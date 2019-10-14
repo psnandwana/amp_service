@@ -269,6 +269,25 @@ class AmpAdminUserController extends ApiController
         $this->httpStatusCode = 200;
         $this->apiResponse['locations'] = $location;
     }
+
+      /** Delete user */
+      public function deleteuser()
+      {
+          header("Access-Control-Allow-Origin: *");
+           if ($this->checkToken()) {
+              $this->request->allowMethod('post');
+              $data = $this->request->data;
+              $user_id = $data['user_id'];
+              $entity = $this->AmpAdminUser->get($user_id);
+              $result = $this->AmpAdminUser->delete($entity);
+              $this->httpStatusCode = 200;
+              $this->apiResponse['message'] = 'Deleted successfully.';
+          } else {
+              $this->httpStatusCode = 403;
+              $this->apiResponse['message'] = "your session has been expired";
+          }
+      }
+  
 }
 
 function crypto_rand_secure($min, $max)
