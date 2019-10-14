@@ -195,7 +195,7 @@ class AmpAdminUserController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $data = $this->request->data;
-           
+
             $name = $data['name'];
             $email = $data['email'];
             $password = getToken(6);
@@ -224,7 +224,7 @@ class AmpAdminUserController extends ApiController
 
             } else {
                 $userList = $this->AmpAdminUser->find('all')->where(['email' => $email])->toArray();
-              
+
                 if (count($userList) > 0) {
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Email already exist.';
@@ -255,7 +255,7 @@ class AmpAdminUserController extends ApiController
         }
     }
 
-     /**
+    /**
      *  Get Location API
      */
     public function getlocation()
@@ -264,30 +264,30 @@ class AmpAdminUserController extends ApiController
         $options = array();
         $options['fields'] = array('id', 'location');
 
-        $TblLocation = TableRegistry::get('Location',['table' => 'amp_locations']);
-        $location = $TblLocation->find('all',$options)->toArray();
+        $TblLocation = TableRegistry::get('Location', ['table' => 'amp_locations']);
+        $location = $TblLocation->find('all', $options)->toArray();
         $this->httpStatusCode = 200;
         $this->apiResponse['locations'] = $location;
     }
 
-      /** Delete user */
-      public function deleteuser()
-      {
-          header("Access-Control-Allow-Origin: *");
-           if ($this->checkToken()) {
-              $this->request->allowMethod('post');
-              $data = $this->request->data;
-              $user_id = $data['user_id'];
-              $entity = $this->AmpAdminUser->get($user_id);
-              $result = $this->AmpAdminUser->delete($entity);
-              $this->httpStatusCode = 200;
-              $this->apiResponse['message'] = 'Deleted successfully.';
-          } else {
-              $this->httpStatusCode = 403;
-              $this->apiResponse['message'] = "your session has been expired";
-          }
-      }
-  
+    /** Delete user */
+    public function deleteuser()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $this->request->allowMethod('post');
+            $data = $this->request->data;
+            $user_id = $data['user_id'];
+            $entity = $this->AmpAdminUser->get($user_id);
+            $result = $this->AmpAdminUser->delete($entity);
+            $this->httpStatusCode = 200;
+            $this->apiResponse['message'] = 'Deleted successfully.';
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
+
 }
 
 function crypto_rand_secure($min, $max)
