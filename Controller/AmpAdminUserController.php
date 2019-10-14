@@ -195,6 +195,7 @@ class AmpAdminUserController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $data = $this->request->data;
+           
             $name = $data['name'];
             $email = $data['email'];
             $password = getToken(6);
@@ -222,8 +223,8 @@ class AmpAdminUserController extends ApiController
                 $this->apiResponse['message'] = 'Name is required field.';
 
             } else {
-                $userList = $this->AmpAdminUser->find('all')->where(['userid' => $email])->toArray();
-
+                $userList = $this->AmpAdminUser->find('all')->where(['email' => $email])->toArray();
+              
                 if (count($userList) > 0) {
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Email already exist.';
@@ -261,7 +262,7 @@ class AmpAdminUserController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         $options = array();
-        $options['fields'] = array('id', 'location' => 'DISTINCT location');
+        $options['fields'] = array('id', 'location');
 
         $TblLocation = TableRegistry::get('Location',['table' => 'amp_locations']);
         $location = $TblLocation->find('all',$options)->toArray();
