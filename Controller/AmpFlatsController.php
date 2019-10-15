@@ -21,7 +21,6 @@ class AmpFlatsController extends ApiController
 
     public function create()
     {
-        header("Access-Control-Allow-Origin: *");
         // if ($this->checkToken()) {
         $data = $this->request->getData();
 
@@ -45,7 +44,7 @@ class AmpFlatsController extends ApiController
         $flat_capacity = $data['flat_capacity'];
         $flat_band = $data['flat_band'];
 
-        $queryInsert = $this->AmpFlat->query();
+        $queryInsert = $this->AmpFlats->query();
         $queryInsert->insert(['flat_no', 'apartment_name', 'flat_type', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'longitude', 'latitude', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'flat_capacity', 'flat_band', 'created_date'])
             ->values([
                 'flat_no' => $flat_no,
