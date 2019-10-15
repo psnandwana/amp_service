@@ -57,7 +57,7 @@ class AmpAdminUserController extends ApiController
             $this->apiResponse['message'] = 'Password is required';
         } else {
             $checkUser = $this->AmpAdminUser->find('all')->where(['email' => $userName, 'password' => $password])->first();
-            
+
             if (!empty($checkUser)) {
                 $checkUser = $checkUser->toArray();
                 unset($checkUser['password']);
@@ -248,6 +248,96 @@ class AmpAdminUserController extends ApiController
                         ->execute();
                     $this->httpStatusCode = 200;
                     $this->apiResponse['message'] = 'New Admin has been created successfully.';
+                }
+            }
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
+
+    /** Get User  */
+    public function getsingleuser()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $user_id = $this->request->getData('user_id');
+            $checkUser = $this->AmpAdminUser->find('all')->where(['id' => $user_id])->first();
+            if (!empty($checkUser)) {
+                $checkUser = $checkUser->toArray();
+                unset($checkUser['password']);
+
+                $this->httpStatusCode = 200;
+                $this->apiResponse['userinfo'] = $checkUser;
+                $this->apiResponse['message'] = 'successfully fetched data';
+            } else {
+                $this->httpStatusCode = 403;
+                $this->apiResponse['message'] = "No user found";
+            }
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
+
+    /** Update user */
+    public function updateuser()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $data = $this->request->data;
+
+            $user_id = $data['user_id'];
+            $name = $data['name'];
+            $email = $data['email'];
+            $campaign_office = $data['campaign_office'];
+            $emp_code = $data['emp_code'];
+            $mobile_no = $data['mobile'];
+            $super_admin = $data['super_admin'];
+            $admin = $data['admin'];
+            $view = $data['view'];
+            $view_download = $data['view_download'];
+            if ($super_admin == '1') {
+                $admin = '1';
+                $view = '1';
+                $view_download = '1';
+            }
+
+            if (empty($email)) {
+
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = 'Email is required field.';
+
+            } else if (empty($name)) {
+
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = 'Name is required field.';
+
+            } else {
+
+                $userList = $this->AmpAdminUser->find('all')->where(['email' => $email, 'id' != $user_id])->toArray();
+
+                if (count($userList) > 0) {
+                    $this->httpStatusCode = 422;
+                    $this->apiResponse['message'] = 'Email already exist.';
+                } else {
+                    $queryUpdate = $this->AmpAdminUser->query();
+                    $queryUpdate->update(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin', 'view', 'view_download', 'created_date'])
+                        ->values([
+                            'name' => $name,
+                            'userid' => $email,
+                            'campaign_office' => $campaign_office,
+                            'emp_code' => $emp_code,
+                            'mobile_no' => $mobile_no,
+                            'super_admin' => $super_admin,
+                            'admin' => $admin,
+                            'view' => $view,
+                            'view_download' => $view_download
+                        ])
+                        ->where(['id' => $user_id])
+                        ->execute();
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['message'] = 'Admin User has been updated successfully.';
                 }
             }
         } else {
