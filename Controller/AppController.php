@@ -52,4 +52,7 @@ class AppController extends Controller
          */
         //$this->loadComponent('Security');
     }
+    public function checkToken(){
+        return true;
+    }
 }
