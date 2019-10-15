@@ -9,7 +9,7 @@ use Cake\Filesystem\Folder;
 use Cake\Mailer\Email;
 use RestApi\Controller\ApiController;
 
-class AmpFlatsController extends ApiController
+class AmpFlatsController extends AppController
 {
 
     public function index()
@@ -67,8 +67,8 @@ class AmpFlatsController extends ApiController
                 'flat_capacity' => $flat_capacity,
                 'flat_band' => $flat_band,
                 'created_date' => Time::now(),
-            ])
-            ->execute();
+            ])->sql();
+            // ->execute();
         $this->httpStatusCode = 200;
         $this->apiResponse['message'] = 'flat details has been updated successfully.';
         // } else {
