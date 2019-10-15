@@ -234,7 +234,7 @@ class AmpAdminUserController extends ApiController
                     $queryInsert->insert(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin', 'view', 'view_download', 'created_date'])
                         ->values([
                             'name' => $name,
-                            'userid' => $email,
+                            'email' => $email,
                             'campaign_office' => $campaign_office,
                             'emp_code' => $emp_code,
                             'mobile_no' => $mobile_no,
@@ -316,16 +316,15 @@ class AmpAdminUserController extends ApiController
             } else {
 
                 $userList = $this->AmpAdminUser->find('all')->where(['email' => $email, 'id' != $user_id])->toArray();
-
                 if (count($userList) > 0) {
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Email already exist.';
                 } else {
                     $queryUpdate = $this->AmpAdminUser->query();
-                    $queryUpdate->update(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin', 'view', 'view_download', 'created_date'])
-                        ->values([
+                    $queryUpdate->update()
+                        ->set([
                             'name' => $name,
-                            'userid' => $email,
+                            'email' => $email,
                             'campaign_office' => $campaign_office,
                             'emp_code' => $emp_code,
                             'mobile_no' => $mobile_no,
