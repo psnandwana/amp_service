@@ -8,7 +8,7 @@ use Cake\Filesystem\Folder;
 use Cake\Mailer\Email;
 use RestApi\Controller\ApiController;
 
-class AmpFlatsController extends AppController
+class AmpFlatsController extends ApiController
 {
 
     public function index()
