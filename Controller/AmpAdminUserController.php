@@ -26,8 +26,9 @@ class AmpAdminUserController extends ApiController
             header("Access-Control-Allow-Origin: *");
             $page = $this->request->getData('page');
             $user_id = $this->request->getData('user_id');
-            $this->paginate = ['limit' => 1, 'page' => $page];
-            $ampAdminUser = $this->paginate($this->AmpAdminUser->contain(['AmpLocation']));
+            $this->paginate = ['limit' => 10, 'page' => $page];
+            $this->paginate['contain'] = ['AmpLocations'];
+            $ampAdminUser = $this->paginate($this->AmpAdminUser);
             $numUsers = $this->AmpAdminUser->find('all', array('conditions' => array('id !=' => $user_id)))->count();
 
             $this->httpStatusCode = 200;
