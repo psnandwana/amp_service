@@ -16,7 +16,7 @@ use RestApi\Controller\ApiController;
  *
  * @method \App\Model\Entity\AmpAdminUser[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class AmpAdminUserController extends ApiController
+class AmpAdminUserController extends AppController
 {
     public $front_url = 'https://www.indianpac.com/dashboard/';
 
