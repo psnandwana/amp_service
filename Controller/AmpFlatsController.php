@@ -4,7 +4,7 @@ namespace App\Controller;
 use Cake\I18n\Time;
 use RestApi\Controller\ApiController;
 
-class AmpFlatsController extends ApiController
+class AmpFlatsController extends AppController
 {
 
     public function index()
