@@ -23,7 +23,7 @@ class AmpFlatsController extends AppController
     {
         // if ($this->checkToken()) {
         $data = $this->request->data;
-        dd($data);
+        // dd($data);
         $flat_no = $data['flat_no'];
         $apartment_name = $data['apartment_name'];
         $flat_type = $data['flat_type'];
@@ -43,7 +43,7 @@ class AmpFlatsController extends AppController
         $vacancy_status = $data['vacancy_status'];
         $flat_capacity = $data['flat_capacity'];
         $flat_band = $data['flat_band'];
-
+        dd("hello");
         $queryInsert = $this->AmpFlats->query();
         $queryInsert->insert(['flat_no', 'apartment_name', 'flat_type', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'longitude', 'latitude', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'flat_capacity', 'flat_band', 'created_date'])
             ->values([
