@@ -55,7 +55,7 @@ class AmpAdminUserController extends ApiController
             $this->httpStatusCode = 422;
             $this->apiResponse['message'] = 'Password is required';
         } else {
-            $checkUser = $this->AmpAdminUser->find('all')->where(['email' => $userName, 'password' => $password])->first();
+            $checkUser = $this->AmpAdminUser->find('all')->where(['email' => $userName, 'password' => $password])->sql();
             dd($checkUser);
             if (!empty($checkUser)) {
                 $checkUser = $checkUser->toArray();
