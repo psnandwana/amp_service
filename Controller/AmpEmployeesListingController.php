@@ -12,18 +12,18 @@ use RestApi\Controller\ApiController;
 class AmpEmployeesListingController extends ApiController
 {
     
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Emails']
-        ];
-        $ampEmployeesListing = $this->paginate($this->AmpEmployeesListing);
+    // public function index()
+    // {
+    //     $this->paginate = [
+    //         'contain' => ['Emails']
+    //     ];
+    //     $ampEmployeesListing = $this->paginate($this->AmpEmployeesListing);
 
-        $this->set(compact('ampEmployeesListing'));
-    }
+    //     $this->set(compact('ampEmployeesListing'));
+    // }
 
     /**List employee List */
-    public function view()
+    public function index()
     {
         if ($this->checkToken()) {
             header("Access-Control-Allow-Origin: *");
