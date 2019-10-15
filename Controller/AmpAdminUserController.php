@@ -16,7 +16,7 @@ use RestApi\Controller\ApiController;
  *
  * @method \App\Model\Entity\AmpAdminUser[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class AmpAdminUserController extends AppController
+class AmpAdminUserController extends ApiController
 {
     public $front_url = 'https://www.indianpac.com/dashboard/';
 
@@ -55,8 +55,8 @@ class AmpAdminUserController extends AppController
             $this->httpStatusCode = 422;
             $this->apiResponse['message'] = 'Password is required';
         } else {
-            $checkUser = $this->AmpAdminUser->find('all')->where(['email' => $userName, 'password' => $password])->sql();
-            dd($checkUser);
+            $checkUser = $this->AmpAdminUser->find('all')->where(['email' => $userName, 'password' => $password])->first();
+            
             if (!empty($checkUser)) {
                 $checkUser = $checkUser->toArray();
                 unset($checkUser['password']);
