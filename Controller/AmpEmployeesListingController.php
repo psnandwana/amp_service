@@ -27,7 +27,7 @@ class AmpEmployeesListingController extends ApiController
     {
         if ($this->checkToken()) {
             header("Access-Control-Allow-Origin: *");
-            $ampEmployeesListing = $this->AmpEmployeesListing->find('all')->toList;
+            $ampEmployeesListing = $this->AmpEmployeesListing->find('all')->toList();
             $this->httpStatusCode = 200;
             $this->apiResponse['employeeinfo'] = $ampEmployeesListing;
         } else{
