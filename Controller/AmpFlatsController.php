@@ -9,7 +9,7 @@ use Cake\Filesystem\Folder;
 use Cake\Mailer\Email;
 use RestApi\Controller\ApiController;
 
-class AmpFlatsController extends AppController
+class AmpFlatsController extends ApiController
 {
 
     public function index()
@@ -42,7 +42,7 @@ class AmpFlatsController extends AppController
         $vacancy_status = $data['vacancy_status'];
         $flat_capacity = $data['flat_capacity'];
         $flat_band = $data['flat_band'];
-        // dd("hello");
+
         $queryInsert = $this->AmpFlats->query();
         $queryInsert->insert(['flat_no', 'apartment_name', 'flat_type', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'longitude', 'latitude', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'flat_capacity', 'flat_band', 'created_date'])
             ->values([
@@ -66,9 +66,8 @@ class AmpFlatsController extends AppController
                 'flat_capacity' => $flat_capacity,
                 'flat_band' => $flat_band,
                 'created_date' => Time::now(),
-            ])->sql();
-        dd($queryInsert);
-            // ->execute();
+            ])
+            ->execute();
         $this->httpStatusCode = 200;
         $this->apiResponse['message'] = 'flat details has been updated successfully.';
         // } else {
