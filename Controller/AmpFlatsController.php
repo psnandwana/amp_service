@@ -24,7 +24,7 @@ class AmpFlatsController extends ApiController
         header("Access-Control-Allow-Origin: *");
         // if ($this->checkToken()) {
         header("Access-Control-Allow-Origin: *");
-        $data = $this->request->data;
+        $data = $this->request->getData();
 
         $flat_no = $data['flat_no'];
         $apartment_name = $data['apartment_name'];
