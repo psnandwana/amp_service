@@ -2,9 +2,13 @@
 namespace App\Controller;
 
 use Cake\I18n\Time;
+use Cake\Datasource\ConnectionManager;
+use Cake\Filesystem\File;
+use Cake\Filesystem\Folder;
+use Cake\Mailer\Email;
 use RestApi\Controller\ApiController;
 
-class AmpFlatsController extends AppController
+class AmpFlatsController extends ApiController
 {
 
     public function index()
@@ -18,6 +22,7 @@ class AmpFlatsController extends AppController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
+            header("Access-Control-Allow-Origin: *");
             $data = $this->request->data;
 
             $flat_no = $data['flat_no'];
@@ -62,11 +67,11 @@ class AmpFlatsController extends AppController
                     'vacancy_status' => $vacancy_status,
                     'flat_capacity' => $flat_capacity,
                     'flat_band' => $flat_band,
-                    'created_date' => Time::now()
+                    'created_date' => Time::now(),
                 ])
                 ->execute();
             $this->httpStatusCode = 200;
-            $this->apiResponse['message'] = 'flat details has been created successfully.';
+            $this->apiResponse['message'] = 'flat details has been updated successfully.';
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
