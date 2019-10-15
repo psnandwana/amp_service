@@ -33,6 +33,10 @@ class AmpAdminUserTable extends Table
         $this->setTable('amp_admin_user');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
+
+        $this->belongsTo('AmpLocation')
+            ->setForeignKey('campaign_office')
+            ->setJoinType('INNER');
     }
    
 }
