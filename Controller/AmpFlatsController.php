@@ -62,7 +62,7 @@ class AmpFlatsController extends ApiController
                     'vacancy_status' => $vacancy_status,
                     'flat_capacity' => $flat_capacity,
                     'flat_band' => $flat_band,
-                    'created_date' => Time::now(),
+                    'created_date' => Time::now()
                 ])
                 ->execute();
             $this->httpStatusCode = 200;
