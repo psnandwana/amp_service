@@ -315,7 +315,8 @@ class AmpAdminUserController extends ApiController
 
             } else {
 
-                $userList = $this->AmpAdminUser->find('all')->where(['email' => $email, 'id' != $user_id])->toArray();
+                $userList = $this->AmpAdminUser->find('all')->where(['email' => $email,'id !='  => $user_id])->toArray();
+             
                 if (count($userList) > 0) {
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Email already exist.';
