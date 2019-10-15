@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Controller\AppController;
 use Cake\I18n\Time;
 use Cake\Datasource\ConnectionManager;
 use Cake\Filesystem\File;
