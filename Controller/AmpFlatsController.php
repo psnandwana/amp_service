@@ -22,8 +22,8 @@ class AmpFlatsController extends AppController
     public function create()
     {
         // if ($this->checkToken()) {
-        $data = $this->request->getData();
-
+        $data = $this->request->data;
+        dd($data);
         $flat_no = $data['flat_no'];
         $apartment_name = $data['apartment_name'];
         $flat_type = $data['flat_type'];
