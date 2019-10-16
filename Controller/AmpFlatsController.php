@@ -52,9 +52,9 @@ class AmpFlatsController extends ApiController
             ->values([
                 'flat_no' => $flat_no,
                 'apartment_name' => $apartment_name,
-                // 'flat_type' => $flat_type,
+                'flat_type' => $flat_type,
                 // 'agreement_status' => $agreement_status,
-                'agreement_date' => $agreement_date,
+                // 'agreement_date' => $agreement_date,
                 // 'address' => $address,
                 // 'pincode' => $pincode,
                 // 'city' => $city,
