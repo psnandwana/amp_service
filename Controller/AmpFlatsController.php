@@ -5,7 +5,7 @@ use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
-class AmpFlatsController extends AppController
+class AmpFlatsController extends ApiController
 {
     public function index()
     {
@@ -38,6 +38,7 @@ class AmpFlatsController extends AppController
             $this->request->data['agreement_date'] = customdateformat($this->request->data['agreement_date']);
            
             $this->request->data['created_date'] = Time::now();
+            print_r($this->request->data);
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->data);
 
             if ($this->AmpFlats->save($AmpFlat)) {
