@@ -72,7 +72,7 @@ class AmpFlatsController extends ApiController
     {
         if ($this->checkToken()) {
             $AmpFlat = $this->AmpFlats->newEntity();
-            $$agreement_date = $this->customdateformat($this->request->data['agreement_date']);
+            $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
             unset($this->request->data['agreement_date']);
             $this->request->data['agreement_date'] = $agreement_date;
             $this->request->data['created_date'] = Time::now();
