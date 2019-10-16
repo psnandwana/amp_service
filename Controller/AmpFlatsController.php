@@ -7,6 +7,7 @@ use RestApi\Controller\ApiController;
 
 class AmpFlatsController extends ApiController
 {
+
     public function customdateformat($chkdt)
     {
         $chkdt = trim($chkdt);
@@ -57,6 +58,8 @@ class AmpFlatsController extends ApiController
             foreach ($AmpFlats as $index => $flat) {
                 $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                 $AmpFlats[$index]['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
+                $AmpFlats[$index]['vacancy_number'] = 0;
+                $AmpFlats[$index]['distance'] = '10 km';
             }
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
