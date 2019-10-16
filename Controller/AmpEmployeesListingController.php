@@ -16,10 +16,17 @@ class AmpEmployeesListingController extends ApiController
     {
         if ($this->checkToken()) {
             header("Access-Control-Allow-Origin: *");
-            $ampEmployeesListing = $this->AmpEmployeesListing->find('all')->toList();
+            $page = $this->request->getData('page');
+            $this->paginate = ['limit' => 10, 'page' => $page];
+            $ampEmployeesListing = $this->paginate($this->AmpEmployeesListing);
+            $numUsers = $this->ampEmployeesListing->find('all')->count();
+
             $this->httpStatusCode = 200;
-            $this->apiResponse['employeeinfo'] = $ampEmployeesListing;
-        } else{
+            $this->apiResponse['page'] = (int) $page;
+            $this->apiResponse['total'] = (int) $numUsers;
+            $this->apiResponse['employees'] = $ampEmployeesListing;
+            $this->apiResponse['message'] = "successfully fetched data";
+        } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
         }

@@ -58,44 +58,59 @@ class AmpFlatsController extends ApiController
 
     public function getsingleflat()
     {
-        $id = $this->request->getData('flat_id');
-        $AmpFlat = $this->AmpFlats->get($id, [
-            'contain' => []
-        ]);
-
-        $this->httpStatusCode = 200;
-        $this->apiResponse['flat'] = $AmpFlat;
+        if ($this->checkToken()) {
+            $id = $this->request->getData('flat_id');
+            $AmpFlat = $this->AmpFlats->get($id, [
+                'contain' => []
+            ]);
+    
+            $this->httpStatusCode = 200;
+            $this->apiResponse['flat'] = $AmpFlat;
+        }else{
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }        
     }
 
     public function update()
     {
-        $id = $this->request->getData('flat_id');
-        $AmpFlat = $this->AmpFlats->get($id, [
-            'contain' => []
-        ]);
-        unset($this->request->data['flat_id']);
-        $this->request->data['agreement_date'] = $this->customdateformat($this->request->data['agreement_date']); 
-        $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
-        if ($this->AmpFlats->save($AmpFlat)) {
-            $this->httpStatusCode = 200;
-            $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
+        if ($this->checkToken()) {
+            $id = $this->request->getData('flat_id');
+            $AmpFlat = $this->AmpFlats->get($id, [
+                'contain' => []
+            ]);
+            unset($this->request->data['flat_id']);
+            $this->request->data['agreement_date'] = $this->customdateformat($this->request->data['agreement_date']); 
+            $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
+            if ($this->AmpFlats->save($AmpFlat)) {
+                $this->httpStatusCode = 200;
+                $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
+            }else{
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = 'Unable to update Flat Profile.';
+            }
         }else{
-            $this->httpStatusCode = 422;
-            $this->apiResponse['message'] = 'Unable to update Flat Profile.';
-        }
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }        
     }
 
     public function delete()
     {
-        $id = $this->request->getData('flat_id');
-        $AmpFlat = $this->AmpFlats->get($id);
-        if ($this->AmpFlats->delete($AmpFlat)) {
-            $this->httpStatusCode = 200;
-            $this->apiResponse['message'] = 'Flat profile has been deleted successfully.';
-        } else {
-            $this->httpStatusCode = 422;
-            $this->apiResponse['message'] = 'Unable to delete Flat Profile.';
-        }
+        if ($this->checkToken()) {
+            $id = $this->request->getData('flat_id');
+            $AmpFlat = $this->AmpFlats->get($id);
+            if ($this->AmpFlats->delete($AmpFlat)) {
+                $this->httpStatusCode = 200;
+                $this->apiResponse['message'] = 'Flat profile has been deleted successfully.';
+            } else {
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = 'Unable to delete Flat Profile.';
+            }
+        }else{
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }        
     }
 
     public function getagreementstatus()
@@ -151,5 +166,37 @@ class AmpFlatsController extends ApiController
 
         $this->httpStatusCode = 200;
         $this->apiResponse['states'] = $tmp_array;
+    }
+
+    public function assignflat()
+    {
+        if ($this->checkToken()) {
+            
+            $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
+            $empID = $this->request->getData('employee_id');
+            $flatID = $this->request->getData('flat_id');
+            $checkAlreadyAssigned = $flatEmpMappingTable->find('all')->where(['employee_id' => $empID])->toArray();
+            
+            if (count($checkAlreadyAssigned) > 0) {
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = 'Flat is already assigned to selected Employee';
+            } else {
+                $queryInsert = $flatEmpMappingTable->query();
+                $queryInsert->insert(['flat_id', 'employee_id', 'assigned_by', 'assigned_date'])
+                ->values([
+                    'flat_id' => $flatID,
+                    'employee_id' => $empID,
+                    'assigned_by' => 1,
+                    'assigned_date' => Time::now()              
+                ])
+                ->execute();
+
+                $this->httpStatusCode = 200;
+                $this->apiResponse['message'] = 'Flat has been assigned successfully';
+            }
+        }else{
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
     }
 }
