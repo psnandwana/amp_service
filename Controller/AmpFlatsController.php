@@ -78,8 +78,7 @@ class AmpFlatsController extends ApiController
             unset($this->request->data['agreement_date']);
             $this->request->data['agreement_date'] = $agreement_date;
             $this->request->data['created_date'] = Time::now();
-            print_r($this->request->getData());exit;
-            $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->data);
+            $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
 
             if ($this->AmpFlats->save($AmpFlat)) {
                 $this->httpStatusCode = 200;
@@ -118,7 +117,9 @@ class AmpFlatsController extends ApiController
                 'contain' => [],
             ]);
             unset($this->request->data['flat_id']);
-            $this->request->data['agreement_date'] = $this->customdateformat($this->request->data['agreement_date']);
+            $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
+            unset($this->request->data['agreement_date']);
+            $this->request->data['agreement_date'] = $agreement_date;
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
             if ($this->AmpFlats->save($AmpFlat)) {
                 $this->httpStatusCode = 200;
