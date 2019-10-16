@@ -10,6 +10,7 @@ class AmpFlatsController extends ApiController
     public function customdateformat($chkdt)
     {
         $month = substr($chkdt, 4, 3);
+        print_r($month);exit;
         if ($month == 'Jan') {
             $month = '01';
         } else if ($month == 'Feb') {
@@ -73,7 +74,7 @@ class AmpFlatsController extends ApiController
         if ($this->checkToken()) {
             $AmpFlat = $this->AmpFlats->newEntity();
             $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
-            print_r($agreement_date);exit;
+            dd($agreement_date);exit;
             unset($this->request->data['agreement_date']);
             $this->request->data['agreement_date'] = $agreement_date;
             $this->request->data['created_date'] = Time::now();
