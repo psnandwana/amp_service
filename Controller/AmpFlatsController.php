@@ -19,6 +19,7 @@ class AmpFlatsController extends ApiController
             $page = $this->request->getData('page');
             $this->paginate = ['limit' => 10, 'page' => $page];           
             $totalFlats = $this->AmpFlats->find('all')->count();
+            // $this->paginate['contain'] = ['AmpEmployeesListing'];
             $AmpFlats = $this->paginate($this->AmpFlats)->toArray();
             foreach($AmpFlats as $index=>$flat){
                 $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
@@ -170,8 +171,7 @@ class AmpFlatsController extends ApiController
 
     public function assignflat()
     {
-        if ($this->checkToken()) {
-            
+        if ($this->checkToken()) {                        
             $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
             $empID = $this->request->getData('employee_id');
             $flatID = $this->request->getData('flat_id');

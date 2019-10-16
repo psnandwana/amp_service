@@ -37,11 +37,11 @@ class AmpFlatEmployeesMappingTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('AmpFlat', [
+        $this->belongsTo('AmpFlats', [
             'foreignKey' => 'flat_id',
             'joinType' => 'INNER'
         ]);
-        
+
         $this->belongsTo('AmpEmployeesListing', [
             'foreignKey' => 'employee_id',
             'joinType' => 'INNER'
