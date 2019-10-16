@@ -19,7 +19,7 @@ class AmpEmployeesListingController extends ApiController
             $page = $this->request->getData('page');
             $this->paginate = ['limit' => 10, 'page' => $page];
             $ampEmployeesListing = $this->paginate($this->AmpEmployeesListing);
-            $numUsers = $this->ampEmployeesListing->find('all')->count();
+            $numUsers = $this->AmpEmployeesListing->find('all')->count();
 
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
