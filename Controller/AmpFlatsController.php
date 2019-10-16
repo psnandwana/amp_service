@@ -25,7 +25,9 @@ class AmpFlatsController extends ApiController
         $data = $this->request->data;
         $flat_no = $data['flat_no'];
         $apartment_name = $data['apartment_name'];
-        $flat_type = (int)$data['flat_type'];
+        $flat_type = $data['flat_type'];
+        echo gettype($flat_type);exit;
+        
         $agreement_status = $data['agreement_status'];
         $agreement_date = $data['agreement_date'];
         $address = $data['address'];
