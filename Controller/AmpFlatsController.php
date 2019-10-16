@@ -9,8 +9,8 @@ class AmpFlatsController extends ApiController
 {
     public function customdateformat($chkdt)
     {
+        $chkdt = trim($chkdt);
         $month = substr($chkdt, 4, 3);
-        print_r($month);exit;
         if ($month == 'Jan') {
             $month = '01';
         } else if ($month == 'Feb') {
@@ -78,7 +78,7 @@ class AmpFlatsController extends ApiController
             unset($this->request->data['agreement_date']);
             $this->request->data['agreement_date'] = $agreement_date;
             $this->request->data['created_date'] = Time::now();
-            print_r($this->request->data);
+            print_r($this->request->getData());exit;
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->data);
 
             if ($this->AmpFlats->save($AmpFlat)) {
