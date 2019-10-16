@@ -9,7 +9,6 @@ class AmpFlatsController extends ApiController
 {
     public function customdateformat($chkdt)
     {
-        print_r($chkdt);exit;
         $month = substr($chkdt, 4, 3);
         if ($month == 'Jan') {
             $month = '01';
