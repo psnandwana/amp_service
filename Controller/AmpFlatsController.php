@@ -7,6 +7,43 @@ use RestApi\Controller\ApiController;
 
 class AmpFlatsController extends ApiController
 {
+    public function customdateformat($chkdt)
+    {
+        $month = substr($chkdt, 4, 3);
+        if ($month == 'Jan') {
+            $month = '01';
+        } else if ($month == 'Feb') {
+            $month = '02';
+        } else if ($month == 'Mar') {
+            $month = '03';
+        } else if ($month == 'Apr') {
+            $month = '04';
+        } else if ($month == 'May') {
+            $month = '05';
+        } else if ($month == 'Jun') {
+            $month = '06';
+        } else if ($month == 'Jul') {
+            $month = '07';
+        } else if ($month == 'Aug') {
+            $month = '08';
+        } else if ($month == 'Sep') {
+            $month = '09';
+        } else if ($month == 'Oct') {
+            $month = '10';
+        } else if ($month == 'Nov') {
+            $month = '11';
+        } else if ($month == 'Dec') {
+            $month = '12';
+        } else {
+            return $chkdt;
+        }
+
+        $date = substr($chkdt, 7, 3);
+        $year = substr($chkdt, 10, 5);
+        print_r(date("Y-m-d", mktime(0, 0, 0, $month, $date, $year)));exit;
+        return date("Y-m-d", mktime(0, 0, 0, $month, $date, $year));
+    }
+
     public function index()
     {
         if ($this->checkToken()) {
@@ -35,7 +72,7 @@ class AmpFlatsController extends ApiController
     {
         if ($this->checkToken()) {
             $AmpFlat = $this->AmpFlats->newEntity();
-            $$agreement_date = customdateformat($this->request->data['agreement_date']);
+            $$agreement_date = $this->customdateformat($this->request->data['agreement_date']);
             unset($this->request->data['agreement_date']);
             $this->request->data['agreement_date'] = $agreement_date;
             $this->request->data['created_date'] = Time::now();
@@ -197,40 +234,4 @@ class AmpFlatsController extends ApiController
             $this->apiResponse['message'] = "your session has been expired";
         }
     }
-}
-
-function customdateformat($chkdt)
-{
-    $month = substr($chkdt, 4, 3);
-    if ($month == 'Jan') {
-        $month = '01';
-    } else if ($month == 'Feb') {
-        $month = '02';
-    } else if ($month == 'Mar') {
-        $month = '03';
-    } else if ($month == 'Apr') {
-        $month = '04';
-    } else if ($month == 'May') {
-        $month = '05';
-    } else if ($month == 'Jun') {
-        $month = '06';
-    } else if ($month == 'Jul') {
-        $month = '07';
-    } else if ($month == 'Aug') {
-        $month = '08';
-    } else if ($month == 'Sep') {
-        $month = '09';
-    } else if ($month == 'Oct') {
-        $month = '10';
-    } else if ($month == 'Nov') {
-        $month = '11';
-    } else if ($month == 'Dec') {
-        $month = '12';
-    } else {
-        return $chkdt;
-    }
-
-    $date = substr($chkdt, 7, 3);
-    $year = substr($chkdt, 10, 5);
-    return date("Y-m-d", mktime(0, 0, 0, $month, $date, $year));
 }
