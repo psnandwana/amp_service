@@ -9,7 +9,7 @@ use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
-class AmpFlatsController extends ApiController
+class AmpFlatsController extends AppController
 {
 
     public function index()
