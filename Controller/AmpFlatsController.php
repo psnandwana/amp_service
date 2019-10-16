@@ -38,8 +38,7 @@ class AmpFlatsController extends AppController
             $this->request->data['agreement_date'] = customdateformat($this->request->data['agreement_date']);
            
             $this->request->data['created_date'] = Time::now();
-            dd( $this->request->getData());
-            $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
+            $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->data);
 
             if ($this->AmpFlats->save($AmpFlat)) {
                 $this->httpStatusCode = 200;
