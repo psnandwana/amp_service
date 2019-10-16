@@ -152,5 +152,4 @@ class AmpFlatsController extends ApiController
         $this->httpStatusCode = 200;
         $this->apiResponse['states'] = $tmp_array;
     }
-
 }

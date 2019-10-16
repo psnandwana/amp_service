@@ -24,5 +24,21 @@ class AmpEmployeesListingController extends ApiController
             $this->apiResponse['message'] = "your session has been expired";
         }
     }
+
+    //Auto Search
+    public function filteremployee()
+    {
+        header("Access-Control-Allow-Origin: *");
+        $options = array();
+        $emp_code = $this->request->getData('emp_code');
+        $options['conditions'] = array('emp_code LIKE'=> $emp_code.'%');
+        $employees = $this->AmpEmployeesListing->find('all',$options)->toArray();
+        $tmp_array = array();
+        foreach ($employees as $value) {
+            $tmp_array[] = $value;
+        }
+        $this->httpStatusCode = 200;
+        $this->apiResponse['employees'] = $tmp_array;
+    }
     
 }
