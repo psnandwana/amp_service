@@ -3,10 +3,10 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\I18n\Time;
-use Cake\Datasource\ConnectionManager;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
 use Cake\Mailer\Email;
+use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
 class AmpFlatsController extends ApiController
@@ -97,4 +97,60 @@ class AmpFlatsController extends ApiController
             $this->apiResponse['message'] = 'Unable to delete Flat Profile.';
         }
     }
+
+    public function getagreementstatus()
+    {
+        header("Access-Control-Allow-Origin: *");
+        $status = array('Expired','Renew','Pending');
+        $this->httpStatusCode = 200;
+        $this->apiResponse['status'] = $status;
+    }
+
+    public function getvacancystatus()
+    {
+        header("Access-Control-Allow-Origin: *");
+        $status = array('Vacant','Partially Occupied','Occupied');
+        $this->httpStatusCode = 200;
+        $this->apiResponse['status'] = $status;
+    }
+
+     /**
+     *  Get Cities
+     */
+    public function getcities()
+    {
+        header("Access-Control-Allow-Origin: *");
+        $options = array();
+        $state = $this->request->getData('state');
+        $options['conditions']['city_state'] = $state;
+        $options['fields'] = array('city_name' => 'DISTINCT city_name');
+        $options['order'] = 'city_name';
+        $TblCities = TableRegistry::get('CSMap',['table' => 'amp_cities_states_mapping']);
+        $cities = $TblCities->find('all',$options)->toArray();
+        $tmp_array = array();
+        foreach ($cities as $value) {
+            $tmp_array[] = trim($value['city_name']);
+        }
+
+        $this->httpStatusCode = 200;
+        $this->apiResponse['cities'] = $tmp_array;
+    }
+
+    public function getstates()
+    {
+        header("Access-Control-Allow-Origin: *");
+        $options = array();
+        $options['fields'] = array('city_state' => 'DISTINCT city_state');
+        $options['order'] = 'city_state';
+        $TblStates = TableRegistry::get('CSMap',['table' => 'amp_cities_states_mapping']);
+        $states = $TblStates->find('all',$options)->toArray();
+        $tmp_array = array();
+        foreach ($states as $value) {
+            $tmp_array[] = trim($value['city_state']);
+        }
+
+        $this->httpStatusCode = 200;
+        $this->apiResponse['states'] = $tmp_array;
+    }
+
 }
