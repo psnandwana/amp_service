@@ -36,7 +36,9 @@ class AmpFlatsController extends AppController
         if ($this->checkToken()) {
             $AmpFlat = $this->AmpFlats->newEntity();
             $this->request->data['agreement_date'] = customdateformat($this->request->data['agreement_date']);
+           
             $this->request->data['created_date'] = Time::now();
+            dd( $this->request->getData());
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
 
             if ($this->AmpFlats->save($AmpFlat)) {
