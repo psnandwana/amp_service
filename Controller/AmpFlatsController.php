@@ -278,7 +278,7 @@ class AmpFlatsController extends ApiController
                     ->values([
                         'flat_id' => $flatID,
                         'employee_id' => $empID,
-                        'assigned_by' => 1,
+                        'assigned_by' => 1000,
                         'assigned_date' => Time::now(),
                     ])
                     ->execute();
@@ -292,5 +292,33 @@ class AmpFlatsController extends ApiController
         }
     }
 
+    public function rentpayment()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $flatRentTable = TableRegistry::get('amp_flat_rent');
+            $flatID = $this->request->getData('flat_id');
+            $rent_month = $this->request->getData('rent_month');
+            $rent_year = $this->request->getData('rent_year');
+            $rent_amount = $this->request->getData('rent_amount');
+                     
+            $queryInsert = $flatRentTable->query();
+            $queryInsert->insert(['flat_id','rent_month','rent_year','rent_amount','payment_date','payment_by'])
+                ->values([
+                    'flat_id' => $flatID,
+                    'rent_month' => $rent_month,
+                    'rent_year' => $rent_year,
+                    'rent_amount' => $rent_amount,                   
+                    'payment_date' => Time::now(),
+                    'payment_by' => 1000
+                ])
+                ->execute();
 
+            $this->httpStatusCode = 200;
+            $this->apiResponse['message'] = 'Rent has been paid successfully';
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
 }
