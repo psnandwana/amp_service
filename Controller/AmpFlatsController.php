@@ -311,24 +311,30 @@ class AmpFlatsController extends ApiController
                     $flatVacancy = $AmpFlat['flat_capacity'];
                 }
                 if($flatVacancy != 0 && $AmpFlat['vacancy_status'] != 'Occupied'){
-                    $queryInsert = $flatEmpMappingTable->query();
-                    $queryInsert->insert(['flat_id', 'employee_id', 'assigned_by', 'assigned_date'])
-                        ->values([
-                            'flat_id' => $flatID,
-                            'employee_id' => $empID,
-                            'assigned_by' => 1000,
-                            'assigned_date' => Time::now(),
-                        ])
-                        ->execute();
-                    $this->httpStatusCode = 422;
-                    $this->apiResponse['message'] = 'Flat has been assigned successfully.'; 
+                    $checkAlreadyAssigned = $flatEmpMappingTable->find('all')->where(['employee_id' => $empID])->toArray();
+                    if (count($checkAlreadyAssigned) > 0) {
+                        $this->httpStatusCode = 422;
+                        $this->apiResponse['message'] = 'Flat is already assigned to selected Employee';
+                    } else {
+                        $queryInsert = $flatEmpMappingTable->query();
+                        $queryInsert->insert(['flat_id', 'employee_id', 'assigned_by', 'assigned_date'])
+                            ->values([
+                                'flat_id' => $flatID,
+                                'employee_id' => $empID,
+                                'assigned_by' => 1000,
+                                'assigned_date' => Time::now(),
+                            ])
+                            ->execute();
+                        $this->httpStatusCode = 200;
+                        $this->apiResponse['message'] = 'Flat has been assigned successfully.'; 
+                    }                    
                 }else{
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Flat already Occupied';
                 }
             } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
-                $this->httpStatusCode = 200;
-                $this->apiResponse['flat'] = null;
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = 'Selected flat not found';
             }
         } else {
             $this->httpStatusCode = 403;
