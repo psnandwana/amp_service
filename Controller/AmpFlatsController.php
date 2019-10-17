@@ -119,13 +119,12 @@ class AmpFlatsController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $id = $this->request->getData('flat_id');
-            if (is_int($id)){
+            $id = $this->request->getData('flat_id');            
+            if (is_numeric($id)){
                 try {
                     $AmpFlat = $this->AmpFlats->get($id, [
                         'contain' => [],
                     ]);
-        
                     $this->httpStatusCode = 200;
                     $this->apiResponse['flat'] = $AmpFlat;
                 } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
