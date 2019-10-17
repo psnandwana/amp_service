@@ -48,8 +48,8 @@ class AmpFlatsController extends ApiController
 
     public function index()
     {
-        if ($this->checkToken()) {
-            header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {           
             $page = $this->request->getData('page');
             $this->paginate = ['limit' => 10, 'page' => $page];
             $totalFlats = $this->AmpFlats->find('all')->count();
@@ -144,6 +144,7 @@ class AmpFlatsController extends ApiController
 
     public function update()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             try {
                 $id = $this->request->getData('flat_id');
@@ -174,6 +175,7 @@ class AmpFlatsController extends ApiController
 
     public function delete()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             try {
                 $id = $this->request->getData('flat_id');
@@ -252,6 +254,7 @@ class AmpFlatsController extends ApiController
 
     public function assignflat()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
             $empID = $this->request->getData('employee_id');
