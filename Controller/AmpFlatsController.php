@@ -53,13 +53,31 @@ class AmpFlatsController extends ApiController
             $page = $this->request->getData('page');
             $this->paginate = ['limit' => 10, 'page' => $page];
             $totalFlats = $this->AmpFlats->find('all')->count();
-            // $this->paginate['contain'] = ['AmpEmployeesListing'];
+            $this->paginate['contain'] = ['AmpEmployeesListing'];
             $AmpFlats = $this->paginate($this->AmpFlats)->toArray();
             foreach ($AmpFlats as $index => $flat) {
+                if(count($flat['amp_employees_listing']) > 0){
+                    $band5500 = 0;
+                    $flatVacancy = 0;
+                    foreach($flat['amp_employees_listing'] as $flatEmp){
+                        unset($flatEmp['_joinData']);
+                        if($flatEmp['flat_band'] == '5500'){
+                            $band5500 += 1;
+                        }
+                    }
+                    if($band5500%2 != 0){
+                        $flatVacancy += 1;
+                    }
+                    $flatVacancy += $flat['flat_capacity'] - count($flat['amp_employees_listing']);
+                    $AmpFlats[$index]['vacancy_number'] = $flatVacancy;
+                }else{
+                    $AmpFlats[$index]['vacancy_number'] = $flat['flat_capacity'];
+                }
                 $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                 $AmpFlats[$index]['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
-                $AmpFlats[$index]['vacancy_number'] = 0;
                 $AmpFlats[$index]['distance'] = '10 km';
+                $AmpFlats[$index]['employees'] = $flat['amp_employees_listing'];
+                unset($flat['amp_employees_listing']);                
             }
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
