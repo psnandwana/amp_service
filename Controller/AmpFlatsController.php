@@ -118,12 +118,17 @@ class AmpFlatsController extends ApiController
     {
         if ($this->checkToken()) {
             $id = $this->request->getData('flat_id');
-            $AmpFlat = $this->AmpFlats->get($id, [
-                'contain' => [],
-            ]);
-
-            $this->httpStatusCode = 200;
-            $this->apiResponse['flat'] = $AmpFlat;
+            try {
+                $AmpFlat = $this->AmpFlats->get($id, [
+                    'contain' => [],
+                ]);
+    
+                $this->httpStatusCode = 200;
+                $this->apiResponse['flat'] = $AmpFlat;
+            } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = "Selected record not found";
+            }
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
@@ -133,22 +138,27 @@ class AmpFlatsController extends ApiController
     public function update()
     {
         if ($this->checkToken()) {
-            $id = $this->request->getData('flat_id');
-            $AmpFlat = $this->AmpFlats->get($id, [
-                'contain' => [],
-            ]);
-            unset($this->request->data['flat_id']);
-            $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
-            unset($this->request->data['agreement_date']);
-            $this->request->data['agreement_date'] = $agreement_date;
-            $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
-            if ($this->AmpFlats->save($AmpFlat)) {
-                $this->httpStatusCode = 200;
-                $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
-            } else {
+            try {
+                $id = $this->request->getData('flat_id');
+                $AmpFlat = $this->AmpFlats->get($id, [
+                    'contain' => [],
+                ]);
+                unset($this->request->data['flat_id']);
+                $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
+                unset($this->request->data['agreement_date']);
+                $this->request->data['agreement_date'] = $agreement_date;
+                $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
+                if ($this->AmpFlats->save($AmpFlat)) {
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
+                } else {
+                    $this->httpStatusCode = 422;
+                    $this->apiResponse['message'] = 'Unable to update Flat Profile.';
+                }
+            } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
                 $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = 'Unable to update Flat Profile.';
-            }
+                $this->apiResponse['message'] = "Selected record not found";
+            }            
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
@@ -158,14 +168,19 @@ class AmpFlatsController extends ApiController
     public function delete()
     {
         if ($this->checkToken()) {
-            $id = $this->request->getData('flat_id');
-            $AmpFlat = $this->AmpFlats->get($id);
-            if ($this->AmpFlats->delete($AmpFlat)) {
-                $this->httpStatusCode = 200;
-                $this->apiResponse['message'] = 'Flat profile has been deleted successfully.';
-            } else {
+            try {
+                $id = $this->request->getData('flat_id');
+                $AmpFlat = $this->AmpFlats->get($id);
+                if ($this->AmpFlats->delete($AmpFlat)) {
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['message'] = 'Flat profile has been deleted successfully.';
+                } else {
+                    $this->httpStatusCode = 422;
+                    $this->apiResponse['message'] = 'Unable to delete Flat Profile.';
+                }
+            } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
                 $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = 'Unable to delete Flat Profile.';
+                $this->apiResponse['message'] = "Selected record not found";
             }
         } else {
             $this->httpStatusCode = 403;
