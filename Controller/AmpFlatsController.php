@@ -213,6 +213,14 @@ class AmpFlatsController extends ApiController
         $this->apiResponse['status'] = $status;
     }
 
+    public function getflatband()
+    {
+        header("Access-Control-Allow-Origin: *");
+        $band = array('8500', '12500', '15500');
+        $this->httpStatusCode = 200;
+        $this->apiResponse['band'] = $band;
+    }
+
     /**
      *  Get Cities
      */
