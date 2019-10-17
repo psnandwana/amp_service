@@ -92,6 +92,7 @@ class AmpFlatsController extends ApiController
 
     public function create()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $AmpFlat = $this->AmpFlats->newEntity();
             $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
@@ -116,6 +117,7 @@ class AmpFlatsController extends ApiController
 
     public function getsingleflat()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $id = $this->request->getData('flat_id');
             if (is_int($id)){
@@ -278,4 +280,6 @@ class AmpFlatsController extends ApiController
             $this->apiResponse['message'] = "your session has been expired";
         }
     }
+
+
 }
