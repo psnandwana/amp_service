@@ -118,17 +118,22 @@ class AmpFlatsController extends ApiController
     {
         if ($this->checkToken()) {
             $id = $this->request->getData('flat_id');
-            try {
-                $AmpFlat = $this->AmpFlats->get($id, [
-                    'contain' => [],
-                ]);
-    
+            if (is_int($id)){
+                try {
+                    $AmpFlat = $this->AmpFlats->get($id, [
+                        'contain' => [],
+                    ]);
+        
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['flat'] = $AmpFlat;
+                } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['flat'] = null;
+                }
+            }else{
                 $this->httpStatusCode = 200;
-                $this->apiResponse['flat'] = $AmpFlat;
-            } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
-                $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = "Selected record not found";
-            }
+                $this->apiResponse['flat'] = null;
+            }            
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
