@@ -65,7 +65,7 @@ class AmpFlatsController extends ApiController
                             $band5500 += 1;
                         }
                     }
-                    if($band5500%2 != 0){
+                    if($band5500 != 0){
                         $flatVacancy += 1;
                     }
                     $flatVacancy += $flat['flat_capacity'] - count($flat['amp_employees_listing']);
@@ -123,8 +123,31 @@ class AmpFlatsController extends ApiController
             if (is_numeric($id)){
                 try {
                     $AmpFlat = $this->AmpFlats->get($id, [
-                        'contain' => [],
-                    ]);
+                        'contain' => ['AmpEmployeesListing'],
+                    ])->toArray();
+    
+                    $flatVacancy = 0;
+                    if(count($AmpFlat['amp_employees_listing']) > 0){
+                        
+                        $band5500 = 0;                    
+                        foreach($AmpFlat['amp_employees_listing'] as $index=>$flatEmp){
+                            unset($AmpFlat['amp_employees_listing'][$index]['_joinData']);
+                            if($flatEmp['flat_band'] == '5500'){
+                                $band5500 += 1;
+                            }
+                        }
+                        if($band5500 != 0){
+                            $flatVacancy += 1;
+                        }
+                       
+                        $flatVacancy += $AmpFlat['flat_capacity'] - count($AmpFlat['amp_employees_listing']);
+                    }else{
+                        $flatVacancy = $AmpFlat['flat_capacity'];
+                    }
+                    $AmpFlat['vacancy_number'] = $flatVacancy;
+                    $AmpFlat['distance'] = '10 km';
+                    $AmpFlat['employees'] = $AmpFlat['amp_employees_listing'];
+                    unset($AmpFlat['amp_employees_listing']);  
                     $this->httpStatusCode = 200;
                     $this->apiResponse['flat'] = $AmpFlat;
                 } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
@@ -263,27 +286,49 @@ class AmpFlatsController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
-            $empID = $this->request->getData('employee_id');
-            $flatID = $this->request->getData('flat_id');
-            $checkAlreadyAssigned = $flatEmpMappingTable->find('all')->where(['employee_id' => $empID])->toArray();
+            try {
+                $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
+                $empID = $this->request->getData('employee_id');
+                $flatID = $this->request->getData('flat_id');
+                $AmpFlat = $this->AmpFlats->get($flatID, [
+                    'contain' => ['AmpEmployeesListing'],
+                ])->toArray();
 
-            if (count($checkAlreadyAssigned) > 0) {
-                $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = 'Flat is already assigned to selected Employee';
-            } else {
-                $queryInsert = $flatEmpMappingTable->query();
-                $queryInsert->insert(['flat_id', 'employee_id', 'assigned_by', 'assigned_date'])
-                    ->values([
-                        'flat_id' => $flatID,
-                        'employee_id' => $empID,
-                        'assigned_by' => 1000,
-                        'assigned_date' => Time::now(),
-                    ])
-                    ->execute();
-
+                $flatVacancy = 0;
+                if(count($AmpFlat['amp_employees_listing']) > 0){
+                    $band5500 = 0;                    
+                    foreach($AmpFlat['amp_employees_listing'] as $flatEmp){
+                        if($flatEmp['flat_band'] == '5500'){
+                            $band5500 += 1;
+                        }
+                    }
+                    if($band5500 != 0){
+                        $flatVacancy += 1;
+                    }
+                   
+                    $flatVacancy += $AmpFlat['flat_capacity'] - count($AmpFlat['amp_employees_listing']);
+                }else{
+                    $flatVacancy = $AmpFlat['flat_capacity'];
+                }
+                if($flatVacancy != 0 && $AmpFlat['vacancy_status'] != 'Occupied'){
+                    $queryInsert = $flatEmpMappingTable->query();
+                    $queryInsert->insert(['flat_id', 'employee_id', 'assigned_by', 'assigned_date'])
+                        ->values([
+                            'flat_id' => $flatID,
+                            'employee_id' => $empID,
+                            'assigned_by' => 1000,
+                            'assigned_date' => Time::now(),
+                        ])
+                        ->execute();
+                    $this->httpStatusCode = 422;
+                    $this->apiResponse['message'] = 'Flat has been assigned successfully.'; 
+                }else{
+                    $this->httpStatusCode = 422;
+                    $this->apiResponse['message'] = 'Flat already Occupied';
+                }
+            } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
                 $this->httpStatusCode = 200;
-                $this->apiResponse['message'] = 'Flat has been assigned successfully';
+                $this->apiResponse['flat'] = null;
             }
         } else {
             $this->httpStatusCode = 403;
@@ -310,8 +355,7 @@ class AmpFlatsController extends ApiController
                     'rent_amount' => $rent_amount,                   
                     'payment_date' => Time::now(),
                     'payment_by' => 1000
-                ])
-                ->execute();
+                ])->execute();
 
             $this->httpStatusCode = 200;
             $this->apiResponse['message'] = 'Rent has been paid successfully';
