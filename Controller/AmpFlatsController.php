@@ -48,18 +48,36 @@ class AmpFlatsController extends ApiController
 
     public function index()
     {
-        if ($this->checkToken()) {
-            header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {           
             $page = $this->request->getData('page');
             $this->paginate = ['limit' => 10, 'page' => $page];
             $totalFlats = $this->AmpFlats->find('all')->count();
-            // $this->paginate['contain'] = ['AmpEmployeesListing'];
+            $this->paginate['contain'] = ['AmpEmployeesListing'];
             $AmpFlats = $this->paginate($this->AmpFlats)->toArray();
             foreach ($AmpFlats as $index => $flat) {
+                if(count($flat['amp_employees_listing']) > 0){
+                    $band5500 = 0;
+                    $flatVacancy = 0;
+                    foreach($flat['amp_employees_listing'] as $flatEmp){
+                        unset($flatEmp['_joinData']);
+                        if($flatEmp['flat_band'] == '5500'){
+                            $band5500 += 1;
+                        }
+                    }
+                    if($band5500%2 != 0){
+                        $flatVacancy += 1;
+                    }
+                    $flatVacancy += $flat['flat_capacity'] - count($flat['amp_employees_listing']);
+                    $AmpFlats[$index]['vacancy_number'] = $flatVacancy;
+                }else{
+                    $AmpFlats[$index]['vacancy_number'] = $flat['flat_capacity'];
+                }
                 $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                 $AmpFlats[$index]['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
-                $AmpFlats[$index]['vacancy_number'] = 0;
                 $AmpFlats[$index]['distance'] = '10 km';
+                $AmpFlats[$index]['employees'] = $flat['amp_employees_listing'];
+                unset($flat['amp_employees_listing']);                
             }
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
@@ -74,6 +92,7 @@ class AmpFlatsController extends ApiController
 
     public function create()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $AmpFlat = $this->AmpFlats->newEntity();
             $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
@@ -98,14 +117,24 @@ class AmpFlatsController extends ApiController
 
     public function getsingleflat()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $id = $this->request->getData('flat_id');
-            $AmpFlat = $this->AmpFlats->get($id, [
-                'contain' => [],
-            ]);
-
-            $this->httpStatusCode = 200;
-            $this->apiResponse['flat'] = $AmpFlat;
+            $id = $this->request->getData('flat_id');            
+            if (is_numeric($id)){
+                try {
+                    $AmpFlat = $this->AmpFlats->get($id, [
+                        'contain' => [],
+                    ]);
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['flat'] = $AmpFlat;
+                } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['flat'] = null;
+                }
+            }else{
+                $this->httpStatusCode = 200;
+                $this->apiResponse['flat'] = null;
+            }            
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
@@ -114,23 +143,29 @@ class AmpFlatsController extends ApiController
 
     public function update()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $id = $this->request->getData('flat_id');
-            $AmpFlat = $this->AmpFlats->get($id, [
-                'contain' => [],
-            ]);
-            unset($this->request->data['flat_id']);
-            $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
-            unset($this->request->data['agreement_date']);
-            $this->request->data['agreement_date'] = $agreement_date;
-            $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
-            if ($this->AmpFlats->save($AmpFlat)) {
-                $this->httpStatusCode = 200;
-                $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
-            } else {
+            try {
+                $id = $this->request->getData('flat_id');
+                $AmpFlat = $this->AmpFlats->get($id, [
+                    'contain' => [],
+                ]);
+                unset($this->request->data['flat_id']);
+                $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
+                unset($this->request->data['agreement_date']);
+                $this->request->data['agreement_date'] = $agreement_date;
+                $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
+                if ($this->AmpFlats->save($AmpFlat)) {
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
+                } else {
+                    $this->httpStatusCode = 422;
+                    $this->apiResponse['message'] = 'Unable to update Flat Profile.';
+                }
+            } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
                 $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = 'Unable to update Flat Profile.';
-            }
+                $this->apiResponse['message'] = "Selected record not found";
+            }            
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
@@ -139,15 +174,21 @@ class AmpFlatsController extends ApiController
 
     public function delete()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $id = $this->request->getData('flat_id');
-            $AmpFlat = $this->AmpFlats->get($id);
-            if ($this->AmpFlats->delete($AmpFlat)) {
-                $this->httpStatusCode = 200;
-                $this->apiResponse['message'] = 'Flat profile has been deleted successfully.';
-            } else {
+            try {
+                $id = $this->request->getData('flat_id');
+                $AmpFlat = $this->AmpFlats->get($id);
+                if ($this->AmpFlats->delete($AmpFlat)) {
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['message'] = 'Flat profile has been deleted successfully.';
+                } else {
+                    $this->httpStatusCode = 422;
+                    $this->apiResponse['message'] = 'Unable to delete Flat Profile.';
+                }
+            } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
                 $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = 'Unable to delete Flat Profile.';
+                $this->apiResponse['message'] = "Selected record not found";
             }
         } else {
             $this->httpStatusCode = 403;
@@ -169,6 +210,14 @@ class AmpFlatsController extends ApiController
         $status = array('Vacant', 'Partially Occupied', 'Occupied');
         $this->httpStatusCode = 200;
         $this->apiResponse['status'] = $status;
+    }
+
+    public function getflatband()
+    {
+        header("Access-Control-Allow-Origin: *");
+        $band = array('8500', '12500', '15500');
+        $this->httpStatusCode = 200;
+        $this->apiResponse['band'] = $band;
     }
 
     /**
@@ -212,6 +261,7 @@ class AmpFlatsController extends ApiController
 
     public function assignflat()
     {
+        header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
             $empID = $this->request->getData('employee_id');
@@ -227,7 +277,7 @@ class AmpFlatsController extends ApiController
                     ->values([
                         'flat_id' => $flatID,
                         'employee_id' => $empID,
-                        'assigned_by' => 1,
+                        'assigned_by' => 1000,
                         'assigned_date' => Time::now(),
                     ])
                     ->execute();
@@ -235,6 +285,36 @@ class AmpFlatsController extends ApiController
                 $this->httpStatusCode = 200;
                 $this->apiResponse['message'] = 'Flat has been assigned successfully';
             }
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
+
+    public function rentpayment()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $flatRentTable = TableRegistry::get('amp_flat_rent');
+            $flatID = $this->request->getData('flat_id');
+            $rent_month = $this->request->getData('rent_month');
+            $rent_year = $this->request->getData('rent_year');
+            $rent_amount = $this->request->getData('rent_amount');
+                     
+            $queryInsert = $flatRentTable->query();
+            $queryInsert->insert(['flat_id','rent_month','rent_year','rent_amount','payment_date','payment_by'])
+                ->values([
+                    'flat_id' => $flatID,
+                    'rent_month' => $rent_month,
+                    'rent_year' => $rent_year,
+                    'rent_amount' => $rent_amount,                   
+                    'payment_date' => Time::now(),
+                    'payment_by' => 1000
+                ])
+                ->execute();
+
+            $this->httpStatusCode = 200;
+            $this->apiResponse['message'] = 'Rent has been paid successfully';
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
