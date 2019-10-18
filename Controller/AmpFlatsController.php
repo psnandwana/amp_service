@@ -56,6 +56,7 @@ class AmpFlatsController extends ApiController
 
             $totalFlats = $this->AmpFlats->find('all')->count();
             $options = array();
+            // $options['conditions']['active_status'] = '1';
             $options['join'] = array(
                 array(
                     'table' => 'amp_flat_rooms_mapping',
@@ -81,7 +82,7 @@ class AmpFlatsController extends ApiController
                         'table' => 'amp_room_employee_mapping',
                         'alias' => 'RoomEmpMap',
                         'type' => 'LEFT',
-                        'conditions' => 'RoomEmpMap.room_id = Room.id',
+                        'conditions' => ['RoomEmpMap.room_id = Room.id', 'RoomEmpMap.active_status' => '1'],
                     ),
                     array(
                         'table' => 'amp_employees_listing',
@@ -190,6 +191,7 @@ class AmpFlatsController extends ApiController
                 $page = $this->request->getData('page');
                 $options = array();
                 $options['conditions']['id'] = $id;
+                $options['conditions']['active_status'] = '1';
 
                 $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'longitude', 'latitude', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
@@ -204,7 +206,7 @@ class AmpFlatsController extends ApiController
                             'table' => 'amp_room_employee_mapping',
                             'alias' => 'RoomEmpMap',
                             'type' => 'LEFT',
-                            'conditions' => 'RoomEmpMap.room_id = Room.id',
+                            'conditions' => ['RoomEmpMap.room_id = Room.id', 'RoomEmpMap.active_status' => '1'],
                         ),
                         array(
                             'table' => 'amp_employees_listing',
@@ -464,21 +466,21 @@ class AmpFlatsController extends ApiController
         }
     }
 
-    public function getkpi(){
+    public function getkpi()
+    {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $data = $this->request->data;
             $flatsTable = TableRegistry::get('amp_flats');
             $employessTable = TableRegistry::get('amp_room_employee_mapping');
             /* Conditions */
-            $condition1 = array(); 
+            $condition1 = array();
             $condition2 = array();
             $condition1['active_status'] = '1';
             $condition2['active_status'] = '1';
             /*  */
             $flatsCount = $flatsTable->find('all')->Where($condition1)->count();
             $employeesCount = $employessTable->find('all')->where($condition1)->count();
-            dd($flatsCount);
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
