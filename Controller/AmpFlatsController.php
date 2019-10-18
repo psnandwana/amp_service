@@ -291,7 +291,6 @@ class AmpFlatsController extends ApiController
                 if ($this->AmpFlats->save($AmpFlat)) {
                     if (count($rooms) > 0) {
                         $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
-                        echo $AmpFlat->id;exit;
                         foreach ($rooms as $room) {
                             $queryUpdate = $roomFlatMapping->query();
                             $queryUpdate->update()
