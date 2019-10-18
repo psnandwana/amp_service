@@ -433,6 +433,7 @@ class AmpFlatsController extends ApiController
             $employeeCount = $roomEmployeeMappingTable->find('all')->where(['room_id' => $roomID])->toList();
             if (count($room) > 0) {
                 $capacity = $roomCapapcity[0]['capacity'];
+                dd($capacity);
             }
             if (count($employeeCount) > 0) {
                 $empcount = count($employeeCount);
