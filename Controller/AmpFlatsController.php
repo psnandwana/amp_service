@@ -238,11 +238,23 @@ class AmpFlatsController extends ApiController
     public function getflatband()
     {
         header("Access-Control-Allow-Origin: *");
-        $band = array('8500', '12500', '15500');
+        $band = array('5500','8500', '12500', '15500');
         $this->httpStatusCode = 200;
         $this->apiResponse['band'] = $band;
     }
 
+    public function getflattype(){
+        header("Access-Control-Allow-Origin: *");
+        $flat_tpyes = array(
+            "1"=>"1 BHK", 
+            "2"=>"2 BHK", 
+            "3"=>"3 BHK",
+            "4"=>"4 BHK",
+            "5"=>"5 BHK",
+        );
+        $this->httpStatusCode = 200;
+        $this->apiResponse['types'] = $flat_tpyes;
+    }
     /**
      *  Get Cities
      */
