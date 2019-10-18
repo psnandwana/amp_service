@@ -431,6 +431,7 @@ class AmpFlatsController extends ApiController
             $roomID = $this->request->getData('room_id');
             $roomCapapcity = $flatRoomMappingTable->find('all')->where(['room_id' => $roomID])->toList();
             $employeeCount = $roomEmployeeMappingTable->find('all')->where(['room_id' => $roomID])->toList();
+            dd($roomCapapcity);
             if (count($room) > 0) {
                 $capacity = $roomCapapcity[0]['capacity'];
             }
