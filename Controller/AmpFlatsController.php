@@ -297,16 +297,17 @@ class AmpFlatsController extends ApiController
         }
     }
 
-    public function delete()
+    public function deactivate()
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             try {
                 $id = $this->request->getData('flat_id');
                 $AmpFlat = $this->AmpFlats->get($id);
-                if ($this->AmpFlats->delete($AmpFlat)) {
+                $AmpFlat->active_status = '0';
+                if ($this->AmpFlats->save($AmpFlat)) {
                     $this->httpStatusCode = 200;
-                    $this->apiResponse['message'] = 'Flat profile has been deleted successfully.';
+                    $this->apiResponse['message'] = 'Flat profile has been deactivated successfully.';
                 } else {
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Unable to delete Flat Profile.';
