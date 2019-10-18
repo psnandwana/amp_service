@@ -193,9 +193,9 @@ class AmpFlatsController extends ApiController
                
                 $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'longitude','latitude','rent_amount','maintenance_amount','owner_name','owner_mobile_no','owner_email', 'vacancy_status', 'created_date', 'active_status');
 
-                $flat = $this->AmpFlats->find('all',$options)->group('AmpFlats.id')->first()->toArray();
-
+                $flat = $this->AmpFlats->find('all',$options)->group('AmpFlats.id')->first();
                 if(!empty($flat)){
+                    $flat->toArray();
                     $flatRoomsMapingTable = TableRegistry::get('Room',['table' => 'amp_flat_rooms_mapping']);
                 
                     $subOptions = array();
