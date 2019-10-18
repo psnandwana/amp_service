@@ -467,12 +467,18 @@ class AmpFlatsController extends ApiController
     public function getkpi(){
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
+            $data = $this->request->data;
             $flatsTable = TableRegistry::get('amp_flats');
             $employessTable = TableRegistry::get('amp_room_employee_mapping');
-            $flatsCount = $flatsTable->find('all')->Where(['active_status' => '1'])->count();
-            $employeesCount = $employessTable->find('all')->where(['active_status' => '1'])->count();
-            print_r($flatsCount);
-            dd($employeesCount);
+            /* Conditions */
+            $condition1 = array(); 
+            $condition2 = array();
+            $condition1['active_status'] = '1';
+            $condition2['active_status'] = '1';
+            /*  */
+            $flatsCount = $flatsTable->find('all')->Where($condition1)->count();
+            $employeesCount = $employessTable->find('all')->where($condition1)->count();
+            dd($flatsCount);
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
