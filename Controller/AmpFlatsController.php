@@ -73,9 +73,26 @@ class AmpFlatsController extends ApiController
 
             $AmpFlats = $this->AmpFlats->find('all',$options)->group('AmpFlats.id')->toArray();
 
-            $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
+            $flatRoomsMapingTable = TableRegistry::get('Room',['table' => 'amp_flat_rooms_mapping']);
             foreach ($AmpFlats as $index => $flat) {
-                $checkUser = $this->AmpAdminUser->find('all')->where(['email' => $email])->first();
+                $subOptions = array();
+                $subOptions['join'] = array(
+                    array(
+                        'table' => 'amp_room_employee_mapping',
+                        'alias' => 'RoomEmpMap',
+                        'type' => 'LEFT',
+                        'conditions' => 'RoomEmpMap.room_id = Room.id',
+                    ),
+                    array(
+                        'table' => 'amp_employees_listing',
+                        'alias' => 'Employees',
+                        'type' => 'LEFT',
+                        'conditions' => 'Employees.id = RoomEmpMap.employee_id',
+                    )
+                );
+                $subOptions['fields'] = array('Room.','Employees.*');
+                $totalRooms = $flatRoomsMapingTable->find('all')->where(['Room.flat_id' => $flat['id']])->toArray();
+                dd($totalRooms);
                 $AmpFlats[$index]['vacancy_number'] = 0;
                 $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                 $AmpFlats[$index]['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
@@ -109,12 +126,11 @@ class AmpFlatsController extends ApiController
             $this->request->data['created_date'] = Time::now();
             $this->request->data['active_status'] = '1';
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
-            if ($this->AmpFlats->save($AmpFlat)) {       
-                     
+            if ($this->AmpFlats->save($AmpFlat)) { 
                 if(count($rooms) > 0)  {                   
                     $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
-                    $queryInsert = $roomFlatMapping->query();
                     foreach($rooms as $room){
+                        $queryInsert = $roomFlatMapping->query();
                         $queryInsert->insert(['flat_id', 'room_no', 'band', 'capacity'])
                         ->values([
                             'flat_id' => $AmpFlat->id,
@@ -123,7 +139,7 @@ class AmpFlatsController extends ApiController
                             'capacity' => $room->capacity,
                         ])
                         ->execute();
-                    }                   
+                    }                 
                 }            
                 $this->httpStatusCode = 200;
                 $this->apiResponse['message'] = 'Flat Profile has been created successfully';
@@ -268,15 +284,13 @@ class AmpFlatsController extends ApiController
 
     public function getflattype(){
         header("Access-Control-Allow-Origin: *");
-        $flat_tpyes = array(
-            "1"=>"1 BHK", 
-            "2"=>"2 BHK", 
-            "3"=>"3 BHK",
-            "4"=>"4 BHK",
-            "5"=>"5 BHK",
-        );
+        $type[] = array('value' => '1','name' => '1 BHK');
+        $type[] = array('value' => '2','name' => '2 BHK');
+        $type[] = array('value' => '3','name' => '3 BHK');
+        $type[] = array('value' => '4','name' => '4 BHK');
+        $type[] = array('value' => '5','name' => '5 BHK');
         $this->httpStatusCode = 200;
-        $this->apiResponse['types'] = $flat_tpyes;
+        $this->apiResponse['types'] = $type;
     }
     /**
      *  Get Cities
