@@ -158,7 +158,7 @@ class AmpFlatsController extends ApiController
             $Second = "/";
             $Firstpos=strpos($String, $First);
             $Secondpos=strpos($String, $Second);
-            print_r($link);
+            // print_r($link);
             $lat_long = substr($String , $Firstpos, $Secondpos);
             print_r($lat_long);exit;
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
