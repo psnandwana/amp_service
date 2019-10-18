@@ -3,18 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 
-/**
- * AmpFlatEmployeesMapping Entity
- *
- * @property int $id
- * @property int $flat_id
- * @property int $employee_id
- * @property int $assigned_by
- * @property \Cake\I18n\FrozenTime $assigned_date
- *
- * @property \App\Model\Entity\Flat $flat
- * @property \App\Model\Entity\Employee $employee
- */
+
 class AmpFlatEmployeesMapping extends Entity
 {
     /**
@@ -27,11 +16,14 @@ class AmpFlatEmployeesMapping extends Entity
      * @var array
      */
     protected $_accessible = [
+        'room_no' => true,
+        'band' => true,
+        'capacity' => true,
         'flat_id' => true,
         'employee_id' => true,
         'assigned_by' => true,
         'assigned_date' => true,
-        'flat' => true,
-        'employee' => true
+        'amp_flat' => true,
+        'amp_employees_listing' => true
     ];
 }

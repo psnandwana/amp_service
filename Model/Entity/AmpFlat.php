@@ -11,11 +11,12 @@ use Cake\ORM\Entity;
  * @property string|null $apartment_name
  * @property int|null $flat_type
  * @property string|null $agreement_status
- * @property \Cake\I18n\FrozenTime|null $agreement_date
+ * @property \Cake\I18n\FrozenDate|null $agreement_date
  * @property string|null $address
  * @property string|null $pincode
  * @property string|null $city
  * @property string|null $state
+ * @property string|null $google_map_link
  * @property string|null $longitude
  * @property string|null $latitude
  * @property float|null $rent_amount
@@ -24,9 +25,10 @@ use Cake\ORM\Entity;
  * @property string|null $owner_mobile_no
  * @property string|null $owner_email
  * @property string|null $vacancy_status
- * @property int|null $flat_capacity
- * @property int|null $flat_band
  * @property \Cake\I18n\FrozenTime $created_date
+ * @property string $active_status
+ *
+ * @property \App\Model\Entity\AmpEmployeesListing[] $amp_employees_listing
  */
 class AmpFlat extends Entity
 {
@@ -49,6 +51,7 @@ class AmpFlat extends Entity
         'pincode' => true,
         'city' => true,
         'state' => true,
+        'google_map_link' => true,
         'longitude' => true,
         'latitude' => true,
         'rent_amount' => true,
@@ -57,8 +60,8 @@ class AmpFlat extends Entity
         'owner_mobile_no' => true,
         'owner_email' => true,
         'vacancy_status' => true,
-        'flat_capacity' => true,
-        'flat_band' => true,
-        'created_date' => true
+        'created_date' => true,
+        'active_status' => true,
+        'amp_employees_listing' => true
     ];
 }

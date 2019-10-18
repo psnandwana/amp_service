@@ -6,21 +6,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
-/**
- * AmpFlatEmployeesMapping Model
- *
- * @property \App\Model\Table\FlatsTable&\Cake\ORM\Association\BelongsTo $Flats
- * @property \App\Model\Table\EmployeesTable&\Cake\ORM\Association\BelongsTo $Employees
- *
- * @method \App\Model\Entity\AmpFlatEmployeesMapping get($primaryKey, $options = [])
- * @method \App\Model\Entity\AmpFlatEmployeesMapping newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\AmpFlatEmployeesMapping[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\AmpFlatEmployeesMapping|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\AmpFlatEmployeesMapping saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\AmpFlatEmployeesMapping patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\AmpFlatEmployeesMapping[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\AmpFlatEmployeesMapping findOrCreate($search, callable $callback = null, $options = [])
- */
+
 class AmpFlatEmployeesMappingTable extends Table
 {
     /**

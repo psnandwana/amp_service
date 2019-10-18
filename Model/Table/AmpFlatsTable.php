@@ -39,5 +39,6 @@ class AmpFlatsTable extends Table
             'foreignKey' => 'flat_id',
             'targetForeignKey' => 'employee_id',
           ]);
-    }
+    }  
+
 }

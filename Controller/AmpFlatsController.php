@@ -5,7 +5,7 @@ use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
-class AmpFlatsController extends ApiController
+class AmpFlatsController extends AppController
 {
 
     public function customdateformat($chkdt)
@@ -96,18 +96,35 @@ class AmpFlatsController extends ApiController
         if ($this->checkToken()) {
             $AmpFlat = $this->AmpFlats->newEntity();
             $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
-           
+            $rooms = array();
+            if(!empty($rooms)){
+                $rooms = json_decode($this->request->data['rooms']);
+            }
             unset($this->request->data['agreement_date']);
             $this->request->data['agreement_date'] = $agreement_date;
             $this->request->data['created_date'] = Time::now();
+            $this->request->data['active_status'] = '1';
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
-
-            if ($this->AmpFlats->save($AmpFlat)) {
+            if ($this->AmpFlats->save($AmpFlat)) {                 
+                if(count($rooms) > 0)  {
+                    $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
+                    $queryInsert = $flatEmpMappingTable->query();
+                    foreach($rooms as $room){
+                        $queryInsert->insert(['flat_id', 'room_no', 'band', 'capacity'])
+                        ->values([
+                            'flat_id' => $AmpFlat->id,
+                            'room_no' => $room['room_no'],
+                            'band' => $room['band'],
+                            'capacity' => $room['capacity'],
+                        ])
+                        ->execute();
+                    }                   
+                }            
                 $this->httpStatusCode = 200;
-                $this->apiResponse['message'] = 'Flat profile has been created successfully.';
+                $this->apiResponse['message'] = 'Flat Profile has been created successfully';
             } else {
                 $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = 'Unable to create Flat Profile.';
+                $this->apiResponse['message'] = 'Unable to create Flat Profile';
             }
         } else {
             $this->httpStatusCode = 403;
@@ -222,7 +239,7 @@ class AmpFlatsController extends ApiController
     public function getagreementstatus()
     {
         header("Access-Control-Allow-Origin: *");
-        $status = array('Expired', 'Renew', 'Pending');
+        $status = array('Renewed', 'Pending');
         $this->httpStatusCode = 200;
         $this->apiResponse['status'] = $status;
     }
@@ -230,11 +247,12 @@ class AmpFlatsController extends ApiController
     public function getvacancystatus()
     {
         header("Access-Control-Allow-Origin: *");
-        $status = array('Vacant', 'Partially Occupied', 'Occupied');
+        $status = array('Vacant', 'Partially Occupied', 'Fully Occupied');
         $this->httpStatusCode = 200;
         $this->apiResponse['status'] = $status;
     }
 
+   
     public function getflatband()
     {
         header("Access-Control-Allow-Origin: *");
