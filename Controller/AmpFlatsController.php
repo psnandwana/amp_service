@@ -153,13 +153,6 @@ class AmpFlatsController extends ApiController
             $this->request->data['agreement_date'] = $agreement_date;
             $this->request->data['created_date'] = Time::now();
             $this->request->data['active_status'] = '1';
-            $link = $this->request->data['google_map_link'];
-            $First = "@";
-            $Second = "/";
-            $Firstpos=strpos($link, $First);
-            $Secondpos=strpos($link, $Second);
-            $lat_long = substr($link , $Firstpos, $Secondpos);
-            print_r($lat_long);exit;
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
             if ($this->AmpFlats->save($AmpFlat)) {
                 if (count($rooms) > 0) {
