@@ -464,6 +464,20 @@ class AmpFlatsController extends ApiController
         }
     }
 
+    public function getkpi(){
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $flatsTable = TableRegistry::get('amp_flats');
+            $employessTable = TableRegistry::get('amp_room_employee_mapping');
+            $flatsCount = $flatsTable->find('all')->Where(['active_status' => '1'])->count();
+            $employeesCount = $employessTable->find('all')->where(['active_status' => '1'])->count();
+            print_r($flatsCount);
+            dd($employeesCount);
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
     public function rentpayment()
     {
         header("Access-Control-Allow-Origin: *");
