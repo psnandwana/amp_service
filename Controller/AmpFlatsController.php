@@ -153,6 +153,9 @@ class AmpFlatsController extends ApiController
             $this->request->data['agreement_date'] = $agreement_date;
             $this->request->data['created_date'] = Time::now();
             $this->request->data['active_status'] = '1';
+            $link = $this->request->data['google_map_link'];
+            preg_match('~@(.*?)]/', $link, $output);
+            echo $output[1];exit;
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
             if ($this->AmpFlats->save($AmpFlat)) {
                 if (count($rooms) > 0) {
@@ -276,6 +279,10 @@ class AmpFlatsController extends ApiController
         if ($this->checkToken()) {
             try {
                 $id = $this->request->getData('flat_id');
+                $rooms = array();
+                if (!empty($this->request->data['rooms'])) {
+                    $rooms = json_decode($this->request->data['rooms']);
+                }
                 $AmpFlat = $this->AmpFlats->get($id, [
                     'contain' => [],
                 ]);
@@ -285,6 +292,21 @@ class AmpFlatsController extends ApiController
                 $this->request->data['agreement_date'] = $agreement_date;
                 $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
                 if ($this->AmpFlats->save($AmpFlat)) {
+                    if (count($rooms) > 0) {
+                        $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
+                        foreach ($rooms as $room) {
+                            $queryInsert = $roomFlatMapping->query();
+                            $queryInsert->update()
+                                ->set([
+                                    'flat_id' => $AmpFlat->id,
+                                    'room_no' => $room->room_number,
+                                    'band' => $room->band,
+                                    'capacity' => $room->capacity,
+                                ])
+                                ->where(['id' => $room->room_id])
+                                ->execute();
+                        }
+                    }
                     $this->httpStatusCode = 200;
                     $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
                 } else {
