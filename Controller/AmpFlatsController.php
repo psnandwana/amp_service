@@ -443,9 +443,9 @@ class AmpFlatsController extends ApiController
                 $queryInsert = $roomEmployeeMappingTable->query();
                 $queryInsert->insert(['room_id', 'flat_id', 'employee_id', 'assigned_by', 'assigned_date'])
                     ->values([
-                        'room_id' => $flatID,
-                        'flat_id' => $rent_month,
-                        'employee_id' => $rent_year,
+                        'room_id' => $roomID,
+                        'flat_id' => $flatID,
+                        'employee_id' => $empID,
                         'assigned_by' => 1000,
                         'assigned_date' => $current_date,
                     ])->execute();
