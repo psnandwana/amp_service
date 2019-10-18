@@ -423,59 +423,42 @@ class AmpFlatsController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            try {
-                $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
-                $empID = $this->request->getData('employee_id');
-                $flatID = $this->request->getData('flat_id');
-                $AmpFlat = $this->AmpFlats->get($flatID, [
-                    'contain' => ['AmpEmployeesListing'],
-                ])->toArray();
-
-                $flatVacancy = 0;
-                if (count($AmpFlat['amp_employees_listing']) > 0) {
-                    $band5500 = 0;
-                    foreach ($AmpFlat['amp_employees_listing'] as $flatEmp) {
-                        if ($flatEmp['flat_band'] == '5500') {
-                            $band5500 += 1;
-                        }
-                    }
-                    if ($band5500 != 0) {
-                        $flatVacancy += 1;
-                    }
-
-                    $flatVacancy += $AmpFlat['flat_capacity'] - count($AmpFlat['amp_employees_listing']);
-                } else {
-                    $flatVacancy = $AmpFlat['flat_capacity'];
-                }
-                if ($flatVacancy != 0 && $AmpFlat['vacancy_status'] != 'Occupied') {
-                    $checkAlreadyAssigned = $flatEmpMappingTable->find('all')->where(['employee_id' => $empID])->toArray();
-                    if (count($checkAlreadyAssigned) > 0) {
-                        $this->httpStatusCode = 422;
-                        $this->apiResponse['message'] = 'Flat is already assigned to selected Employee';
-                    } else {
-                        $queryInsert = $flatEmpMappingTable->query();
-                        $queryInsert->insert(['flat_id', 'employee_id', 'assigned_by', 'assigned_date'])
-                            ->values([
-                                'flat_id' => $flatID,
-                                'employee_id' => $empID,
-                                'assigned_by' => 1000,
-                                'assigned_date' => Time::now(),
-                            ])
-                            ->execute();
-                        $this->httpStatusCode = 200;
-                        $this->apiResponse['message'] = 'Flat has been assigned successfully.';
-                    }
-                } else {
-                    $this->httpStatusCode = 422;
-                    $this->apiResponse['message'] = 'Flat already Occupied';
-                }
-            } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
-                $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = 'Selected flat not found';
+            $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
+            $flatRoomMappingTable = TableRegistry::get('amp_flat_rooms_mapping');
+            $roomEmployeeMappingTable = TableRegistry::get('amp_room_employee_mapping');
+            $empID = $this->request->getData('employee_id');
+            $flatID = $this->request->getData('flat_id');
+            $roomID = $this->request->getData('room_id');
+            $roomCapapcity = $flatRoomMappingTable->find('all')->where(['room_id' => $roomID])->toList();
+            $employeeCount = $roomEmployeeMappingTable->find('all')->where(['room_id' => $roomID])->toList();
+            if (count($room) > 0) {
+                $capacity = $roomCapapcity[0]['capacity'];
             }
+            if (count($employeeCount) > 0) {
+                $empcount = count($employeeCount);
+            }
+            date_default_timezone_set('Asia/Kolkata');
+            $current_date = date('Y-m-d H:i:s');
+            if (($capacity - $empcount) > 0) {
+                $queryInsert = $roomEmployeeMappingTable->query();
+                $queryInsert->insert(['room_id', 'flat_id', 'employee_id', 'assigned_by', 'assigned_date'])
+                    ->values([
+                        'room_id' => $flatID,
+                        'flat_id' => $rent_month,
+                        'employee_id' => $rent_year,
+                        'assigned_by' => 1000,
+                        'assigned_date' => $current_date,
+                    ])->execute();
+                $this->httpStatusCode = 200;
+                $this->apiResponse['message'] = 'Flat has been assigned successfully.';
+            } else {
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = 'Flat already Occupied';
+            }
+
         } else {
             $this->httpStatusCode = 403;
-            $this->apiResponse['message'] = "your session has been expired";
+            $this->apiResponse['message'] = "your session has been expaired";
         }
     }
 
