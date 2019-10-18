@@ -156,10 +156,9 @@ class AmpFlatsController extends ApiController
             $link = $this->request->data['google_map_link'];
             $First = "@";
             $Second = "/";
-            $Firstpos=strpos($String, $First);
-            $Secondpos=strpos($String, $Second);
-            // print_r($link);
-            $lat_long = substr($String , $Firstpos, $Secondpos);
+            $Firstpos=strpos($link, $First);
+            $Secondpos=strpos($link, $Second);
+            $lat_long = substr($link , $Firstpos, $Secondpos);
             print_r($lat_long);exit;
             $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
             if ($this->AmpFlats->save($AmpFlat)) {
