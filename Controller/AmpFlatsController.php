@@ -277,6 +277,7 @@ class AmpFlatsController extends ApiController
             try {
                 $id = $this->request->getData('flat_id');
                 $rooms = array();
+                dd($this->request->data);
                 if (!empty($this->request->data['rooms'])) {
                     $rooms = json_decode($this->request->data['rooms']);
                 }
