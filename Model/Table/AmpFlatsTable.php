@@ -34,11 +34,11 @@ class AmpFlatsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsToMany('AmpEmployeesListing', [
-            'through' => 'AmpFlatEmployeesMapping',
-            'foreignKey' => 'flat_id',
-            'targetForeignKey' => 'employee_id',
-          ]);
+        // $this->belongsToMany('AmpEmployeesListing', [
+        //     'through' => 'AmpFlatEmployeesMapping',
+        //     'foreignKey' => 'flat_id',
+        //     'targetForeignKey' => 'employee_id',
+        //   ]);
     }  
 
 }
