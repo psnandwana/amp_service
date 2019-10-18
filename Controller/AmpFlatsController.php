@@ -289,6 +289,7 @@ class AmpFlatsController extends ApiController
                 $this->request->data['agreement_date'] = $agreement_date;
                 $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
                 if ($this->AmpFlats->save($AmpFlat)) {
+                    dd($rooms);
                     if (count($rooms) > 0) {
                         $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
                         echo $AmpFlat->id;
