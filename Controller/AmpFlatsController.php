@@ -310,7 +310,7 @@ class AmpFlatsController extends ApiController
                     $this->apiResponse['message'] = 'Flat profile has been deactivated successfully.';
                 } else {
                     $this->httpStatusCode = 422;
-                    $this->apiResponse['message'] = 'Unable to delete Flat Profile.';
+                    $this->apiResponse['message'] = 'Unable to deactivate Flat Profile.';
                 }
             } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
                 $this->httpStatusCode = 422;
