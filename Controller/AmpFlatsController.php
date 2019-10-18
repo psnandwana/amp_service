@@ -426,10 +426,10 @@ class AmpFlatsController extends ApiController
             $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
             $flatRoomMappingTable = TableRegistry::get('amp_flat_rooms_mapping');
             $roomEmployeeMappingTable = TableRegistry::get('amp_room_employee_mapping');
-            $empID = $this->request->getData('employee_id');
-            $flatID = $this->request->getData('flat_id');
-            $roomID = $this->request->getData('room_id');
-            dd($this->request->getData);
+            $empID = $this->request->data('employee_id');
+            $flatID = $this->request->data('flat_id');
+            $roomID = $this->request->data('room_id');
+            dd($this->request->data);
             $roomCapapcity = $flatRoomMappingTable->find('all')->where(['room_id' => $roomID])->toList();
             $employeeCount = $roomEmployeeMappingTable->find('all')->where(['room_id' => $roomID])->toList();
             dd($roomCapapcity);
