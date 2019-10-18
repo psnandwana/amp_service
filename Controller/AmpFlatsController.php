@@ -222,7 +222,7 @@ class AmpFlatsController extends ApiController
     public function getagreementstatus()
     {
         header("Access-Control-Allow-Origin: *");
-        $status = array('Expired', 'Renew', 'Pending');
+        $status = array('Renewed', 'Pending');
         $this->httpStatusCode = 200;
         $this->apiResponse['status'] = $status;
     }
@@ -230,7 +230,7 @@ class AmpFlatsController extends ApiController
     public function getvacancystatus()
     {
         header("Access-Control-Allow-Origin: *");
-        $status = array('Vacant', 'Partially Occupied', 'Occupied');
+        $status = array('Vacant', 'Partially Occupied', 'Fully Occupied');
         $this->httpStatusCode = 200;
         $this->apiResponse['status'] = $status;
     }
