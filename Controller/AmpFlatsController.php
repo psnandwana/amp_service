@@ -429,6 +429,7 @@ class AmpFlatsController extends ApiController
             $empID = $this->request->getData('employee_id');
             $flatID = $this->request->getData('flat_id');
             $roomID = $this->request->getData('room_id');
+            dd($this->request->getData);
             $roomCapapcity = $flatRoomMappingTable->find('all')->where(['room_id' => $roomID])->toList();
             $employeeCount = $roomEmployeeMappingTable->find('all')->where(['room_id' => $roomID])->toList();
             dd($roomCapapcity);
