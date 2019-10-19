@@ -54,8 +54,7 @@ class AmpFlatsController extends ApiController
                 return $error;
             } 
         }
-        return $error
-        
+        return $error;   
     }
 
     public function index()
