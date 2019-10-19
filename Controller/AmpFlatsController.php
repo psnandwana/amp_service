@@ -180,7 +180,7 @@ class AmpFlatsController extends ApiController
                             $queryInsert = $roomFlatMapping->query();
                             $queryInsert->insert(['room_no', 'band', 'capacity','flat_id'])
                                 ->values([
-                                    'room_no' => $room->room_number,
+                                    'room_no' => $room->room_no,
                                     'band' => $room->flat_band,
                                     'capacity' => $room->room_capacity,
                                     'flat_id' => $AmpFlat->id,
