@@ -46,7 +46,17 @@ class AmpFlatsController extends ApiController
         return date("Y-m-d", mktime(0, 0, 0, $month, $date, $year));
     }
 
-    // public function input
+    public function checkpostvariables($data){
+        $error = false;
+        foreach($data as $key => $value){
+            if ($value=="undefined"){
+                $error = true;
+                return $error;
+            } 
+        }
+        return $error
+        
+    }
 
     public function index()
     {
@@ -340,6 +350,7 @@ class AmpFlatsController extends ApiController
         if ($this->checkToken()) {
             try {
                 $id = $this->request->getData('flat_id');
+                print_r($this->checkpostvariables($this->request->getData));exit;
                 $AmpFlat = $this->AmpFlats->get($id);
                 $AmpFlat->active_status = '0';
                 if ($this->AmpFlats->save($AmpFlat)) {
