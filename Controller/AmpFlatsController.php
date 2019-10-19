@@ -178,12 +178,12 @@ class AmpFlatsController extends ApiController
                         $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
                         foreach ($rooms as $room) {
                             $queryInsert = $roomFlatMapping->query();
-                            $queryInsert->insert(['flat_id', 'room_no', 'band', 'capacity'])
+                            $queryInsert->insert(['room_no', 'band', 'capacity','flat_id'])
                                 ->values([
-                                    'flat_id' => $AmpFlat->id,
                                     'room_no' => $room->room_number,
                                     'band' => $room->band,
                                     'capacity' => $room->capacity,
+                                    'flat_id' => $AmpFlat->id,
                                 ])
                                 ->execute();
                         }
