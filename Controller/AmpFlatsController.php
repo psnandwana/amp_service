@@ -46,6 +46,8 @@ class AmpFlatsController extends ApiController
         return date("Y-m-d", mktime(0, 0, 0, $month, $date, $year));
     }
 
+    // public function input
+
     public function index()
     {
         header("Access-Control-Allow-Origin: *");
@@ -106,7 +108,7 @@ class AmpFlatsController extends ApiController
                 foreach ($totalRooms as $i => $room) {
                     $tmp_array[$room['room_no']]['room_id'] = $room['room_id'];
                     $tmp_array[$room['room_no']]['room_no'] = $room['room_no'];
-                    $tmp_array[$room['room_no']]['room_band'] = $room['room_band'];
+                    $tmp_array[$room['room_no']]['room_band'] = (int)$room['room_band'];
                     $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
                     if ($room['employee']['id'] != null) {
                         $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
@@ -238,7 +240,7 @@ class AmpFlatsController extends ApiController
                     foreach ($totalRooms as $i => $room) {
                         $tmp_array[$room['room_no']]['room_id'] = $room['room_id'];
                         $tmp_array[$room['room_no']]['room_no'] = $room['room_no'];
-                        $tmp_array[$room['room_no']]['room_band'] = $room['room_band'];
+                        $tmp_array[$room['room_no']]['room_band'] = (int)$room['room_band'];
                         $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
                         if ($room['employee']['id'] != null) {
                             $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
