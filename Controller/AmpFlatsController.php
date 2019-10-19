@@ -149,32 +149,37 @@ class AmpFlatsController extends ApiController
             if(!empty($this->request->data['rooms'])){
                 $rooms = json_decode($this->request->data['rooms']);
             }
-            unset($this->request->data['agreement_date']);
-            $this->request->data['agreement_date'] = $agreement_date;
-            $this->request->data['created_date'] = Time::now();
-            $this->request->data['active_status'] = '1';
-            $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
-            if ($this->AmpFlats->save($AmpFlat)) { 
-                if(count($rooms) > 0)  {                   
-                    $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
-                    foreach($rooms as $room){
-                        $queryInsert = $roomFlatMapping->query();
-                        $queryInsert->insert(['flat_id', 'room_no', 'band', 'capacity'])
-                        ->values([
-                            'flat_id' => $AmpFlat->id,
-                            'room_no' => $room->room_number,
-                            'band' => $room->band,
-                            'capacity' => $room->capacity,
-                        ])
-                        ->execute();
-                    }                 
-                }            
-                $this->httpStatusCode = 200;
-                $this->apiResponse['message'] = 'Flat Profile has been created successfully';
-            } else {
+            if(count($rooms) > 0){
+                unset($this->request->data['agreement_date']);
+                $this->request->data['agreement_date'] = $agreement_date;
+                $this->request->data['created_date'] = Time::now();
+                $this->request->data['active_status'] = '1';
+                $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
+                if ($this->AmpFlats->save($AmpFlat)) { 
+                    if(count($rooms) > 0)  {                   
+                        $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
+                        foreach($rooms as $room){
+                            $queryInsert = $roomFlatMapping->query();
+                            $queryInsert->insert(['flat_id', 'room_no', 'band', 'capacity'])
+                            ->values([
+                                'flat_id' => $AmpFlat->id,
+                                'room_no' => $room->room_number,
+                                'band' => $room->band,
+                                'capacity' => $room->capacity,
+                            ])
+                            ->execute();
+                        }                 
+                    }            
+                    $this->httpStatusCode = 200;
+                    $this->apiResponse['message'] = 'Flat Profile has been created successfully';
+                } else {
+                    $this->httpStatusCode = 422;
+                    $this->apiResponse['message'] = 'Unable to create Flat Profile';
+                }
+            }else{
                 $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = 'Unable to create Flat Profile';
-            }
+                $this->apiResponse['message'] = 'Please enter room details';
+            }            
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
