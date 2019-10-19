@@ -47,9 +47,9 @@ class AmpFlatsController extends ApiController
     }
 
     public function checkpostvariables($data){
+        dd($data);
         $error = false;
         foreach($data as $key => $value){
-            echo $value;exit;
             if ($value=="undefined"){
                 $error = true;
                 return $error;
