@@ -118,12 +118,15 @@ class AmpFlatsController extends ApiController
                 }
                 $rooms = array();
                 $band_vacancy = array();
+                $vacancy_count = 0;
                 foreach ($tmp_array as $key => $room) {
                     $room['room_vacancy'] = $tmp_array[$key]['capacity'] - count($tmp_array[$key]['employees']);
                     $rooms[] = $room;
+                    $vacancy_count += $room['room_vacancy'];
                     $band_vacancy[] = array('band' => $room['room_band'], 'vacancy' => $room['room_vacancy']);
                 }
                 $AmpFlats[$index]['flat_vacancy'] = $band_vacancy;
+                $AmpFlats[$index]['vacancy_count'] = $vacancy_count;
                 $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                 $AmpFlats[$index]['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                 $AmpFlats[$index]['distance'] = '10 km';
