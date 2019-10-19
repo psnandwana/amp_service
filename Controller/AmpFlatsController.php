@@ -52,10 +52,10 @@ class AmpFlatsController extends ApiController
         foreach ($data as $key => $value) {
             if ($value == "undefined") {
                 $error = true;
-                return array("error_string" => "$key"." has value undefined","error_status" => $error);
+                return array("error_string" => "$key" . " has value undefined", "error_status" => $error);
             }
         }
-        return array("error_string" => "Success","error_status" => $error);;
+        return array("error_string" => "Success", "error_status" => $error);
     }
 
     public function index()
@@ -118,7 +118,7 @@ class AmpFlatsController extends ApiController
                 foreach ($totalRooms as $i => $room) {
                     $tmp_array[$room['room_no']]['room_id'] = $room['room_id'];
                     $tmp_array[$room['room_no']]['room_no'] = $room['room_no'];
-                    $tmp_array[$room['room_no']]['room_band'] = (int) $room['room_band'];
+                    $tmp_array[$room['room_no']]['room_band'] = moneyFormatIndia((int) $room['room_band']);
                     $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
                     if ($room['employee']['id'] != null) {
                         $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
@@ -135,10 +135,12 @@ class AmpFlatsController extends ApiController
                     $room['room_vacancy'] = $tmp_array[$key]['capacity'] - count($tmp_array[$key]['employees']);
                     $rooms[] = $room;
                     $vacancy_count += $room['room_vacancy'];
-                    $band_vacancy[] = array('band' => $room['room_band'], 'vacancy' => $room['room_vacancy']);
+                    $band_vacancy[] = array('band' => moneyFormatIndia($room['room_band']), 'vacancy' => $room['room_vacancy']);
                 }
                 $AmpFlats[$index]['flat_vacancy'] = $band_vacancy;
                 $AmpFlats[$index]['vacancy_count'] = $vacancy_count;
+                $AmpFlats[$index]['rent_amount'] = moneyFormatIndia($AmpFlats[$index]['rent_amount']);
+                $AmpFlats[$index]['maintenance_amount'] = moneyFormatIndia($AmpFlats[$index]['maintenance_amount']);
                 $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                 $AmpFlats[$index]['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                 $AmpFlats[$index]['distance'] = '10 km';
@@ -274,6 +276,8 @@ class AmpFlatsController extends ApiController
 
                     $flat['flat_vacancy'] = $band_vacancy;
                     $flat['vacancy_count'] = $vacancy_count;
+                    $flat['rent_amount'] = moneyFormatIndia($flat['rent_amount']);
+                    $flat['maintenance_amount'] = moneyFormatIndia($flat['maintenance_amount']);
                     $flat['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                     $flat['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                     $flat['distance'] = '10 km';
@@ -584,4 +588,27 @@ class AmpFlatsController extends ApiController
             $this->apiResponse['message'] = "your session has been expired";
         }
     }
+}
+
+function moneyFormatIndia($num)
+{
+    $explrestunits = "";
+    if (strlen($num) > 3) {
+        $lastthree = substr($num, strlen($num) - 3, strlen($num));
+        $restunits = substr($num, 0, strlen($num) - 3); // extracts the last three digits
+        $restunits = (strlen($restunits) % 2 == 1) ? "0" . $restunits : $restunits; // explodes the remaining digits in 2's formats, adds a zero in the beginning to maintain the 2's grouping.
+        $expunit = str_split($restunits, 2);
+        for ($i = 0; $i < sizeof($expunit); $i++) {
+            // creates each of the 2's group and adds a comma to the end
+            if ($i == 0) {
+                $explrestunits .= (int) $expunit[$i] . ","; // if is first value , convert into integer
+            } else {
+                $explrestunits .= $expunit[$i] . ",";
+            }
+        }
+        $thecash = $explrestunits . $lastthree;
+    } else {
+        $thecash = $num;
+    }
+    return $thecash; // writes the final format where $currency is the currency symbol.
 }
