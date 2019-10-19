@@ -349,8 +349,8 @@ class AmpFlatsController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             try {
-                $id = $this->request->getData('flat_id');
-                print_r($this->checkpostvariables($this->request->getData));exit;
+                $id = $this->request->data['flat_id'];
+                print_r($this->checkpostvariables($this->request->data));exit;
                 $AmpFlat = $this->AmpFlats->get($id);
                 $AmpFlat->active_status = '0';
                 if ($this->AmpFlats->save($AmpFlat)) {
