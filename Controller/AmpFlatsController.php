@@ -46,15 +46,16 @@ class AmpFlatsController extends ApiController
         return date("Y-m-d", mktime(0, 0, 0, $month, $date, $year));
     }
 
-    public function checkpostvariables($data){
+    public function checkpostvariables($data)
+    {
         $error = false;
-        foreach($data as $key => $value){
-            if ($value=="undefined"){
+        foreach ($data as $key => $value) {
+            if ($value == "undefined") {
                 $error = true;
-                return $error;
-            } 
+                return array("error_string" => "$key"." has value undefined","error_status" => $error);
+            }
         }
-        return $error;   
+        return array("error_string" => "Success","error_status" => $error);;
     }
 
     public function index()
@@ -348,17 +349,23 @@ class AmpFlatsController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             try {
-                dd($this->checkpostvariables($this->request->getData()));
-                $id = $this->request->getData('flat_id');
-                $AmpFlat = $this->AmpFlats->get($id);
-                $AmpFlat->active_status = '0';
-                if ($this->AmpFlats->save($AmpFlat)) {
-                    $this->httpStatusCode = 200;
-                    $this->apiResponse['message'] = 'Flat profile has been deactivated successfully.';
+                $var = $this->checkpostvariables($this->request->getData());
+                if (!($var['error_status'])) {
+                    $id = $this->request->getData('flat_id');
+                    $AmpFlat = $this->AmpFlats->get($id);
+                    $AmpFlat->active_status = '0';
+                    if ($this->AmpFlats->save($AmpFlat)) {
+                        $this->httpStatusCode = 200;
+                        $this->apiResponse['message'] = 'Flat profile has been deactivated successfully.';
+                    } else {
+                        $this->httpStatusCode = 422;
+                        $this->apiResponse['message'] = 'Unable to deactivate Flat Profile.';
+                    }
                 } else {
                     $this->httpStatusCode = 422;
-                    $this->apiResponse['message'] = 'Unable to deactivate Flat Profile.';
+                    $this->apiResponse['message'] = $var['error_string'];
                 }
+
             } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
                 $this->httpStatusCode = 422;
                 $this->apiResponse['message'] = "Selected record not found";
