@@ -45,6 +45,7 @@ class AmpFlat extends Entity
         'flat_no' => true,
         'apartment_name' => true,
         'flat_type' => true,
+        'flat_band' => true,
         'agreement_status' => true,
         'agreement_date' => true,
         'address' => true,
