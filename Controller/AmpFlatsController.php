@@ -279,7 +279,7 @@ class AmpFlatsController extends ApiController
                     $flat['rent_amount'] = moneyFormatIndia((int)$flat['rent_amount']);
                     $flat['flat_band'] = (int)$flat['flat_band'];
                     $flat['maintenance_amount'] = moneyFormatIndia((int)$flat['maintenance_amount']);
-                    $flat['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
+                    $flat['agreement_date'] = date("Y-m-d", strtotime($flat['agreement_date']));
                     $flat['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                     $flat['distance'] = '10 km';
                     $flat['rooms'] = $rooms;
