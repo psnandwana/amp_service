@@ -324,9 +324,9 @@ class AmpFlatsController extends ApiController
                             $queryUpdate->update()
                                 ->set([
                                     'flat_id' => $AmpFlat->id,
-                                    'room_no' => $room->room_number,
-                                    'band' => $room->band,
-                                    'capacity' => $room->capacity,
+                                    'room_no' => $room->room_no,
+                                    'band' => $room->flat_band,
+                                    'capacity' => $room->room_capacity,
                                 ])
                                 ->where(['id' => $room->room_id])
                                 ->execute();
