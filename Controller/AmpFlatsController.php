@@ -47,7 +47,6 @@ class AmpFlatsController extends ApiController
     }
 
     public function checkpostvariables($data){
-        dd($data);
         $error = false;
         foreach($data as $key => $value){
             if ($value=="undefined"){
@@ -349,8 +348,7 @@ class AmpFlatsController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             try {
-                dd($this->request->getData());
-                // dd($this->checkpostvariables($this->request->getData));
+                dd($this->checkpostvariables($this->request->getData));
                 $id = $this->request->getData('flat_id');
                 $AmpFlat = $this->AmpFlats->get($id);
                 $AmpFlat->active_status = '0';
