@@ -118,7 +118,7 @@ class AmpFlatsController extends ApiController
                 foreach ($totalRooms as $i => $room) {
                     $tmp_array[$room['room_no']]['room_id'] = $room['room_id'];
                     $tmp_array[$room['room_no']]['room_no'] = $room['room_no'];
-                    $tmp_array[$room['room_no']]['room_band'] = moneyFormatIndia((int) $room['room_band']);
+                    $tmp_array[$room['room_no']]['room_band'] = (int) $room['room_band'];
                     $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
                     if ($room['employee']['id'] != null) {
                         $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
@@ -135,7 +135,7 @@ class AmpFlatsController extends ApiController
                     $room['room_vacancy'] = $tmp_array[$key]['capacity'] - count($tmp_array[$key]['employees']);
                     $rooms[] = $room;
                     $vacancy_count += $room['room_vacancy'];
-                    $band_vacancy[] = array('band' => moneyFormatIndia($room['room_band']), 'vacancy' => $room['room_vacancy']);
+                    $band_vacancy[] = array('band' => (int)$room['room_band'], 'vacancy' => $room['room_vacancy']);
                 }
                 $AmpFlats[$index]['flat_vacancy'] = $band_vacancy;
                 $AmpFlats[$index]['vacancy_count'] = $vacancy_count;
@@ -257,7 +257,7 @@ class AmpFlatsController extends ApiController
                         $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
                         if ($room['employee']['id'] != null) {
                             $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
-                            $room['employee']['flat_band'] = moneyFormatIndia((int) $room['employee']['flat_band']);
+                            $room['employee']['flat_band'] = (int) $room['employee']['flat_band'];
                             $tmp_array[$room['room_no']]['employees'][] = $room['employee'];
 
                         } else {
@@ -271,12 +271,13 @@ class AmpFlatsController extends ApiController
                         $room['room_vacancy'] = $tmp_array[$key]['capacity'] - count($tmp_array[$key]['employees']);
                         $rooms[] = $room;
                         $vacancy_count += $room['room_vacancy'];
-                        $band_vacancy[] = array('band' => moneyFormatIndia($room['room_band']), 'vacancy' => $room['room_vacancy']);
+                        $band_vacancy[] = array('band' => (int)$room['room_band'], 'vacancy' => $room['room_vacancy']);
                     }
 
                     $flat['flat_vacancy'] = $band_vacancy;
                     $flat['vacancy_count'] = $vacancy_count;
                     $flat['rent_amount'] = moneyFormatIndia($flat['rent_amount']);
+                    $flat['flat_band'] = (int)$flat['flat_band'];
                     $flat['maintenance_amount'] = moneyFormatIndia($flat['maintenance_amount']);
                     $flat['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                     $flat['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
