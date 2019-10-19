@@ -77,7 +77,7 @@ class AmpFlatsController extends ApiController
                 ),
             );
 
-            $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
+            $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link','rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
             $options['limit'] = $limit;
             $options['order'] = 'created_date ASC';
@@ -215,7 +215,7 @@ class AmpFlatsController extends ApiController
                 $options['conditions']['id'] = $id;
                 $options['conditions']['active_status'] = '1';
 
-                $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
+                $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link','rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
                 $flat = $this->AmpFlats->find('all', $options)->group('AmpFlats.id')->first();
                 if (!empty($flat)) {
