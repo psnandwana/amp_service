@@ -428,6 +428,7 @@ class AmpFlatsController extends ApiController
             $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
             $flatRoomMappingTable = TableRegistry::get('amp_flat_rooms_mapping');
             $roomEmployeeMappingTable = TableRegistry::get('amp_room_employee_mapping');
+            $flatsTable = TableRegistry::get('amp_flats');
             $empID = $this->request->data('employee_id');
             $flatID = $this->request->data('flat_id');
             $roomID = $this->request->data('room_id');
@@ -453,6 +454,38 @@ class AmpFlatsController extends ApiController
                         'assigned_by' => 1000,
                         'assigned_date' => $current_date,
                     ])->execute();
+                $flatCapacityTable = $flatRoomMappingTable->find('all')->where(['flat_id' => $flatID])->toList();
+                $flatcapacity = 0;
+                foreach ($flatCapacityTable as $room) {
+                    $flatcapacity += $room['capacity'];
+                }
+                $flatoccupancycount = $roomEmployeeMappingTable->find('all')->where(['flat_id' => $flatID])->count();
+                if ($flatoccupancycount == 0) {
+                    $queryUpdate = $flatsTable->query();
+                    $queryUpdate->update()
+                        ->set([
+                            'vacancy_status' => 'Vacant',
+                        ])
+                        ->where(['id' => $flatID])
+                        ->execute();
+                } elseif ($flatoccupancycount == $flatcapacity) {
+                    $queryUpdate = $flatsTable->query();
+                    $queryUpdate->update()
+                        ->set([
+                            'vacancy_status' => 'Fully Occupied',
+                        ])
+                        ->where(['id' => $flatID])
+                        ->execute();
+                } else {
+                    echo "Partially Occupied";
+                    $queryUpdate = $flatsTable->query();
+                    $queryUpdate->update()
+                        ->set([
+                            'vacancy_status' => 'Partially Occupied',
+                        ])
+                        ->where(['id' => $flatID])
+                        ->execute();
+                }
                 $this->httpStatusCode = 200;
                 $this->apiResponse['message'] = 'Flat has been assigned successfully.';
             } else {
