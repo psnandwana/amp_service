@@ -407,11 +407,11 @@ class AmpFlatsController extends ApiController
     public function getflattype()
     {
         header("Access-Control-Allow-Origin: *");
-        $type[] = array('value' => '1', 'name' => '1 BHK');
-        $type[] = array('value' => '2', 'name' => '2 BHK');
-        $type[] = array('value' => '3', 'name' => '3 BHK');
-        $type[] = array('value' => '4', 'name' => '4 BHK');
-        $type[] = array('value' => '5', 'name' => '5 BHK');
+        $type[] = array('value' => 1, 'name' => '1 BHK');
+        $type[] = array('value' => 2, 'name' => '2 BHK');
+        $type[] = array('value' => 3, 'name' => '3 BHK');
+        $type[] = array('value' => 4, 'name' => '4 BHK');
+        $type[] = array('value' => 5, 'name' => '5 BHK');
         $this->httpStatusCode = 200;
         $this->apiResponse['types'] = $type;
     }
