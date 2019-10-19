@@ -139,8 +139,8 @@ class AmpFlatsController extends ApiController
                 }
                 $AmpFlats[$index]['flat_vacancy'] = $band_vacancy;
                 $AmpFlats[$index]['vacancy_count'] = $vacancy_count;
-                $AmpFlats[$index]['rent_amount'] = moneyFormatIndia($AmpFlats[$index]['rent_amount']);
-                $AmpFlats[$index]['maintenance_amount'] = moneyFormatIndia($AmpFlats[$index]['maintenance_amount']);
+                $AmpFlats[$index]['rent_amount'] = moneyFormatIndia((int)$AmpFlats[$index]['rent_amount']);
+                $AmpFlats[$index]['maintenance_amount'] = moneyFormatIndia((int)$AmpFlats[$index]['maintenance_amount']);
                 $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                 $AmpFlats[$index]['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                 $AmpFlats[$index]['distance'] = '10 km';
@@ -276,9 +276,9 @@ class AmpFlatsController extends ApiController
 
                     $flat['flat_vacancy'] = $band_vacancy;
                     $flat['vacancy_count'] = $vacancy_count;
-                    $flat['rent_amount'] = moneyFormatIndia($flat['rent_amount']);
+                    $flat['rent_amount'] = moneyFormatIndia((int)$flat['rent_amount']);
                     $flat['flat_band'] = (int)$flat['flat_band'];
-                    $flat['maintenance_amount'] = moneyFormatIndia($flat['maintenance_amount']);
+                    $flat['maintenance_amount'] = moneyFormatIndia((int)$flat['maintenance_amount']);
                     $flat['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
                     $flat['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                     $flat['distance'] = '10 km';
