@@ -56,7 +56,6 @@ class AmpFlatsController extends ApiController
 
             $totalFlats = $this->AmpFlats->find('all')->count();
             $options = array();
-            // $options['conditions']['active_status'] = '1';
             $options['join'] = array(
                 array(
                     'table' => 'amp_flat_rooms_mapping',
@@ -510,13 +509,20 @@ class AmpFlatsController extends ApiController
             $flatsTable = TableRegistry::get('amp_flats');
             $employessTable = TableRegistry::get('amp_room_employee_mapping');
             /* Conditions */
-            $condition1 = array();
-            $condition2 = array();
-            $condition1['active_status'] = '1';
-            $condition2['active_status'] = '1';
-            /*  */
-            $flatsCount = $flatsTable->find('all')->Where($condition1)->count();
-            $employeesCount = $employessTable->find('all')->where($condition1)->count();
+            // $condition1 = array();
+            // $condition2 = array();
+            // $condition1['active_status'] = '1';
+            // $condition2['active_status'] = '1';
+            // /*  */
+            // $flatsCount = $flatsTable->find('all')->Where($condition1)->count();
+            // $employeesCount = $employessTable->find('all')->where($condition1)->count();
+            $kpi = array();
+            $kpi['flatscount'] = 10;
+            $kpi['occupied'] = 6;
+            $kpi['vacant'] = 4;
+            $kpi['employees'] = 18;
+            $this->httpStatusCode = 200;
+            $this->apiResponse['message'] = 'Flat has been assigned successfully.';
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
