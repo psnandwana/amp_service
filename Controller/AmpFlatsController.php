@@ -112,6 +112,7 @@ class AmpFlatsController extends ApiController
                     $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
                     if ($room['employee']['id'] != null) {
                         $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
+                        $room['employee']['flat_band'] = (int)$room['employee']['flat_band'];
                         $tmp_array[$room['room_no']]['employees'][] = $room['employee'];
                     } else {
                         $tmp_array[$room['room_no']]['employees'] = array();
