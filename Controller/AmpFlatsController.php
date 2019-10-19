@@ -522,7 +522,8 @@ class AmpFlatsController extends ApiController
             $kpi['vacant'] = 4;
             $kpi['employees'] = 18;
             $this->httpStatusCode = 200;
-            $this->apiResponse['message'] = 'success';
+            $this->apiResponse['kpis'] = $kpi;
+
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
