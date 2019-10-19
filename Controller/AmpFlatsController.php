@@ -67,7 +67,7 @@ class AmpFlatsController extends ApiController
                 ),
             );
 
-            $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'longitude', 'latitude', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
+            $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'longitude', 'latitude', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
             $options['limit'] = $limit;
             $options['order'] = 'created_date ASC';
@@ -108,11 +108,11 @@ class AmpFlatsController extends ApiController
                 foreach ($totalRooms as $i => $room) {
                     $tmp_array[$room['room_no']]['room_id'] = $room['room_id'];
                     $tmp_array[$room['room_no']]['room_no'] = $room['room_no'];
-                    $tmp_array[$room['room_no']]['room_band'] = (int)$room['room_band'];
+                    $tmp_array[$room['room_no']]['room_band'] = (int) $room['room_band'];
                     $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
                     if ($room['employee']['id'] != null) {
                         $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
-                        $room['employee']['flat_band'] = (int)$room['employee']['flat_band'];
+                        $room['employee']['flat_band'] = (int) $room['employee']['flat_band'];
                         $tmp_array[$room['room_no']]['employees'][] = $room['employee'];
                     } else {
                         $tmp_array[$room['room_no']]['employees'] = array();
@@ -155,37 +155,37 @@ class AmpFlatsController extends ApiController
             if (!empty($this->request->data['rooms'])) {
                 $rooms = json_decode($this->request->data['rooms']);
             }
-            if(count($rooms) > 0){
+            if (count($rooms) > 0) {
                 unset($this->request->data['agreement_date']);
                 $this->request->data['agreement_date'] = $agreement_date;
                 $this->request->data['created_date'] = Time::now();
                 $this->request->data['active_status'] = '1';
                 $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
-                if ($this->AmpFlats->save($AmpFlat)) { 
-                    if(count($rooms) > 0)  {                   
+                if ($this->AmpFlats->save($AmpFlat)) {
+                    if (count($rooms) > 0) {
                         $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
-                        foreach($rooms as $room){
+                        foreach ($rooms as $room) {
                             $queryInsert = $roomFlatMapping->query();
                             $queryInsert->insert(['flat_id', 'room_no', 'band', 'capacity'])
-                            ->values([
-                                'flat_id' => $AmpFlat->id,
-                                'room_no' => $room->room_number,
-                                'band' => $room->band,
-                                'capacity' => $room->capacity,
-                            ])
-                            ->execute();
-                        }                 
-                    }            
+                                ->values([
+                                    'flat_id' => $AmpFlat->id,
+                                    'room_no' => $room->room_number,
+                                    'band' => $room->band,
+                                    'capacity' => $room->capacity,
+                                ])
+                                ->execute();
+                        }
+                    }
                     $this->httpStatusCode = 200;
                     $this->apiResponse['message'] = 'Flat Profile has been created successfully';
                 } else {
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Unable to create Flat Profile';
                 }
-            }else{
+            } else {
                 $this->httpStatusCode = 422;
                 $this->apiResponse['message'] = 'Please enter room details';
-            }            
+            }
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
@@ -203,7 +203,7 @@ class AmpFlatsController extends ApiController
                 $options['conditions']['id'] = $id;
                 $options['conditions']['active_status'] = '1';
 
-                $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'longitude', 'latitude', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
+                $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'longitude', 'latitude', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
                 $flat = $this->AmpFlats->find('all', $options)->group('AmpFlats.id')->first();
                 if (!empty($flat)) {
@@ -241,11 +241,11 @@ class AmpFlatsController extends ApiController
                     foreach ($totalRooms as $i => $room) {
                         $tmp_array[$room['room_no']]['room_id'] = $room['room_id'];
                         $tmp_array[$room['room_no']]['room_no'] = $room['room_no'];
-                        $tmp_array[$room['room_no']]['room_band'] = (int)$room['room_band'];
+                        $tmp_array[$room['room_no']]['room_band'] = (int) $room['room_band'];
                         $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
                         if ($room['employee']['id'] != null) {
                             $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
-                            $room['employee']['flat_band'] = (int)$room['employee']['flat_band']; 
+                            $room['employee']['flat_band'] = (int) $room['employee']['flat_band'];
                             $tmp_array[$room['room_no']]['employees'][] = $room['employee'];
 
                         } else {
