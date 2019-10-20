@@ -305,10 +305,10 @@ class AmpFlatsController extends ApiController
         if ($this->checkToken()) {
             try {
                 $id = $this->request->getData('flat_id');
-                $rooms = array();
-                if (!empty($this->request->data['rooms'])) {
-                    $rooms = json_decode($this->request->data['rooms']);
-                }
+                // $rooms = array();
+                // if (!empty($this->request->data['rooms'])) {
+                //     $rooms = json_decode($this->request->data['rooms']);
+                // }
                 $AmpFlat = $this->AmpFlats->get($id, [
                     'contain' => [],
                 ]);
@@ -318,21 +318,21 @@ class AmpFlatsController extends ApiController
                 $this->request->data['agreement_date'] = $agreement_date;
                 $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
                 if ($this->AmpFlats->save($AmpFlat)) {
-                    if (count($rooms) > 0) {
-                        $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
-                        foreach ($rooms as $room) {
-                            $queryUpdate = $roomFlatMapping->query();
-                            $queryUpdate->update()
-                                ->set([
-                                    'flat_id' => $AmpFlat->id,
-                                    'room_no' => $room->room_no,
-                                    'band' => $room->flat_band,
-                                    'capacity' => $room->room_capacity,
-                                ])
-                                ->where(['id' => $room->room_id])
-                                ->execute();
-                        }
-                    }
+                    // if (count($rooms) > 0) {
+                    //     $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
+                    //     foreach ($rooms as $room) {
+                    //         $queryUpdate = $roomFlatMapping->query();
+                    //         $queryUpdate->update()
+                    //             ->set([
+                    //                 'flat_id' => $AmpFlat->id,
+                    //                 'room_no' => $room->room_no,
+                    //                 'band' => $room->flat_band,
+                    //                 'capacity' => $room->room_capacity,
+                    //             ])
+                    //             ->where(['id' => $room->room_id])
+                    //             ->execute();
+                    //     }
+                    // }
                     $this->httpStatusCode = 200;
                     $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
                 } else {
