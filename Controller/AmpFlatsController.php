@@ -304,11 +304,10 @@ class AmpFlatsController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             try {
-                if(isset($this->request->data['flat_id'])){
+                if($this->request->data['flat_id'] == null){
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Flat ID is required';
                 }else{
-                    dd($this->request->data['flat_id']);
                     $id = $this->request->getData('flat_id');
                     // $rooms = array();
                     // if (!empty($this->request->data['rooms'])) {
