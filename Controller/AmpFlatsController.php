@@ -80,7 +80,7 @@ class AmpFlatsController extends ApiController
             $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link','rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
             $options['limit'] = $limit;
-            $options['order'] = 'created_date ASC';
+            $options['order'] = 'created_date DESC';
             $options['offset'] = $start;
 
             $AmpFlats = $this->AmpFlats->find('all', $options)->group('AmpFlats.id')->toArray();
@@ -113,6 +113,7 @@ class AmpFlatsController extends ApiController
                     'employee__email_id' => 'Employees.email_id',
                     'employee__flat_band' => 'Employees.flat_band',
                 );
+                $subOptions['order'] = 'Room.id ASC';
                 $totalRooms = $flatRoomsMapingTable->find('all', $subOptions)->where(['Room.flat_id' => $flat['id']])->toArray();
                 $tmp_array = array();
                 foreach ($totalRooms as $i => $room) {
@@ -246,6 +247,7 @@ class AmpFlatsController extends ApiController
                         'employee__email_id' => 'Employees.email_id',
                         'employee__flat_band' => 'Employees.flat_band',
                     );
+                    $subOptions['order'] = 'Room.id ASC';
                     $totalRooms = $flatRoomsMapingTable->find('all', $subOptions)->where(['Room.flat_id' => $flat['id']])->toArray();
                     $tmp_array = array();
                     foreach ($totalRooms as $i => $room) {
@@ -527,7 +529,7 @@ class AmpFlatsController extends ApiController
             ->set(['active_status' => '0'])
             ->where(['employee_id' => $empID,'flat_id' => $flatID,'room_id' => $roomID])
             ->execute();
-            
+
             $roomTable = $flatRoomMappingTable->find('all')->where(['flat_id' => $flatID])->toList();
             $flatCapacity = 0;
             foreach ($roomTable as $room) {
