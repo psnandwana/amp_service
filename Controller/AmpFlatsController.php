@@ -515,18 +515,37 @@ class AmpFlatsController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
+            $flatRoomMappingTable = TableRegistry::get('amp_flat_rooms_mapping');
             $roomEmployeeMappingTable = TableRegistry::get('amp_room_employee_mapping');
+            $flatsTable = TableRegistry::get('amp_flats');
+
             $empID = $this->request->data('employee_id');
             $flatID = $this->request->data('flat_id');
             $roomID = $this->request->data('room_id');
-            $queryUpdate = $roomEmployeeMappingTable->query();
-            $queryUpdate->update()
-            ->set([
-                'active_status' => '0',
-            ])
+            $queryRoomUpdate = $roomEmployeeMappingTable->query();
+            $queryRoomUpdate->update()
+            ->set(['active_status' => '0'])
             ->where(['employee_id' => $empID,'flat_id' => $flatID,'room_id' => $roomID])
             ->execute();
-
+            
+            $roomTable = $flatRoomMappingTable->find('all')->where(['flat_id' => $flatID])->toList();
+            $flatCapacity = 0;
+            foreach ($roomTable as $room) {
+                $flatCapacity += $room['capacity'];
+            }
+            $totalFlatOccupancy = $roomEmployeeMappingTable->find('all')->where(['flat_id' => $flatID,'active_status' => '1'])->count();
+            if ($totalFlatOccupancy == 0) {
+                $vacancyStatus = 'Vacant';
+            } elseif ($totalFlatOccupancy == $flatCapacity) {
+                $vacancyStatus = 'Fully Occupied';
+            } else {
+                $vacancyStatus = 'Partially Occupied';
+            }
+            $queryUpdate = $flatsTable->query();
+            $queryUpdate->update()
+                ->set([ 'vacancy_status' => $vacancyStatus])
+                ->where(['id' => $flatID])
+                ->execute();
             $this->httpStatusCode = 200;
             $this->apiResponse['message'] = 'Flat has been unassigned successfully.';
         } else {
