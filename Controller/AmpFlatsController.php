@@ -414,9 +414,7 @@ class AmpFlatsController extends ApiController
         $this->httpStatusCode = 200;
         $this->apiResponse['types'] = $type;
     }
-    /**
-     *  Get Cities
-     */
+   
     public function getcities()
     {
         header("Access-Control-Allow-Origin: *");
@@ -457,26 +455,22 @@ class AmpFlatsController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $flatEmpMappingTable = TableRegistry::get('amp_flat_employees_mapping');
-            $flatRoomMappingTable = TableRegistry::get('amp_flat_rooms_mapping');
-            $roomEmployeeMappingTable = TableRegistry::get('amp_room_employee_mapping');
-            $flatsTable = TableRegistry::get('amp_flats');
             $empID = $this->request->data('employee_id');
             $flatID = $this->request->data('flat_id');
             $roomID = $this->request->data('room_id');
-            $roomCapapcity = $flatRoomMappingTable->find('all')->where(['id' => $roomID])->toList();
-            $employeeCount = $roomEmployeeMappingTable->find('all')->where(['room_id' => $roomID])->toList();
-            $capacity = 0;
-            if (count($roomCapapcity) > 0) {
-                $capacity = $roomCapapcity[0]['capacity'];
-            }
-            $empcount = 0;
-            if (count($employeeCount) > 0) {
-                $empcount = count($employeeCount);
-            }
             date_default_timezone_set('Asia/Kolkata');
             $current_date = date('Y-m-d H:i:s');
-            if (($capacity - $empcount) > 0) {
+
+            $flatRoomMappingTable = TableRegistry::get('amp_flat_rooms_mapping');
+            $roomEmployeeMappingTable = TableRegistry::get('amp_room_employee_mapping');
+            $flatsTable = TableRegistry::get('amp_flats');
+          
+            $roomCapacity = $flatRoomMappingTable->find('all')->where(['id' => $roomID])->first()->toArray();
+            $employeeCount = $roomEmployeeMappingTable->find('all')->where(['room_id' => $roomID, 'flat_id' => $flatID, 'active_status' => '1'])->count();
+            $roomCapacity = $roomCapacity['capacity'];
+            $empCount = $employeeCount;
+            $totalVanancy = $roomCapacity - $empCount;
+            if ($totalVanancy > 0) {
                 $queryInsert = $roomEmployeeMappingTable->query();
                 $queryInsert->insert(['room_id', 'flat_id', 'employee_id', 'assigned_by', 'assigned_date'])
                     ->values([
@@ -486,37 +480,24 @@ class AmpFlatsController extends ApiController
                         'assigned_by' => 1000,
                         'assigned_date' => $current_date,
                     ])->execute();
-                $flatCapacityTable = $flatRoomMappingTable->find('all')->where(['flat_id' => $flatID])->toList();
-                $flatcapacity = 0;
-                foreach ($flatCapacityTable as $room) {
-                    $flatcapacity += $room['capacity'];
+                $roomTable = $flatRoomMappingTable->find('all')->where(['flat_id' => $flatID])->toList();
+                $flatCapacity = 0;
+                foreach ($roomTable as $room) {
+                    $flatCapacity += $room['capacity'];
                 }
-                $flatoccupancycount = $roomEmployeeMappingTable->find('all')->where(['flat_id' => $flatID])->count();
-                if ($flatoccupancycount == 0) {
-                    $queryUpdate = $flatsTable->query();
-                    $queryUpdate->update()
-                        ->set([
-                            'vacancy_status' => 'Vacant',
-                        ])
-                        ->where(['id' => $flatID])
-                        ->execute();
-                } elseif ($flatoccupancycount == $flatcapacity) {
-                    $queryUpdate = $flatsTable->query();
-                    $queryUpdate->update()
-                        ->set([
-                            'vacancy_status' => 'Fully Occupied',
-                        ])
-                        ->where(['id' => $flatID])
-                        ->execute();
+                $totalFlatOccupancy = $roomEmployeeMappingTable->find('all')->where(['flat_id' => $flatID,'active_status' => '1'])->count();
+                if ($totalFlatOccupancy == 0) {
+                    $vacancyStatus = 'Vacant';
+                } elseif ($totalFlatOccupancy == $flatCapacity) {
+                    $vacancyStatus = 'Fully Occupied';
                 } else {
-                    $queryUpdate = $flatsTable->query();
-                    $queryUpdate->update()
-                        ->set([
-                            'vacancy_status' => 'Partially Occupied',
-                        ])
-                        ->where(['id' => $flatID])
-                        ->execute();
+                    $vacancyStatus = 'Partially Occupied';
                 }
+                $queryUpdate = $flatsTable->query();
+                $queryUpdate->update()
+                    ->set([ 'vacancy_status' => $vacancyStatus])
+                    ->where(['id' => $flatID])
+                    ->execute();
                 $this->httpStatusCode = 200;
                 $this->apiResponse['message'] = 'Flat has been assigned successfully.';
             } else {
