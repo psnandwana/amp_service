@@ -304,41 +304,46 @@ class AmpFlatsController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             try {
-                $id = $this->request->getData('flat_id');
-                // $rooms = array();
-                // if (!empty($this->request->data['rooms'])) {
-                //     $rooms = json_decode($this->request->data['rooms']);
-                // }
-                $AmpFlat = $this->AmpFlats->get($id, [
-                    'contain' => [],
-                ]);
-                unset($this->request->data['flat_id']);
-                $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
-                unset($this->request->data['agreement_date']);
-                $this->request->data['agreement_date'] = $agreement_date;
-                $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
-                if ($this->AmpFlats->save($AmpFlat)) {
-                    // if (count($rooms) > 0) {
-                    //     $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
-                    //     foreach ($rooms as $room) {
-                    //         $queryUpdate = $roomFlatMapping->query();
-                    //         $queryUpdate->update()
-                    //             ->set([
-                    //                 'flat_id' => $AmpFlat->id,
-                    //                 'room_no' => $room->room_no,
-                    //                 'band' => $room->flat_band,
-                    //                 'capacity' => $room->room_capacity,
-                    //             ])
-                    //             ->where(['id' => $room->room_id])
-                    //             ->execute();
-                    //     }
-                    // }
-                    $this->httpStatusCode = 200;
-                    $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
-                } else {
+                if(isset($this->request->data['flat_id'])){
                     $this->httpStatusCode = 422;
-                    $this->apiResponse['message'] = 'Unable to update Flat Profile.';
-                }
+                    $this->apiResponse['message'] = 'Flat ID is required';
+                }else{
+                    $id = $this->request->getData('flat_id');
+                    // $rooms = array();
+                    // if (!empty($this->request->data['rooms'])) {
+                    //     $rooms = json_decode($this->request->data['rooms']);
+                    // }
+                    $AmpFlat = $this->AmpFlats->get($id, [
+                        'contain' => [],
+                    ]);
+                    unset($this->request->data['flat_id']);
+                    $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
+                    unset($this->request->data['agreement_date']);
+                    $this->request->data['agreement_date'] = $agreement_date;
+                    $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
+                    if ($this->AmpFlats->save($AmpFlat)) {
+                        // if (count($rooms) > 0) {
+                        //     $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
+                        //     foreach ($rooms as $room) {
+                        //         $queryUpdate = $roomFlatMapping->query();
+                        //         $queryUpdate->update()
+                        //             ->set([
+                        //                 'flat_id' => $AmpFlat->id,
+                        //                 'room_no' => $room->room_no,
+                        //                 'band' => $room->flat_band,
+                        //                 'capacity' => $room->room_capacity,
+                        //             ])
+                        //             ->where(['id' => $room->room_id])
+                        //             ->execute();
+                        //     }
+                        // }
+                        $this->httpStatusCode = 200;
+                        $this->apiResponse['message'] = 'Flat profile has been updated successfully.';
+                    } else {
+                        $this->httpStatusCode = 422;
+                        $this->apiResponse['message'] = 'Unable to update Flat Profile.';
+                    }
+                }               
             } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
                 $this->httpStatusCode = 422;
                 $this->apiResponse['message'] = "Selected record not found";
