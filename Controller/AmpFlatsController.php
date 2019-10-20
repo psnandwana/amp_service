@@ -533,6 +533,27 @@ class AmpFlatsController extends ApiController
         }
     }
 
+    public function unassignflat()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $roomEmployeeMappingTable = TableRegistry::get('amp_room_employee_mapping');
+            $empID = $this->request->data('employee_id');
+            $flatID = $this->request->data('flat_id');
+            $roomID = $this->request->data('room_id');
+            $queryUpdate = $roomEmployeeMappingTable->query();
+            $queryUpdate->update()
+            ->set([
+                'active_status' => '0',
+            ])
+            ->where(['employee_id' => $empID,'flat_id' => $flatID,'room_id' => $roomID])
+            ->execute();
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expaired";
+        }
+    }
+
     public function getkpi()
     {
         header("Access-Control-Allow-Origin: *");
