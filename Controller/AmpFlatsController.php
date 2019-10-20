@@ -548,6 +548,9 @@ class AmpFlatsController extends ApiController
             ])
             ->where(['employee_id' => $empID,'flat_id' => $flatID,'room_id' => $roomID])
             ->execute();
+
+            $this->httpStatusCode = 200;
+            $this->apiResponse['message'] = 'Flat has been unassigned successfully.';
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expaired";
