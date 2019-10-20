@@ -561,6 +561,7 @@ class AmpFlatsController extends ApiController
             $this->apiResponse['message'] = "your session has been expired";
         }
     }
+
     public function rentpayment()
     {
         header("Access-Control-Allow-Origin: *");
@@ -584,6 +585,77 @@ class AmpFlatsController extends ApiController
 
             $this->httpStatusCode = 200;
             $this->apiResponse['message'] = 'Rent has been paid successfully';
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
+
+    public function getvacantrom()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $id = $this->request->getData('flat_id');
+            if (is_numeric($id)) {
+                $flatRoomsMapingTable = TableRegistry::get('Room', ['table' => 'amp_flat_rooms_mapping']);
+
+                $subOptions = array();
+                $subOptions['join'] = array(
+                    array(
+                        'table' => 'amp_room_employee_mapping',
+                        'alias' => 'RoomEmpMap',
+                        'type' => 'LEFT',
+                        'conditions' => ['RoomEmpMap.room_id = Room.id', 'RoomEmpMap.active_status' => '1'],
+                    ),
+                    array(
+                        'table' => 'amp_employees_listing',
+                        'alias' => 'Employees',
+                        'type' => 'LEFT',
+                        'conditions' => 'Employees.id = RoomEmpMap.employee_id',
+                    ),
+                );
+                $subOptions['fields'] = array(
+                    'room_id' => 'Room.id',
+                    'room_no',
+                    'room_band' => 'band',
+                    'capacity',
+                    'employee__id' => 'Employees.id',
+                    'employee__emp_code' => 'Employees.emp_code',
+                    'employee__emp_name' => 'Employees.emp_name',
+                    'employee__email_id' => 'Employees.email_id',
+                    'employee__flat_band' => 'Employees.flat_band',
+                );
+                $totalRooms = $flatRoomsMapingTable->find('all', $subOptions)->where(['Room.flat_id' => $id])->toArray();
+                $tmp_array = array();
+                foreach ($totalRooms as $i => $room) {
+                    $tmp_array[$room['room_no']]['room_id'] = $room['room_id'];
+                    $tmp_array[$room['room_no']]['room_no'] = $room['room_no'];
+                    $tmp_array[$room['room_no']]['room_band'] = (int) $room['room_band'];
+                    $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
+                    if ($room['employee']['id'] != null) {
+                        $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
+                        $room['employee']['flat_band'] = (int) $room['employee']['flat_band'];
+                        $tmp_array[$room['room_no']]['employees'][] = $room['employee'];
+                    } else {
+                        $tmp_array[$room['room_no']]['employees'] = array();
+                    }
+                }
+                $rooms = array();
+                foreach ($tmp_array as $key => $room) {
+                    $room_vacancy = $tmp_array[$key]['capacity'] - count($tmp_array[$key]['employees']);
+                    if($room_vacancy > 0){
+                        unset($room['employees']);
+                        $rooms[] = $room;
+                    }                    
+                }
+
+                $this->httpStatusCode = 200;
+                $this->apiResponse['rooms'] = $rooms;
+                
+            } else {
+                $this->httpStatusCode = 200;
+                $this->apiResponse['flat'] = null;
+            }
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
