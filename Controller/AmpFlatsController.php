@@ -381,6 +381,38 @@ class AmpFlatsController extends ApiController
         }
     }
 
+    public function activate()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            try {
+                $var = $this->checkpostvariables($this->request->getData());
+                if (!($var['error_status'])) {
+                    $id = $this->request->getData('flat_id');
+                    $AmpFlat = $this->AmpFlats->get($id);
+                    $AmpFlat->active_status = '1';
+                    if ($this->AmpFlats->save($AmpFlat)) {
+                        $this->httpStatusCode = 200;
+                        $this->apiResponse['message'] = 'Flat profile has been activated successfully.';
+                    } else {
+                        $this->httpStatusCode = 422;
+                        $this->apiResponse['message'] = 'Unable to deactivate Flat Profile.';
+                    }
+                } else {
+                    $this->httpStatusCode = 422;
+                    $this->apiResponse['message'] = $var['error_string'];
+                }
+
+            } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = "Selected record not found";
+            }
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
+
     public function getagreementstatus()
     {
         header("Access-Control-Allow-Origin: *");
