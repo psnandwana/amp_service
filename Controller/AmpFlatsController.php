@@ -511,7 +511,6 @@ class AmpFlatsController extends ApiController
                         ->where(['id' => $flatID])
                         ->execute();
                 } else {
-                    echo "Partially Occupied";
                     $queryUpdate = $flatsTable->query();
                     $queryUpdate->update()
                         ->set([
