@@ -784,7 +784,7 @@ class AmpFlatsController extends ApiController
                     if ($this->AmpFlats->save($AmpFlat)) {
                         if ($total_rooms > 0) {
                             $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
-                            for($i=1; $i<$total_rooms; $i++){
+                            for($i=1; $i <= $total_rooms; $i++){
                                 $queryInsert = $roomFlatMapping->query();
                                 $queryInsert->insert(['room_no', 'band', 'capacity','flat_id'])
                                     ->values([
