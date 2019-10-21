@@ -142,7 +142,7 @@ class AmpFlatsController extends ApiController
                 $AmpFlats[$index]['vacancy_count'] = $vacancy_count;
                 $AmpFlats[$index]['rent_amount'] = moneyFormatIndia((int)$AmpFlats[$index]['rent_amount']);
                 $AmpFlats[$index]['maintenance_amount'] = moneyFormatIndia((int)$AmpFlats[$index]['maintenance_amount']);
-                if($AmpFlats[$index]['agreement_date'] == 'Pending'){
+                if($AmpFlats[$index]['agreement_status'] == 'Pending'){
                     $AmpFlats[$index]['agreement_date'] = '';
                 }else{
                     $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
@@ -285,7 +285,11 @@ class AmpFlatsController extends ApiController
                     $flat['rent_amount'] = moneyFormatIndia((int)$flat['rent_amount']);
                     $flat['flat_band'] = (int)$flat['flat_band'];
                     $flat['maintenance_amount'] = moneyFormatIndia((int)$flat['maintenance_amount']);
-                    $flat['agreement_date'] = date("Y-m-d", strtotime($flat['agreement_date']));
+                    if( $flat['agreement_status'] == 'Pending'){
+                         $flat['agreement_date'] = '';
+                    }else{
+                        $flat['agreement_date'] = date("Y-m-d", strtotime($flat['agreement_date']));
+                    }                     
                     $flat['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                     $flat['distance'] = '10 km';
                     $flat['rooms'] = $rooms;
