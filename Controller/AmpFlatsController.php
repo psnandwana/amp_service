@@ -575,9 +575,12 @@ class AmpFlatsController extends ApiController
             $empID = $this->request->data('employee_id');
             $flatID = $this->request->data('flat_id');
             $roomID = $this->request->data('room_id');
+            date_default_timezone_set('Asia/Kolkata');
+            $current_date = date('Y-m-d H:i:s');
+
             $queryRoomUpdate = $roomEmployeeMappingTable->query();
             $queryRoomUpdate->update()
-            ->set(['active_status' => '0'])
+            ->set(['active_status' => '0', 'unassigned_date' => $current_date])
             ->where(['employee_id' => $empID,'flat_id' => $flatID,'room_id' => $roomID])
             ->execute();
 
