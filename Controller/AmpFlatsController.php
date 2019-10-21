@@ -166,6 +166,8 @@ class AmpFlatsController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
+            date_default_timezone_set('Asia/Kolkata');
+            $current_date = date('Y-m-d H:i:s');
             $AmpFlat = $this->AmpFlats->newEntity();
             $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
             $rooms = array();
@@ -177,7 +179,7 @@ class AmpFlatsController extends ApiController
                 if($this->request->data['agreement_status'] != 'Pending'){                  
                     $this->request->data['agreement_date'] = $agreement_date;
                 }                
-                $this->request->data['created_date'] = Time::now();
+                $this->request->data['created_date'] = $current_date;
                 $this->request->data['active_status'] = '1';
                 $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
                 if ($this->AmpFlats->save($AmpFlat)) {
@@ -732,6 +734,75 @@ class AmpFlatsController extends ApiController
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
         }
+    }
+
+    public function uploadflats(){
+        $data = $this->request->data['upload_flats'];
+        date_default_timezone_set('Asia/Kolkata');
+        $current_date = date('Y-m-d H:i:s');
+        if(isset($data['name'])){
+            $file = $data['tmp_name'];
+            $handle = fopen($file, "r");
+            $headerLine = true;
+            while (($row = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                if($headerLine) { $headerLine = false; }
+                else {   
+                    $AmpFlat = $this->AmpFlats->newEntity();                
+                    $param = array();
+                    $param["flat_no"] = $row[0];
+                    $param["apartment_name"] = $row[1];
+                    $param["flat_type"] = chop($row[2]," BHK");
+                    $param["flat_band"] = $row[3];
+                    $param["agreement_status"] = $row[4];
+                    if($param["agreement_status"] == 'Pending'){
+                        $param["agreement_date"] = '';
+                    }else{
+                        $param["agreement_date"] = $row[5];
+                    }                    
+                    $param["address"] = $row[6];
+                    $param["pincode"] = $row[7];
+                    $param["city"] = $row[8];
+                    $param["state"] = $row[9];
+                    $param["google_map_link"] = $row[10];
+                    $param["longitude"] = $row[11];
+                    $param["latitude"] = $row[12];
+                    $param["rent_amount"] = $row[13];
+                    $param["maintenance_amount"] = $row[14];
+                    $param["owner_name"] = $row[15];
+                    $param["owner_mobile_no"] = $row[16];
+                    $param["owner_email"] = $row[17];
+                    $vacancyStatus = ucwords($row[18]);
+
+                    $param["vacancy_status"] = str_replace("Fully ","",$vacancyStatus);
+                    $param['active_status'] = '1';
+                    $param['created_date'] = $current_date;
+                    $total_rooms = $row[19];
+                    $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $param);                    
+                    if ($this->AmpFlats->save($AmpFlat)) {
+                        if ($total_rooms > 0) {
+                            $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
+                            for($i=1; $i<$total_rooms; $i++){
+                                $queryInsert = $roomFlatMapping->query();
+                                $queryInsert->insert(['room_no', 'band', 'capacity','flat_id'])
+                                    ->values([
+                                        'room_no' => $i,
+                                        'band' => $param["flat_band"],
+                                        'capacity' => 1,
+                                        'flat_id' => $AmpFlat->id,
+                                    ])->execute();
+                            }
+                        }
+                    } 
+                }                
+            }
+            fclose($handle);
+            $this->httpStatusCode = 200;
+            $this->apiResponse['message'] = 'CSV has been uploaded successfully.';
+        }else{
+            $this->httpStatusCode = 422;
+            $this->apiResponse['message'] = "Please upload proper CSV";
+        }
+        
     }
 }
 
