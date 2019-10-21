@@ -142,7 +142,11 @@ class AmpFlatsController extends ApiController
                 $AmpFlats[$index]['vacancy_count'] = $vacancy_count;
                 $AmpFlats[$index]['rent_amount'] = moneyFormatIndia((int)$AmpFlats[$index]['rent_amount']);
                 $AmpFlats[$index]['maintenance_amount'] = moneyFormatIndia((int)$AmpFlats[$index]['maintenance_amount']);
-                $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
+                if($AmpFlats[$index]['agreement_date'] == 'Pending'){
+                    $AmpFlats[$index]['agreement_date'] = '';
+                }else{
+                    $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
+                }                
                 $AmpFlats[$index]['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                 $AmpFlats[$index]['distance'] = '10 km';
                 $AmpFlats[$index]['rooms'] = $rooms;
@@ -170,7 +174,9 @@ class AmpFlatsController extends ApiController
             }
             if (count($rooms) > 0) {
                 unset($this->request->data['agreement_date']);
-                $this->request->data['agreement_date'] = $agreement_date;
+                if($this->request->data['agreement_status'] != 'Pending'){                  
+                    $this->request->data['agreement_date'] = $agreement_date;
+                }                
                 $this->request->data['created_date'] = Time::now();
                 $this->request->data['active_status'] = '1';
                 $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
@@ -319,7 +325,9 @@ class AmpFlatsController extends ApiController
                     unset($this->request->data['flat_id']);
                     $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
                     unset($this->request->data['agreement_date']);
-                    $this->request->data['agreement_date'] = $agreement_date;
+                    if($this->request->data['agreement_status'] != 'Pending'){                  
+                        $this->request->data['agreement_date'] = $agreement_date;
+                    }
                     $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
                     if ($this->AmpFlats->save($AmpFlat)) {
                         // if (count($rooms) > 0) {
