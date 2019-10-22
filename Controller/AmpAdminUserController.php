@@ -28,6 +28,7 @@ class AmpAdminUserController extends ApiController
             $user_id = $this->request->getData('user_id');
             $this->paginate = ['limit' => 10, 'page' => $page];
             $this->paginate['contain'] = ['AmpLocations'];
+            // $this->paginate['conditions'] = ['id !=' => $user_id];
             $ampAdminUser = $this->paginate($this->AmpAdminUser);
             $numUsers = $this->AmpAdminUser->find('all', array('conditions' => array('id !=' => $user_id)))->count();
 
@@ -205,11 +206,13 @@ class AmpAdminUserController extends ApiController
             $super_admin = $data['super_admin'];
             $admin = $data['admin'];
             $view = $data['view'];
+            $employee = $data['employee'];
             $view_download = $data['view_download'];
             if ($super_admin == '1') {
                 $admin = '1';
                 $view = '1';
                 $view_download = '1';
+                $employee = '1';
             }
 
             if (empty($email)) {
@@ -230,16 +233,18 @@ class AmpAdminUserController extends ApiController
                     $this->apiResponse['message'] = 'Email already exist.';
                 } else {
                     $queryInsert = $this->AmpAdminUser->query();
-                    $queryInsert->insert(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin', 'view', 'view_download', 'created_date'])
+                    $queryInsert->insert(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin' , 'employee', 'view',  'view_download', 'created_date'])
                         ->values([
                             'name' => $name,
                             'email' => $email,
+                            
                             'campaign_office' => $campaign_office,
                             'emp_code' => $emp_code,
                             'mobile_no' => $mobile_no,
                             'password' => md5($password),
                             'super_admin' => $super_admin,
                             'admin' => $admin,
+                            'employee' => $employee,
                             'view' => $view,
                             'view_download' => $view_download,
                             'created_date' => Time::now(),
