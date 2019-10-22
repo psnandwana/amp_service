@@ -9,7 +9,7 @@ use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
-class AmpGrievanceController extends AppController
+class AmpGrievanceController extends ApiController
 {
     
     public function add()
