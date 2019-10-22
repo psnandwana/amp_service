@@ -29,16 +29,6 @@ class AmpEmployeesListing extends Entity
         'emp_code' => true,
         'emp_name' => true,
         'email_id' => true,
-        'password' => true,
         'email' => true
-    ];
-
-    /**
-     * Fields that are excluded from JSON versions of the entity.
-     *
-     * @var array
-     */
-    protected $_hidden = [
-        'password'
     ];
 }
