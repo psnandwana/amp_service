@@ -12,14 +12,7 @@ use RestApi\Controller\ApiController;
 class AmpGrievanceController extends ApiController
 {
     
-    public function index()
-    {
-        $ampGrievance = $this->paginate($this->AmpGrievance);
-
-        $this->set(compact('ampGrievance'));
-    }
-
-    public function create()
+    public function add()
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
@@ -51,7 +44,7 @@ class AmpGrievanceController extends ApiController
         $this->apiResponse['data'] = $status;
     }
 
-    public function getallrequest()
+    public function list()
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {            
@@ -78,62 +71,62 @@ class AmpGrievanceController extends ApiController
         }
     }
 
-    public function getpendingrequest()
-    {
-        header("Access-Control-Allow-Origin: *");
-        if ($this->checkToken()) {            
-            $page = $this->request->getData('page');
-            $employee_id = $this->request->getData('employee_id');
-            $this->paginate = ['limit' => 10, 'page' => $page];
-            $this->paginate['conditions']['employee_id'] = $employee_id;
-            $this->paginate['conditions']['status'] = 'Pending';
-            $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
-            $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id,'status' => 'Pending')))->count();
+    // public function getpendingrequest()
+    // {
+    //     header("Access-Control-Allow-Origin: *");
+    //     if ($this->checkToken()) {            
+    //         $page = $this->request->getData('page');
+    //         $employee_id = $this->request->getData('employee_id');
+    //         $this->paginate = ['limit' => 10, 'page' => $page];
+    //         $this->paginate['conditions']['employee_id'] = $employee_id;
+    //         $this->paginate['conditions']['status'] = 'Pending';
+    //         $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
+    //         $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id,'status' => 'Pending')))->count();
             
-            if(count($AmpGrievance) > 0){
-                foreach ($AmpGrievance as $index => $request) {
-                    $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
-                }   
-            }    
+    //         if(count($AmpGrievance) > 0){
+    //             foreach ($AmpGrievance as $index => $request) {
+    //                 $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
+    //             }   
+    //         }    
 
-            $this->httpStatusCode = 200;
-            $this->apiResponse['page'] = (int) $page;
-            $this->apiResponse['total'] = (int) $totalRequests;
-            $this->apiResponse['requests'] = $AmpGrievance;
-            $this->apiResponse['message'] = "successfully fetched data";
-        } else {
-            $this->httpStatusCode = 403;
-            $this->apiResponse['message'] = "your session has been expired";
-        }
-    }
+    //         $this->httpStatusCode = 200;
+    //         $this->apiResponse['page'] = (int) $page;
+    //         $this->apiResponse['total'] = (int) $totalRequests;
+    //         $this->apiResponse['requests'] = $AmpGrievance;
+    //         $this->apiResponse['message'] = "successfully fetched data";
+    //     } else {
+    //         $this->httpStatusCode = 403;
+    //         $this->apiResponse['message'] = "your session has been expired";
+    //     }
+    // }
 
-    public function getresolvedrequest()
-    {
-        header("Access-Control-Allow-Origin: *");
-        if ($this->checkToken()) {            
-            $page = $this->request->getData('page');
-            $employee_id = $this->request->getData('employee_id');
-            $this->paginate = ['limit' => 10, 'page' => $page];
-            $this->paginate['conditions']['employee_id'] = $employee_id;
-            $this->paginate['conditions']['status'] = 'Resolved';
-            $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
-            $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id,'status' => 'Resolved')))->count();
+    // public function getresolvedrequest()
+    // {
+    //     header("Access-Control-Allow-Origin: *");
+    //     if ($this->checkToken()) {            
+    //         $page = $this->request->getData('page');
+    //         $employee_id = $this->request->getData('employee_id');
+    //         $this->paginate = ['limit' => 10, 'page' => $page];
+    //         $this->paginate['conditions']['employee_id'] = $employee_id;
+    //         $this->paginate['conditions']['status'] = 'Resolved';
+    //         $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
+    //         $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id,'status' => 'Resolved')))->count();
             
-            if(count($AmpGrievance) > 0){
-                foreach ($AmpGrievance as $index => $request) {
-                    $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
-                }   
-            }    
+    //         if(count($AmpGrievance) > 0){
+    //             foreach ($AmpGrievance as $index => $request) {
+    //                 $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
+    //             }   
+    //         }    
 
-            $this->httpStatusCode = 200;
-            $this->apiResponse['page'] = (int) $page;
-            $this->apiResponse['total'] = (int) $totalRequests;
-            $this->apiResponse['requests'] = $AmpGrievance;
-            $this->apiResponse['message'] = "successfully fetched data";
-        } else {
-            $this->httpStatusCode = 403;
-            $this->apiResponse['message'] = "your session has been expired";
-        }
-    }
+    //         $this->httpStatusCode = 200;
+    //         $this->apiResponse['page'] = (int) $page;
+    //         $this->apiResponse['total'] = (int) $totalRequests;
+    //         $this->apiResponse['requests'] = $AmpGrievance;
+    //         $this->apiResponse['message'] = "successfully fetched data";
+    //     } else {
+    //         $this->httpStatusCode = 403;
+    //         $this->apiResponse['message'] = "your session has been expired";
+    //     }
+    // }
     
 }
