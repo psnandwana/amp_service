@@ -3,7 +3,7 @@ namespace App\Controller;
 
 use RestApi\Controller\ApiController;
 
-class AmpEmployeesListingController extends AppController
+class AmpEmployeesListingController extends ApiController
 {
     /**List employee List */
     public function index()
@@ -56,6 +56,7 @@ class AmpEmployeesListingController extends AppController
             // 'Room', ['table' => 'amp_flat_rooms_mapping']
             $roomEmployeeMappingTable = TableRegistry::get('RoomEmpMap', ['table' => 'amp_room_employee_mapping']);
             $empExists = $roomEmployeeMappingTable->find('all')->where(['employee_id' => $emp_id, 'active_status' => '1'])->count();
+            echo $empExists;exit;
             if ($empExists > 0) {
                 $options = array();
                 $options['conditions']['RoomEmpMap.employee_id'] = $emp_id;
@@ -82,7 +83,7 @@ class AmpEmployeesListingController extends AppController
                     'RoomFlat.band',
                     'RoomFlat.capacity',
                 );
-                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->toArray();
+                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->sql();
                 $this->httpStatusCode = 200;
                 $this->apiResponse['flat_details'] = $userFlatDetails;
             } else {
