@@ -9,7 +9,7 @@ use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
-class AmpGrievanceController extends AppController
+class AmpGrievanceController extends ApiController
 {
     
     public function add()
@@ -41,7 +41,7 @@ class AmpGrievanceController extends AppController
         $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id)))->count();
     }
 
-    public function requesttypes()
+    public function requesttype()
     {
         header("Access-Control-Allow-Origin: *");
         $status = array('Accomodation', 'Travel');
