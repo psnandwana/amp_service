@@ -41,7 +41,7 @@ class AmpGrievanceController extends ApiController
         $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id)))->count();
     }
 
-    public function requesttype()
+    public function requesttypes()
     {
         header("Access-Control-Allow-Origin: *");
         $status = array('Accomodation', 'Travel');
