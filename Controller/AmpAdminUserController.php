@@ -232,12 +232,12 @@ class AmpAdminUserController extends ApiController
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Email already exist.';
                 } else {
+            
                     $queryInsert = $this->AmpAdminUser->query();
                     $queryInsert->insert(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin' , 'employee', 'view',  'view_download', 'created_date'])
                         ->values([
                             'name' => $name,
-                            'email' => $email,
-                            
+                            'email' => $email,                            
                             'campaign_office' => $campaign_office,
                             'emp_code' => $emp_code,
                             'mobile_no' => $mobile_no,
