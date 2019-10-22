@@ -886,10 +886,10 @@ class AmpFlatsController extends ApiController
                 );
                 $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->first()->toArray();
                 $this->httpStatusCode = 200;
-                $this->apiResponse['accomodation_details'] = $userFlatDetails; 
+                $this->apiResponse['flat'] = $userFlatDetails; 
             } else {
                 $this->httpStatusCode = 200;
-                $this->apiResponse['flat_details'] = null;
+                $this->apiResponse['flat'] = null;
             }
         } else {
             $this->httpStatusCode = 403;

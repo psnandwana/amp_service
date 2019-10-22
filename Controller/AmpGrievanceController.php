@@ -56,7 +56,7 @@ class AmpGrievanceController extends ApiController
 
     }
 
-    public function requesttype()
+    public function requesttypes()
     {
         header("Access-Control-Allow-Origin: *");
         $status = array('Accomodation', 'Travel');
