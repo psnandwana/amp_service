@@ -53,9 +53,8 @@ class AmpEmployeesListingController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $emp_id = $this->request->getData('emp_id');
-            // 'Room', ['table' => 'amp_flat_rooms_mapping']
             $roomEmployeeMappingTable = TableRegistry::get('RoomEmpMap', ['table' => 'amp_room_employee_mapping']);
-            $empExists = $roomEmployeeMappingTable->find('all')->where(['employee_id' => $emp_id, 'active_status' => '1'])->count();
+            $empExists = $roomEmployeeMappingTable->find('all')->where(['RoomEmpMap.employee_id' => $emp_id, 'RoomEmpMap.active_status' => '1'])->count();
             echo $empExists;exit;
             if ($empExists > 0) {
                 $options = array();
