@@ -84,6 +84,7 @@ class AmpGrievanceController extends ApiController
             $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
+                    unset($AmpGrievance[$index]['employee_id']);
                     $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
                 }
             }
