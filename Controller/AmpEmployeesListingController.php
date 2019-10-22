@@ -82,14 +82,14 @@ class AmpEmployeesListingController extends ApiController
                     ),
                 );
                 $options['fields'] = array(
-                    'flat.flat_no',
-                    'flat.apartment_name',
-                    'flat.flat_type',
-                    'RoomFlat.room_no',
-                    'RoomFlat.band',
-                    'RoomFlat.capacity',
+                    'flat_no'=>'flat.flat_no',
+                    'apartment_name'=>'flat.apartment_name',
+                    'flat_type'=>'flat.flat_type',
+                    'room_no'=>'RoomFlat.room_no',
+                    'band'=>'RoomFlat.band',
+                    'capacity'=>'RoomFlat.capacity',
                 );
-                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->sql();
+                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->toArray();
                 $this->httpStatusCode = 200;
                 $this->apiResponse['flat_details'] = $userFlatDetails;
             } else {
