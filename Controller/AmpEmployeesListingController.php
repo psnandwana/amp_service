@@ -1,6 +1,12 @@
 <?php
 namespace App\Controller;
 
+use Cake\Datasource\ConnectionManager;
+use Cake\Filesystem\File;
+use Cake\Filesystem\Folder;
+use Cake\I18n\Time;
+use Cake\Mailer\Email;
+use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
 class AmpEmployeesListingController extends ApiController
@@ -53,10 +59,10 @@ class AmpEmployeesListingController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $emp_id = $this->request->getData('emp_id');
-            dd($emp_id);
+            // dd($emp_id);
+            $emp_id = (int)$emp_id;
             $roomEmployeeMappingTable = TableRegistry::get('RoomEmpMap', ['table' => 'amp_room_employee_mapping']);
             $empExists = $roomEmployeeMappingTable->find('all')->where(['RoomEmpMap.employee_id' => $emp_id, 'RoomEmpMap.active_status' => '1'])->count();
-            echo $empExists;exit;
             if ($empExists > 0) {
                 $options = array();
                 $options['conditions']['RoomEmpMap.employee_id'] = $emp_id;
@@ -76,14 +82,14 @@ class AmpEmployeesListingController extends ApiController
                     ),
                 );
                 $options['fields'] = array(
-                    'flat.flat_no',
-                    'flat.apartment_name',
-                    'flat.flat_type',
-                    'RoomFlat.room_no',
-                    'RoomFlat.band',
-                    'RoomFlat.capacity',
+                    'flat_no'=>'flat.flat_no',
+                    'apartment_name'=>'flat.apartment_name',
+                    'flat_type'=>'flat.flat_type',
+                    'room_no'=>'RoomFlat.room_no',
+                    'band'=>'RoomFlat.band',
+                    'capacity'=>'RoomFlat.capacity',
                 );
-                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->sql();
+                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->toArray();
                 $this->httpStatusCode = 200;
                 $this->apiResponse['flat_details'] = $userFlatDetails;
             } else {
