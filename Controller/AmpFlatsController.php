@@ -884,9 +884,9 @@ class AmpFlatsController extends ApiController
                     'band'=>'RoomFlat.band',
                     'capacity'=>'RoomFlat.capacity',
                 );
-                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->toArray();
+                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->first()->toArray();
                 $this->httpStatusCode = 200;
-                $this->apiResponse['flat_details'] = $userFlatDetails;
+                $this->apiResponse['accomodation_details'] = $userFlatDetails; 
             } else {
                 $this->httpStatusCode = 200;
                 $this->apiResponse['flat_details'] = null;
