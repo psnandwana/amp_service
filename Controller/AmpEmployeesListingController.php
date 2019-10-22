@@ -48,4 +48,51 @@ class AmpEmployeesListingController extends ApiController
 
     }
 
+    public function getemployeeflat()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $emp_id = $this->request->getData('emp_id');
+            // 'Room', ['table' => 'amp_flat_rooms_mapping']
+            $roomEmployeeMappingTable = TableRegistry::get('RoomEmpMap', ['table' => 'amp_room_employee_mapping']);
+            $empExists = $roomEmployeeMappingTable->find('all')->where(['employee_id' => $emp_id, 'active_status' => '1'])->count();
+            if ($empExists > 0) {
+                $options = array();
+                $options['conditions']['RoomEmpMap.employee_id'] = $emp_id;
+                $options['conditions']['RoomEmpMap.active_status'] = '1';
+                $options['join'] = array(
+                    array(
+                        'table' => 'amp_flats',
+                        'alias' => 'flat',
+                        'type' => 'INNER',
+                        'conditions' => 'RoomEmpMap.flat_id = flat.id',
+                    ),
+                    array(
+                        'table' => 'amp_flat_rooms_mapping',
+                        'alias' => 'RoomFlat',
+                        'type' => 'INNER',
+                        'conditions' => 'RoomEmpMap.room_id = RoomFlat.id',
+                    ),
+                );
+                $options['fields'] = array(
+                    'flat.flat_no',
+                    'flat.apartment_name',
+                    'flat.flat_type',
+                    'RoomFlat.room_no',
+                    'RoomFlat.band',
+                    'RoomFlat.capacity',
+                );
+                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->toArray();
+                $this->httpStatusCode = 200;
+                $this->apiResponse['flat_details'] = $userFlatDetails;
+            } else {
+                $this->httpStatusCode = 200;
+                $this->apiResponse['flat_details'] = null;
+            }
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
+
 }
