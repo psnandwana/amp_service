@@ -634,22 +634,42 @@ class AmpFlatsController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $data = $this->request->data;
             $flatsTable = TableRegistry::get('amp_flats');
             $employessTable = TableRegistry::get('amp_room_employee_mapping');
-            /* Conditions */
-            // $condition1 = array();
-            // $condition2 = array();
-            // $condition1['active_status'] = '1';
-            // $condition2['active_status'] = '1';
-            // /*  */
-            // $flatsCount = $flatsTable->find('all')->Where($condition1)->count();
-            // $employeesCount = $employessTable->find('all')->where($condition1)->count();
+            if ($this->request->getData('flat_type') != "") {
+                $options['conditions']['flat_type'] = $this->request->getData('flat_type');
+            }
+            if ($this->request->getData('flat_band') != "") {
+                $options['conditions']['flat_band'] = $this->request->getData('flat_band');
+            }
+            if ($this->request->getData('agreement_status') != "") {
+                $options['conditions']['agreement_status'] = $this->request->getData('agreement_status');
+            }
+            if ($this->request->getData('city') != "") {
+                $options['conditions']['city'] = $this->request->getData('city');
+            }
+            if ($this->request->getData('state') != "") {
+                $options['conditions']['state'] = $this->request->getData('state');
+            }
+
+            $options['conditions']['active_status'] = '1';
+            /* query return total active flats count */
+            $flatscount = $this->AmpFlats->find('all', $options)->count();
+            /* query return occupied flats count */
+            $options['conditions']['vacancy_status'] = 'Occupied';
+            $occupied = $this->AmpFlats->find('all', $options)->count();
+            /* query return patiall occupied flats count */
+            $options['conditions']['vacancy_status'] = 'Partially Occupied';
+            $partially_occupied = $this->AmpFlats->find('all', $options)->count();
+            /* query return vacant flats count */
+            $options['conditions']['vacancy_status'] = 'Vacant';
+            $vacant = $this->AmpFlats->find('all', $options)->count();
+
             $kpi = array();
-            $kpi['flatscount'] = 10;
-            $kpi['occupied'] = 6;
-            $kpi['vacant'] = 4;
-            $kpi['employees'] = 18;
+            $kpi['flatscount'] = $flatscount;
+            $kpi['occupied'] = $occupied;
+            $kpi['partially_vacant'] = $partially_occupied;
+            $kpi['vacant'] = $vacant;
             $this->httpStatusCode = 200;
             $this->apiResponse['kpis'] = $kpi;
 
