@@ -28,7 +28,7 @@ class AmpAdminUserController extends ApiController
             $user_id = $this->request->getData('user_id');
             $this->paginate = ['limit' => 10, 'page' => $page];
             $this->paginate['contain'] = ['AmpLocations'];
-            // $this->paginate['conditions'] = ['id !=' => $user_id];
+            $this->paginate['conditions'] = ['AmpAdminUser.id !=' => $user_id];
             $ampAdminUser = $this->paginate($this->AmpAdminUser);
             $numUsers = $this->AmpAdminUser->find('all', array('conditions' => array('id !=' => $user_id)))->count();
 
