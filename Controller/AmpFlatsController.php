@@ -76,8 +76,28 @@ class AmpFlatsController extends ApiController
                     'conditions' => 'Rooms.flat_id = AmpFlats.id',
                 ),
             );
-
-            $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link','rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
+            if ($this->request->getData('flat_type') != "") {
+                $options['conditions']['flat_type'] = $this->request->getData('flat_type');
+            }
+            if ($this->request->getData('flat_band') != "") {
+                $options['conditions']['flat_band'] = $this->request->getData('flat_band');
+            }
+            if ($this->request->getData('vacancy_status') != "") {
+                $options['conditions']['vacancy_status'] = $this->request->getData('vacancy_status');
+            }
+            if ($this->request->getData('agreement_status') != "") {
+                $options['conditions']['agreement_status'] = $this->request->getData('agreement_status');
+            }
+            if ($this->request->getData('city') != "") {
+                $options['conditions']['city'] = $this->request->getData('city');
+            }
+            if ($this->request->getData('state') != "") {
+                $options['conditions']['state'] = $this->request->getData('state');
+            }
+            if ($this->request->getData('active_status') != "") {
+                $options['conditions']['active_status'] = $this->request->getData('active_status');
+            }
+            $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
             $options['limit'] = $limit;
             $options['order'] = 'created_date DESC';
@@ -136,17 +156,17 @@ class AmpFlatsController extends ApiController
                     $room['room_vacancy'] = $tmp_array[$key]['capacity'] - count($tmp_array[$key]['employees']);
                     $rooms[] = $room;
                     $vacancy_count += $room['room_vacancy'];
-                    $band_vacancy[] = array('band' => (int)$room['room_band'], 'vacancy' => $room['room_vacancy']);
+                    $band_vacancy[] = array('band' => (int) $room['room_band'], 'vacancy' => $room['room_vacancy']);
                 }
                 $AmpFlats[$index]['flat_vacancy'] = $band_vacancy;
                 $AmpFlats[$index]['vacancy_count'] = $vacancy_count;
-                $AmpFlats[$index]['rent_amount'] = moneyFormatIndia((int)$AmpFlats[$index]['rent_amount']);
-                $AmpFlats[$index]['maintenance_amount'] = moneyFormatIndia((int)$AmpFlats[$index]['maintenance_amount']);
-                if($AmpFlats[$index]['agreement_status'] == 'Pending'){
+                $AmpFlats[$index]['rent_amount'] = moneyFormatIndia((int) $AmpFlats[$index]['rent_amount']);
+                $AmpFlats[$index]['maintenance_amount'] = moneyFormatIndia((int) $AmpFlats[$index]['maintenance_amount']);
+                if ($AmpFlats[$index]['agreement_status'] == 'Pending') {
                     $AmpFlats[$index]['agreement_date'] = '';
-                }else{
+                } else {
                     $AmpFlats[$index]['agreement_date'] = date("jS F, Y", strtotime($flat['agreement_date']));
-                }                
+                }
                 $AmpFlats[$index]['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                 $AmpFlats[$index]['distance'] = '10 km';
                 $AmpFlats[$index]['rooms'] = $rooms;
@@ -176,9 +196,9 @@ class AmpFlatsController extends ApiController
             }
             if (count($rooms) > 0) {
                 unset($this->request->data['agreement_date']);
-                if($this->request->data['agreement_status'] != 'Pending'){                  
+                if ($this->request->data['agreement_status'] != 'Pending') {
                     $this->request->data['agreement_date'] = $agreement_date;
-                }                
+                }
                 $this->request->data['created_date'] = $current_date;
                 $this->request->data['active_status'] = '1';
                 $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
@@ -187,7 +207,7 @@ class AmpFlatsController extends ApiController
                         $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
                         foreach ($rooms as $room) {
                             $queryInsert = $roomFlatMapping->query();
-                            $queryInsert->insert(['room_no', 'band', 'capacity','flat_id'])
+                            $queryInsert->insert(['room_no', 'band', 'capacity', 'flat_id'])
                                 ->values([
                                     'room_no' => $room->room_no,
                                     'band' => $room->flat_band,
@@ -221,8 +241,8 @@ class AmpFlatsController extends ApiController
             if (is_numeric($id)) {
                 $page = $this->request->getData('page');
                 $options = array();
-                $options['conditions']['id'] = $id;                
-                $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link','rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
+                $options['conditions']['id'] = $id;
+                $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
                 $flat = $this->AmpFlats->find('all', $options)->group('AmpFlats.id')->first();
                 if (!empty($flat)) {
@@ -279,19 +299,19 @@ class AmpFlatsController extends ApiController
                         $room['room_vacancy'] = $tmp_array[$key]['capacity'] - count($tmp_array[$key]['employees']);
                         $rooms[] = $room;
                         $vacancy_count += $room['room_vacancy'];
-                        $band_vacancy[] = array('band' => (int)$room['room_band'], 'vacancy' => $room['room_vacancy']);
+                        $band_vacancy[] = array('band' => (int) $room['room_band'], 'vacancy' => $room['room_vacancy']);
                     }
 
                     $flat['flat_vacancy'] = $band_vacancy;
                     $flat['vacancy_count'] = $vacancy_count;
-                    $flat['rent_amount'] = moneyFormatIndia((int)$flat['rent_amount']);
-                    $flat['flat_band'] = (int)$flat['flat_band'];
-                    $flat['maintenance_amount'] = moneyFormatIndia((int)$flat['maintenance_amount']);
-                    if( $flat['agreement_status'] == 'Pending'){
-                         $flat['agreement_date'] = '';
-                    }else{
+                    $flat['rent_amount'] = moneyFormatIndia((int) $flat['rent_amount']);
+                    $flat['flat_band'] = (int) $flat['flat_band'];
+                    $flat['maintenance_amount'] = moneyFormatIndia((int) $flat['maintenance_amount']);
+                    if ($flat['agreement_status'] == 'Pending') {
+                        $flat['agreement_date'] = '';
+                    } else {
                         $flat['agreement_date'] = date("Y-m-d", strtotime($flat['agreement_date']));
-                    }                     
+                    }
                     $flat['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
                     $flat['distance'] = '10 km';
                     $flat['rooms'] = $rooms;
@@ -316,10 +336,10 @@ class AmpFlatsController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             try {
-                if($this->request->data['flat_id'] == null){
+                if ($this->request->data['flat_id'] == null) {
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Flat ID is required';
-                }else{
+                } else {
                     $id = $this->request->getData('flat_id');
                     // $rooms = array();
                     // if (!empty($this->request->data['rooms'])) {
@@ -331,7 +351,7 @@ class AmpFlatsController extends ApiController
                     unset($this->request->data['flat_id']);
                     $agreement_date = $this->customdateformat($this->request->data['agreement_date']);
                     unset($this->request->data['agreement_date']);
-                    if($this->request->data['agreement_status'] != 'Pending'){                  
+                    if ($this->request->data['agreement_status'] != 'Pending') {
                         $this->request->data['agreement_date'] = $agreement_date;
                     }
                     $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $this->request->getData());
@@ -357,7 +377,7 @@ class AmpFlatsController extends ApiController
                         $this->httpStatusCode = 422;
                         $this->apiResponse['message'] = 'Unable to update Flat Profile.';
                     }
-                }               
+                }
             } catch (\Cake\Datasource\Exception\RecordNotFoundException $exeption) {
                 $this->httpStatusCode = 422;
                 $this->apiResponse['message'] = "Selected record not found";
@@ -467,7 +487,7 @@ class AmpFlatsController extends ApiController
         $this->httpStatusCode = 200;
         $this->apiResponse['types'] = $type;
     }
-   
+
     public function getcities()
     {
         header("Access-Control-Allow-Origin: *");
@@ -517,7 +537,7 @@ class AmpFlatsController extends ApiController
             $flatRoomMappingTable = TableRegistry::get('amp_flat_rooms_mapping');
             $roomEmployeeMappingTable = TableRegistry::get('amp_room_employee_mapping');
             $flatsTable = TableRegistry::get('amp_flats');
-          
+
             $roomCapacity = $flatRoomMappingTable->find('all')->where(['id' => $roomID])->first()->toArray();
             $employeeCount = $roomEmployeeMappingTable->find('all')->where(['room_id' => $roomID, 'flat_id' => $flatID, 'active_status' => '1'])->count();
             $roomCapacity = $roomCapacity['capacity'];
@@ -538,7 +558,7 @@ class AmpFlatsController extends ApiController
                 foreach ($roomTable as $room) {
                     $flatCapacity += $room['capacity'];
                 }
-                $totalFlatOccupancy = $roomEmployeeMappingTable->find('all')->where(['flat_id' => $flatID,'active_status' => '1'])->count();
+                $totalFlatOccupancy = $roomEmployeeMappingTable->find('all')->where(['flat_id' => $flatID, 'active_status' => '1'])->count();
                 if ($totalFlatOccupancy == 0) {
                     $vacancyStatus = 'Vacant';
                 } elseif ($totalFlatOccupancy == $flatCapacity) {
@@ -548,7 +568,7 @@ class AmpFlatsController extends ApiController
                 }
                 $queryUpdate = $flatsTable->query();
                 $queryUpdate->update()
-                    ->set([ 'vacancy_status' => $vacancyStatus])
+                    ->set(['vacancy_status' => $vacancyStatus])
                     ->where(['id' => $flatID])
                     ->execute();
                 $this->httpStatusCode = 200;
@@ -580,16 +600,16 @@ class AmpFlatsController extends ApiController
 
             $queryRoomUpdate = $roomEmployeeMappingTable->query();
             $queryRoomUpdate->update()
-            ->set(['active_status' => '0', 'unassigned_date' => $current_date])
-            ->where(['employee_id' => $empID,'flat_id' => $flatID,'room_id' => $roomID])
-            ->execute();
+                ->set(['active_status' => '0', 'unassigned_date' => $current_date])
+                ->where(['employee_id' => $empID, 'flat_id' => $flatID, 'room_id' => $roomID])
+                ->execute();
 
             $roomTable = $flatRoomMappingTable->find('all')->where(['flat_id' => $flatID])->toList();
             $flatCapacity = 0;
             foreach ($roomTable as $room) {
                 $flatCapacity += $room['capacity'];
             }
-            $totalFlatOccupancy = $roomEmployeeMappingTable->find('all')->where(['flat_id' => $flatID,'active_status' => '1'])->count();
+            $totalFlatOccupancy = $roomEmployeeMappingTable->find('all')->where(['flat_id' => $flatID, 'active_status' => '1'])->count();
             if ($totalFlatOccupancy == 0) {
                 $vacancyStatus = 'Vacant';
             } elseif ($totalFlatOccupancy == $flatCapacity) {
@@ -599,7 +619,7 @@ class AmpFlatsController extends ApiController
             }
             $queryUpdate = $flatsTable->query();
             $queryUpdate->update()
-                ->set([ 'vacancy_status' => $vacancyStatus])
+                ->set(['vacancy_status' => $vacancyStatus])
                 ->where(['id' => $flatID])
                 ->execute();
             $this->httpStatusCode = 200;
@@ -614,22 +634,42 @@ class AmpFlatsController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $data = $this->request->data;
             $flatsTable = TableRegistry::get('amp_flats');
             $employessTable = TableRegistry::get('amp_room_employee_mapping');
-            /* Conditions */
-            // $condition1 = array();
-            // $condition2 = array();
-            // $condition1['active_status'] = '1';
-            // $condition2['active_status'] = '1';
-            // /*  */
-            // $flatsCount = $flatsTable->find('all')->Where($condition1)->count();
-            // $employeesCount = $employessTable->find('all')->where($condition1)->count();
+            if ($this->request->getData('flat_type') != "") {
+                $options['conditions']['flat_type'] = $this->request->getData('flat_type');
+            }
+            if ($this->request->getData('flat_band') != "") {
+                $options['conditions']['flat_band'] = $this->request->getData('flat_band');
+            }
+            if ($this->request->getData('agreement_status') != "") {
+                $options['conditions']['agreement_status'] = $this->request->getData('agreement_status');
+            }
+            if ($this->request->getData('city') != "") {
+                $options['conditions']['city'] = $this->request->getData('city');
+            }
+            if ($this->request->getData('state') != "") {
+                $options['conditions']['state'] = $this->request->getData('state');
+            }
+
+            $options['conditions']['active_status'] = '1';
+            /* query return total active flats count */
+            $flatscount = $this->AmpFlats->find('all', $options)->count();
+            /* query return occupied flats count */
+            $options['conditions']['vacancy_status'] = 'Occupied';
+            $occupied = $this->AmpFlats->find('all', $options)->count();
+            /* query return patiall occupied flats count */
+            $options['conditions']['vacancy_status'] = 'Partially Occupied';
+            $partially_occupied = $this->AmpFlats->find('all', $options)->count();
+            /* query return vacant flats count */
+            $options['conditions']['vacancy_status'] = 'Vacant';
+            $vacant = $this->AmpFlats->find('all', $options)->count();
+
             $kpi = array();
-            $kpi['flatscount'] = 10;
-            $kpi['occupied'] = 6;
-            $kpi['vacant'] = 4;
-            $kpi['employees'] = 18;
+            $kpi['flatscount'] = $flatscount;
+            $kpi['occupied'] = $occupied;
+            $kpi['partially_vacant'] = $partially_occupied;
+            $kpi['vacant'] = $vacant;
             $this->httpStatusCode = 200;
             $this->apiResponse['kpis'] = $kpi;
 
@@ -720,15 +760,15 @@ class AmpFlatsController extends ApiController
                 $rooms = array();
                 foreach ($tmp_array as $key => $room) {
                     $room_vacancy = $tmp_array[$key]['capacity'] - count($tmp_array[$key]['employees']);
-                    if($room_vacancy > 0){
+                    if ($room_vacancy > 0) {
                         unset($room['employees']);
                         $rooms[] = $room;
-                    }                    
+                    }
                 }
 
                 $this->httpStatusCode = 200;
                 $this->apiResponse['rooms'] = $rooms;
-                
+
             } else {
                 $this->httpStatusCode = 200;
                 $this->apiResponse['flat'] = null;
@@ -739,29 +779,29 @@ class AmpFlatsController extends ApiController
         }
     }
 
-    public function uploadflats(){
+    public function uploadflats()
+    {
         $data = $this->request->data['upload_flats'];
         date_default_timezone_set('Asia/Kolkata');
         $current_date = date('Y-m-d H:i:s');
-        if(isset($data['name'])){
+        if (isset($data['name'])) {
             $file = $data['tmp_name'];
             $handle = fopen($file, "r");
             $headerLine = true;
-            while (($row = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                if($headerLine) { $headerLine = false; }
-                else {   
-                    $AmpFlat = $this->AmpFlats->newEntity();                
+            while (($row = fgetcsv($handle, 1000, ",")) !== false) {
+                if ($headerLine) {$headerLine = false;} else {
+                    $AmpFlat = $this->AmpFlats->newEntity();
                     $param = array();
                     $param["flat_no"] = $row[0];
                     $param["apartment_name"] = $row[1];
-                    $param["flat_type"] = chop($row[2]," BHK");
+                    $param["flat_type"] = chop($row[2], " BHK");
                     $param["flat_band"] = $row[3];
                     $param["agreement_status"] = $row[4];
-                    if($param["agreement_status"] == 'Pending'){
+                    if ($param["agreement_status"] == 'Pending') {
                         $param["agreement_date"] = '';
-                    }else{
+                    } else {
                         $param["agreement_date"] = $row[5];
-                    }                    
+                    }
                     $param["address"] = $row[6];
                     $param["pincode"] = $row[7];
                     $param["city"] = $row[8];
@@ -776,17 +816,17 @@ class AmpFlatsController extends ApiController
                     $param["owner_email"] = $row[17];
                     $vacancyStatus = ucwords($row[18]);
 
-                    $param["vacancy_status"] = str_replace("Fully ","",$vacancyStatus);
+                    $param["vacancy_status"] = str_replace("Fully ", "", $vacancyStatus);
                     $param['active_status'] = '1';
                     $param['created_date'] = $current_date;
                     $total_rooms = $row[19];
-                    $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $param);                    
+                    $AmpFlat = $this->AmpFlats->patchEntity($AmpFlat, $param);
                     if ($this->AmpFlats->save($AmpFlat)) {
                         if ($total_rooms > 0) {
                             $roomFlatMapping = TableRegistry::get('amp_flat_rooms_mapping');
-                            for($i=1; $i <= $total_rooms; $i++){
+                            for ($i = 1; $i <= $total_rooms; $i++) {
                                 $queryInsert = $roomFlatMapping->query();
-                                $queryInsert->insert(['room_no', 'band', 'capacity','flat_id'])
+                                $queryInsert->insert(['room_no', 'band', 'capacity', 'flat_id'])
                                     ->values([
                                         'room_no' => $i,
                                         'band' => $param["flat_band"],
@@ -795,17 +835,17 @@ class AmpFlatsController extends ApiController
                                     ])->execute();
                             }
                         }
-                    } 
-                }                
+                    }
+                }
             }
             fclose($handle);
             $this->httpStatusCode = 200;
             $this->apiResponse['message'] = 'CSV has been uploaded successfully.';
-        }else{
+        } else {
             $this->httpStatusCode = 422;
             $this->apiResponse['message'] = "Please upload proper CSV";
         }
-        
+
     }
 }
 
