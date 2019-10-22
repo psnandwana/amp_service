@@ -3,7 +3,7 @@ namespace App\Controller;
 
 use RestApi\Controller\ApiController;
 
-class AmpEmployeesListingController extends ApiController
+class AmpEmployeesListingController extends AppController
 {
     /**List employee List */
     public function index()
