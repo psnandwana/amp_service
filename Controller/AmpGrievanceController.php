@@ -36,7 +36,12 @@ class AmpGrievanceController extends ApiController
         }
     }
 
-    public function getrequesttype()
+    public function count()
+    {
+        $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id)))->count();
+    }
+
+    public function requesttype()
     {
         header("Access-Control-Allow-Origin: *");
         $status = array('Accomodation', 'Travel');
@@ -50,10 +55,19 @@ class AmpGrievanceController extends ApiController
         if ($this->checkToken()) {            
             $page = $this->request->getData('page');
             $employee_id = $this->request->getData('employee_id');
-            $this->paginate = ['limit' => 10, 'page' => $page];
+            $type = $this->request->getData('type');
+            $type = strtolower($type);
+            $options = array();
+            $options['conditions']['employee_id'] = $employee_id;
             $this->paginate['conditions']['employee_id'] = $employee_id;
+            $this->paginate = ['limit' => 10, 'page' => $page];
+            if($type != 'all'){
+                $this->paginate['conditions']['status'] = ucfirst($type);
+                $options['conditions']['status'] = ucfirst($type);
+            }            
+            
             $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
-            $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id)))->count();
+            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             if(count($AmpGrievance) > 0){
                 foreach ($AmpGrievance as $index => $request) {
                     $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
