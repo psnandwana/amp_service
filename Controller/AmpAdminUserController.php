@@ -205,9 +205,9 @@ class AmpAdminUserController extends ApiController
             $mobile_no = $data['mobile'];
             $super_admin = $data['super_admin'];
             $admin = $data['admin'];
-            $view = $data['view'];
-            $employee = $data['employee'];
+            $view = $data['view'];           
             $view_download = $data['view_download'];
+            $employee = $data['employee'];
             if ($super_admin == '1') {
                 $admin = '1';
                 $view = '1';
@@ -301,10 +301,12 @@ class AmpAdminUserController extends ApiController
             $admin = $data['admin'];
             $view = $data['view'];
             $view_download = $data['view_download'];
+            $employee = $data['employee'];
             if ($super_admin == '1') {
                 $admin = '1';
                 $view = '1';
                 $view_download = '1';
+                $employee = '1';
             }
 
             if (empty($email)) {
@@ -335,6 +337,7 @@ class AmpAdminUserController extends ApiController
                             'mobile_no' => $mobile_no,
                             'super_admin' => $super_admin,
                             'admin' => $admin,
+                            'employee' => $employee,
                             'view' => $view,
                             'view_download' => $view_download
                         ])
