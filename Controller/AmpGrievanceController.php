@@ -1,17 +1,11 @@
 <?php
 namespace App\Controller;
 
-use Cake\Datasource\ConnectionManager;
-use Cake\Filesystem\File;
-use Cake\Filesystem\Folder;
-use Cake\I18n\Time;
-use Cake\Mailer\Email;
-use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
 class AmpGrievanceController extends ApiController
 {
-    
+
     public function add()
     {
         header("Access-Control-Allow-Origin: *");
@@ -19,7 +13,7 @@ class AmpGrievanceController extends ApiController
             date_default_timezone_set('Asia/Kolkata');
             $current_date = date('Y-m-d H:i:s');
             $AmpGrievance = $this->AmpGrievance->newEntity();
-           
+
             $this->request->data['submitted_date'] = $current_date;
             $this->request->data['status'] = 'Pending';
             $AmpGrievance = $this->AmpGrievance->patchEntity($AmpGrievance, $this->request->getData());
@@ -38,7 +32,30 @@ class AmpGrievanceController extends ApiController
 
     public function count()
     {
-        $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id)))->count();
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $employee_id = $this->request->getData('employee_id');
+            $options = array();
+            $options['conditions']['employee_id'] = $employee_id;
+            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
+            $options['conditions']['status'] = "Fulfilled";
+            $fulfilledRequests = $this->AmpGrievance->find('all', $options)->count();
+            $options['conditions']['status'] = "Pending";
+            $pendingRequests = $this->AmpGrievance->find('all', $options)->count();
+            $options['conditions']['status'] = "Rejected";
+            $rejectedRequests = $this->AmpGrievance->find('all', $options)->count();
+            $requestSummary = array();
+            $requestSummary['total'] = $totalRequests;
+            $requestSummary['fulfilled'] = $fulfilledRequests;
+            $requestSummary['pending'] = $pendingRequests;
+            $requestSummary['rejected'] = $rejectedRequests;
+            $this->httpStatusCode = 200;
+            $this->apiResponse['data'] = $status;
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+
     }
 
     public function requesttypes()
@@ -49,10 +66,9 @@ class AmpGrievanceController extends ApiController
         $this->apiResponse['data'] = $status;
     }
 
-    public function list()
-    {
+    function list() {
         header("Access-Control-Allow-Origin: *");
-        if ($this->checkToken()) {            
+        if ($this->checkToken()) {
             $page = $this->request->getData('page');
             $employee_id = $this->request->getData('employee_id');
             $type = $this->request->getData('type');
@@ -61,18 +77,18 @@ class AmpGrievanceController extends ApiController
             $options['conditions']['employee_id'] = $employee_id;
             $this->paginate['conditions']['employee_id'] = $employee_id;
             $this->paginate = ['limit' => 10, 'page' => $page];
-            if($type != 'all'){
+            if ($type != 'all') {
                 $this->paginate['conditions']['status'] = ucfirst($type);
                 $options['conditions']['status'] = ucfirst($type);
-            }            
-            
+            }
+
             $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
             $totalRequests = $this->AmpGrievance->find('all', $options)->count();
-            if(count($AmpGrievance) > 0){
+            if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
                     $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
-                }   
-            }           
+                }
+            }
 
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
@@ -88,7 +104,7 @@ class AmpGrievanceController extends ApiController
     // public function getpendingrequest()
     // {
     //     header("Access-Control-Allow-Origin: *");
-    //     if ($this->checkToken()) {            
+    //     if ($this->checkToken()) {
     //         $page = $this->request->getData('page');
     //         $employee_id = $this->request->getData('employee_id');
     //         $this->paginate = ['limit' => 10, 'page' => $page];
@@ -96,12 +112,12 @@ class AmpGrievanceController extends ApiController
     //         $this->paginate['conditions']['status'] = 'Pending';
     //         $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
     //         $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id,'status' => 'Pending')))->count();
-            
+
     //         if(count($AmpGrievance) > 0){
     //             foreach ($AmpGrievance as $index => $request) {
     //                 $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
-    //             }   
-    //         }    
+    //             }
+    //         }
 
     //         $this->httpStatusCode = 200;
     //         $this->apiResponse['page'] = (int) $page;
@@ -117,7 +133,7 @@ class AmpGrievanceController extends ApiController
     // public function getresolvedrequest()
     // {
     //     header("Access-Control-Allow-Origin: *");
-    //     if ($this->checkToken()) {            
+    //     if ($this->checkToken()) {
     //         $page = $this->request->getData('page');
     //         $employee_id = $this->request->getData('employee_id');
     //         $this->paginate = ['limit' => 10, 'page' => $page];
@@ -125,12 +141,12 @@ class AmpGrievanceController extends ApiController
     //         $this->paginate['conditions']['status'] = 'Resolved';
     //         $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
     //         $totalRequests = $this->AmpGrievance->find('all', array('conditions' => array('employee_id' => $employee_id,'status' => 'Resolved')))->count();
-            
+
     //         if(count($AmpGrievance) > 0){
     //             foreach ($AmpGrievance as $index => $request) {
     //                 $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
-    //             }   
-    //         }    
+    //             }
+    //         }
 
     //         $this->httpStatusCode = 200;
     //         $this->apiResponse['page'] = (int) $page;
@@ -142,5 +158,5 @@ class AmpGrievanceController extends ApiController
     //         $this->apiResponse['message'] = "your session has been expired";
     //     }
     // }
-    
+
 }
