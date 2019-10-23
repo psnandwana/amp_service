@@ -196,10 +196,9 @@ class AmpAdminUserController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $data = $this->request->data;
-
             $name = $data['name'];
             $email = $data['email'];
-            $password = getToken(6);
+            $password = $data['emp_code'];
             $campaign_office = $data['campaign_office'];
             $emp_code = $data['emp_code'];
             $mobile_no = $data['mobile'];
@@ -226,6 +225,7 @@ class AmpAdminUserController extends ApiController
                 $this->apiResponse['message'] = 'Name is required field.';
 
             } else {
+
                 $userList = $this->AmpAdminUser->find('all')->where(['email' => $email])->toArray();
 
                 if (count($userList) > 0) {
@@ -250,8 +250,44 @@ class AmpAdminUserController extends ApiController
                             'created_date' => Time::now(),
                         ])
                         ->execute();
+
+                    if($employee == '1'){
+                        $amp_employees_listing = TableRegistry::get('amp_employees_listing');
+                        $empListing = $amp_employees_listing->find('all')->where(['email' => $email])->toArray();
+                        if (count($empListing) > 0) {
+                            $employeeID = $empListing[0]->id;
+                            $queryEmpInsert = $amp_employees_listing->query();
+                            $queryEmpInsert->update()
+                                ->set([
+                                    'emp_code' => $emp_code,
+                                    'emp_name' => $name,
+                                    'email_id' => $email,                            
+                                    'flat_band' => $campaign_office
+                                ])
+                                ->where(['id' => $employeeID])
+                                ->execute();
+                                
+                        }else{
+                            $queryEmpInsert = $amp_employees_listing->query();
+                            $statement = $queryEmpInsert->insert(['emp_code', 'emp_name', 'email_id', 'flat_band'])
+                                ->values([
+                                    'emp_code' => $emp_code,
+                                    'emp_name' => $name,
+                                    'email_id' => $email,                            
+                                    'flat_band' => $campaign_office
+                                ])->execute();
+                            $employeeID = $statement->lastInsertId('amp_employees_listing');
+                        }
+
+                        $queryUpdate = $amp_employees_listing->query();
+                        $queryUpdate->update()
+                            ->set(['employee_id' => $employeeID])
+                            ->where(['email' => $email])
+                            ->execute();
+                    }
+
                     $this->httpStatusCode = 200;
-                    $this->apiResponse['message'] = 'New Admin has been created successfully.';
+                    $this->apiResponse['message'] = 'New User has been created successfully.';
                 }
             }
         } else {
@@ -322,7 +358,6 @@ class AmpAdminUserController extends ApiController
             } else {
 
                 $userList = $this->AmpAdminUser->find('all')->where(['email' => $email,'id !='  => $user_id])->toArray();
-             
                 if (count($userList) > 0) {
                     $this->httpStatusCode = 422;
                     $this->apiResponse['message'] = 'Email already exist.';
@@ -343,8 +378,44 @@ class AmpAdminUserController extends ApiController
                         ])
                         ->where(['id' => $user_id])
                         ->execute();
+                    
+                    if($employee == '1'){
+                        $amp_employees_listing = TableRegistry::get('amp_employees_listing');
+                        $empListing = $amp_employees_listing->find('all')->where(['email' => $email])->toArray();
+                        if (count($empListing) > 0) {
+                            $employeeID = $empListing[0]->id;
+                            $queryEmpInsert = $amp_employees_listing->query();
+                            $queryEmpInsert->update()
+                                ->set([
+                                    'emp_code' => $emp_code,
+                                    'emp_name' => $name,
+                                    'email_id' => $email,                            
+                                    'flat_band' => $campaign_office
+                                ])
+                                ->where(['id' => $employeeID])
+                                ->execute();
+                                
+                        }else{
+                            $queryEmpInsert = $amp_employees_listing->query();
+                            $statement = $queryEmpInsert->insert(['emp_code', 'emp_name', 'email_id', 'flat_band'])
+                                ->values([
+                                    'emp_code' => $emp_code,
+                                    'emp_name' => $name,
+                                    'email_id' => $email,                            
+                                    'flat_band' => $campaign_office
+                                ])->execute();
+                            $employeeID = $statement->lastInsertId('amp_employees_listing');
+                        }
+
+                        $queryEmpIDUpdate = $amp_employees_listing->query();
+                        $queryEmpIDUpdate->update()
+                            ->set(['employee_id' => $employeeID])
+                            ->where(['id' => $user_id])
+                            ->execute();
+                    }
+
                     $this->httpStatusCode = 200;
-                    $this->apiResponse['message'] = 'Admin User has been updated successfully.';
+                    $this->apiResponse['message'] = 'User has been updated successfully.';
                 }
             }
         } else {
