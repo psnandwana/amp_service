@@ -68,36 +68,45 @@ class AmpFlatsController extends ApiController
 
             $totalFlats = $this->AmpFlats->find('all')->count();
             $options = array();
+
+            if ($this->request->getData('flat_type') != "") {
+                $options['conditions']['flat_type'] = $this->request->getData('flat_type');
+            }
+
+            if ($this->request->getData('flat_band') != "") {
+                $options['conditions']['flat_band'] = $this->request->getData('flat_band');
+            }
+
+            if ($this->request->getData('vacancy_status') != "") {
+                $options['conditions']['vacancy_status'] = $this->request->getData('vacancy_status');
+            }
+
+            if ($this->request->getData('agreement_status') != "") {
+                $options['conditions']['agreement_status'] = $this->request->getData('agreement_status');
+            }
+
+            if ($this->request->getData('city') != "") {
+                $options['conditions']['city'] = $this->request->getData('city');
+            }
+
+            if ($this->request->getData('state') != "") {
+                $options['conditions']['state'] = $this->request->getData('state');
+            }
+
+            if ($this->request->getData('active_status') != "") {
+                $options['conditions']['active_status'] = $this->request->getData('active_status');
+            }
+
+            $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
+
             $options['join'] = array(
                 array(
                     'table' => 'amp_flat_rooms_mapping',
                     'alias' => 'Rooms',
                     'type' => 'INNER',
                     'conditions' => 'Rooms.flat_id = AmpFlats.id',
-                ),
+                )
             );
-            if ($this->request->getData('flat_type') != "") {
-                $options['conditions']['flat_type'] = $this->request->getData('flat_type');
-            }
-            if ($this->request->getData('flat_band') != "") {
-                $options['conditions']['flat_band'] = $this->request->getData('flat_band');
-            }
-            if ($this->request->getData('vacancy_status') != "") {
-                $options['conditions']['vacancy_status'] = $this->request->getData('vacancy_status');
-            }
-            if ($this->request->getData('agreement_status') != "") {
-                $options['conditions']['agreement_status'] = $this->request->getData('agreement_status');
-            }
-            if ($this->request->getData('city') != "") {
-                $options['conditions']['city'] = $this->request->getData('city');
-            }
-            if ($this->request->getData('state') != "") {
-                $options['conditions']['state'] = $this->request->getData('state');
-            }
-            if ($this->request->getData('active_status') != "") {
-                $options['conditions']['active_status'] = $this->request->getData('active_status');
-            }
-            $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
             $options['limit'] = $limit;
             $options['order'] = 'created_date DESC';
@@ -636,42 +645,45 @@ class AmpFlatsController extends ApiController
         if ($this->checkToken()) {
             $flatsTable = TableRegistry::get('amp_flats');
             $employessTable = TableRegistry::get('amp_room_employee_mapping');
+          
             if ($this->request->getData('flat_type') != "") {
                 $options['conditions']['flat_type'] = $this->request->getData('flat_type');
             }
+
             if ($this->request->getData('flat_band') != "") {
                 $options['conditions']['flat_band'] = $this->request->getData('flat_band');
             }
+
             if ($this->request->getData('agreement_status') != "") {
                 $options['conditions']['agreement_status'] = $this->request->getData('agreement_status');
             }
+
             if ($this->request->getData('city') != "") {
                 $options['conditions']['city'] = $this->request->getData('city');
             }
+
             if ($this->request->getData('state') != "") {
                 $options['conditions']['state'] = $this->request->getData('state');
             }
 
-            $options['conditions']['active_status'] = '1';
-            /* query return total active flats count */
-            $flatscount = $this->AmpFlats->find('all', $options)->count();
-            /* query return occupied flats count */
-            $options['conditions']['vacancy_status'] = 'Occupied';
-            $occupied = $this->AmpFlats->find('all', $options)->count();
-            /* query return patiall occupied flats count */
-            $options['conditions']['vacancy_status'] = 'Partially Occupied';
-            $partially_occupied = $this->AmpFlats->find('all', $options)->count();
-            /* query return vacant flats count */
-            $options['conditions']['vacancy_status'] = 'Vacant';
-            $vacant = $this->AmpFlats->find('all', $options)->count();
+            if ($this->request->getData('active_status') != "") {
+                $options['conditions']['active_status'] = $this->request->getData('active_status');
+            }
 
-            $kpi = array();
-            $kpi['flatscount'] = $flatscount;
-            $kpi['occupied'] = $occupied;
-            $kpi['partially_vacant'] = $partially_occupied;
-            $kpi['vacant'] = $vacant;
+            $totalflats = $this->AmpFlats->find('all', $options)->count();
+            $options['conditions']['vacancy_status'] = 'Vacant';
+            $vacantflats = $this->AmpFlats->find('all', $options)->count();
+            $options['conditions']['vacancy_status'] = 'Occupied';
+            $occupiedflats = $this->AmpFlats->find('all', $options)->count();
+            $options['conditions']['vacancy_status'] = 'Partially Occupied';
+            $partiallyflats = $this->AmpFlats->find('all', $options)->count();
+            
+            $data[] = array('name' => 'Total Flats','value' => $totalflats);
+            $data[] = array('name' => 'Vacant Flats','value' => $vacantflats);
+            $data[] = array('name' => 'Occupied Flats','value' => $occupiedflats);
+            $data[] = array('name' => 'Partially Occupied Flats','value' => $partiallyflats);
             $this->httpStatusCode = 200;
-            $this->apiResponse['kpis'] = $kpi;
+            $this->apiResponse['data'] = $data;
 
         } else {
             $this->httpStatusCode = 403;
