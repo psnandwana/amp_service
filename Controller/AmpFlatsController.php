@@ -639,13 +639,13 @@ class AmpFlatsController extends ApiController
         }
     }
 
-    public function getkpi()
+    public function getkeypoint()
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $flatsTable = TableRegistry::get('amp_flats');
             $employessTable = TableRegistry::get('amp_room_employee_mapping');
-          
+            $options = array();
             if ($this->request->getData('flat_type') != "") {
                 $options['conditions']['flat_type'] = $this->request->getData('flat_type');
             }
@@ -677,11 +677,21 @@ class AmpFlatsController extends ApiController
             $occupiedflats = $this->AmpFlats->find('all', $options)->count();
             $options['conditions']['vacancy_status'] = 'Partially Occupied';
             $partiallyflats = $this->AmpFlats->find('all', $options)->count();
-            
+            $allowanceOption['conditions']['vacancy_status'] = 'Vacant';
+            $allowanceOption['fields'] = array(
+                'total_allowance' => 'SUM(rent_amount)'
+            );
+            $vacantAmount = 0;
+            $vacantAllowance = $this->AmpFlats->find('all', $allowanceOption)->first();  
+            if($vacantAllowance->total_allowance != null){
+                $vacantAmount = $vacantAllowance->total_allowance;
+            }         
             $data[] = array('name' => 'Total Flats','value' => $totalflats);
             $data[] = array('name' => 'Vacant Flats','value' => $vacantflats);
             $data[] = array('name' => 'Occupied Flats','value' => $occupiedflats);
             $data[] = array('name' => 'Partially Occupied Flats','value' => $partiallyflats);
+            $data[] = array('name' => 'Vacant Allowance','value' => moneyFormatIndia($vacantAmount));
+            
             $this->httpStatusCode = 200;
             $this->apiResponse['data'] = $data;
 
