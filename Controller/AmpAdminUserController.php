@@ -253,7 +253,7 @@ class AmpAdminUserController extends ApiController
 
                     if($employee == '1'){
                         $amp_employees_listing = TableRegistry::get('amp_employees_listing');
-                        $empListing = $amp_employees_listing->find('all')->where(['email' => $email])->toArray();
+                        $empListing = $amp_employees_listing->find('all')->where(['email_id' => $email])->toArray();
                         if (count($empListing) > 0) {
                             $employeeID = $empListing[0]->id;
                             $queryEmpInsert = $amp_employees_listing->query();
@@ -261,8 +261,7 @@ class AmpAdminUserController extends ApiController
                                 ->set([
                                     'emp_code' => $emp_code,
                                     'emp_name' => $name,
-                                    'email_id' => $email,                            
-                                    'flat_band' => $campaign_office
+                                    'email_id' => $email
                                 ])
                                 ->where(['id' => $employeeID])
                                 ->execute();
@@ -274,12 +273,12 @@ class AmpAdminUserController extends ApiController
                                     'emp_code' => $emp_code,
                                     'emp_name' => $name,
                                     'email_id' => $email,                            
-                                    'flat_band' => $campaign_office
+                                    'flat_band' => 8500
                                 ])->execute();
                             $employeeID = $statement->lastInsertId('amp_employees_listing');
                         }
 
-                        $queryUpdate = $amp_employees_listing->query();
+                        $queryUpdate =  $this->AmpAdminUser->query();
                         $queryUpdate->update()
                             ->set(['employee_id' => $employeeID])
                             ->where(['email' => $email])
@@ -381,7 +380,7 @@ class AmpAdminUserController extends ApiController
                     
                     if($employee == '1'){
                         $amp_employees_listing = TableRegistry::get('amp_employees_listing');
-                        $empListing = $amp_employees_listing->find('all')->where(['email' => $email])->toArray();
+                        $empListing = $amp_employees_listing->find('all')->where(['email_id' => $email])->toArray();
                         if (count($empListing) > 0) {
                             $employeeID = $empListing[0]->id;
                             $queryEmpInsert = $amp_employees_listing->query();
@@ -389,8 +388,7 @@ class AmpAdminUserController extends ApiController
                                 ->set([
                                     'emp_code' => $emp_code,
                                     'emp_name' => $name,
-                                    'email_id' => $email,                            
-                                    'flat_band' => $campaign_office
+                                    'email_id' => $email
                                 ])
                                 ->where(['id' => $employeeID])
                                 ->execute();
@@ -402,12 +400,12 @@ class AmpAdminUserController extends ApiController
                                     'emp_code' => $emp_code,
                                     'emp_name' => $name,
                                     'email_id' => $email,                            
-                                    'flat_band' => $campaign_office
+                                    'flat_band' => 8500
                                 ])->execute();
                             $employeeID = $statement->lastInsertId('amp_employees_listing');
                         }
 
-                        $queryEmpIDUpdate = $amp_employees_listing->query();
+                        $queryEmpIDUpdate =  $this->AmpAdminUser->query();
                         $queryEmpIDUpdate->update()
                             ->set(['employee_id' => $employeeID])
                             ->where(['id' => $user_id])
