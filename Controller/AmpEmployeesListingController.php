@@ -51,7 +51,5 @@ class AmpEmployeesListingController extends ApiController
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
         }
-
-    }   
-
+    }
 }

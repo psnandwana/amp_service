@@ -13,6 +13,11 @@ class AmpGrievance extends Entity
         'description' => true,
         'status' => true,
         'submitted_date' => true,
-        'employee' => true
+        'employee' => true,
+        'rm_id' => true,
+        'rm_approval_status' => true,
+        'rm_approval_date' => true,
+        'approved_by' => true,
+        'approved_date' => true
     ];
 }

@@ -38,7 +38,7 @@ class AmpGrievanceController extends ApiController
             $options = array();
             $options['conditions']['employee_id'] = $employee_id;
             $totalRequests = $this->AmpGrievance->find('all', $options)->count();
-            $options['conditions']['status'] = "Fulfilled";
+            $options['conditions']['status'] = "Resolved";
             $fulfilledRequests = $this->AmpGrievance->find('all', $options)->count();
             $options['conditions']['status'] = "Pending";
             $pendingRequests = $this->AmpGrievance->find('all', $options)->count();
@@ -53,7 +53,6 @@ class AmpGrievanceController extends ApiController
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
         }
-
     }
 
     public function requesttypes()
