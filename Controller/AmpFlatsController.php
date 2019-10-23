@@ -876,39 +876,84 @@ class AmpFlatsController extends ApiController
             $emp_id = $this->request->getData('employee_id');
             $emp_id = (int)$emp_id;
             $roomEmployeeMappingTable = TableRegistry::get('RoomEmpMap', ['table' => 'amp_room_employee_mapping']);
-            $empExists = $roomEmployeeMappingTable->find('all')->where(['RoomEmpMap.employee_id' => $emp_id, 'RoomEmpMap.active_status' => '1'])->count();
-            if ($empExists > 0) {
+            $checkEmployeeFlat = $roomEmployeeMappingTable->find('all')->where(['RoomEmpMap.employee_id' => $emp_id, 'RoomEmpMap.active_status' => '1'])->first();
+            if (!empty($checkEmployeeFlat)) {
+                $checkEmployeeFlat = $checkEmployeeFlat->toArray();
                 $options = array();
-                $options['conditions']['RoomEmpMap.employee_id'] = $emp_id;
-                $options['conditions']['RoomEmpMap.active_status'] = '1';
-                $options['join'] = array(
+                $options['conditions']['id'] = $checkEmployeeFlat['flat_id'];
+                $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
+
+                $flat = $this->AmpFlats->find('all', $options)->group('AmpFlats.id')->first()->toArray();
+                $flatRoomsMapingTable = TableRegistry::get('Room', ['table' => 'amp_flat_rooms_mapping']);
+
+                $subOptions = array();
+                $subOptions['join'] = array(
                     array(
-                        'table' => 'amp_flats',
-                        'alias' => 'flat',
-                        'type' => 'INNER',
-                        'conditions' => 'RoomEmpMap.flat_id = flat.id',
+                        'table' => 'amp_room_employee_mapping',
+                        'alias' => 'RoomEmpMap',
+                        'type' => 'LEFT',
+                        'conditions' => ['RoomEmpMap.room_id = Room.id', 'RoomEmpMap.active_status' => '1'],
                     ),
                     array(
-                        'table' => 'amp_flat_rooms_mapping',
-                        'alias' => 'RoomFlat',
-                        'type' => 'INNER',
-                        'conditions' => 'RoomEmpMap.room_id = RoomFlat.id',
+                        'table' => 'amp_employees_listing',
+                        'alias' => 'Employees',
+                        'type' => 'LEFT',
+                        'conditions' => 'Employees.id = RoomEmpMap.employee_id',
                     ),
                 );
-                $options['fields'] = array(
-                    'flat_no'=>'flat.flat_no',
-                    'apartment_name'=>'flat.apartment_name',
-                    'flat_type'=>'flat.flat_type',
-                    'address'=>'flat.address',
-                    'state'=>'flat.state',
-                    'city'=>'flat.city',
-                    'room_no'=>'RoomFlat.room_no',
-                    'band'=>'RoomFlat.band',
-                    'capacity'=>'RoomFlat.capacity',
+                $subOptions['fields'] = array(
+                    'room_id' => 'Room.id',
+                    'room_no',
+                    'room_band' => 'band',
+                    'capacity',
+                    'employee__id' => 'Employees.id',
+                    'employee__emp_code' => 'Employees.emp_code',
+                    'employee__emp_name' => 'Employees.emp_name',
+                    'employee__email_id' => 'Employees.email_id',
+                    'employee__flat_band' => 'Employees.flat_band',
                 );
-                $userFlatDetails = $roomEmployeeMappingTable->find('all', $options)->first()->toArray();
+                $subOptions['order'] = 'Room.id ASC';
+                $totalRooms = $flatRoomsMapingTable->find('all', $subOptions)->where(['Room.flat_id' => $flat['id']])->toArray();
+                $tmp_array = array();
+                foreach ($totalRooms as $i => $room) {
+                    $tmp_array[$room['room_no']]['room_id'] = $room['room_id'];
+                    $tmp_array[$room['room_no']]['room_no'] = $room['room_no'];
+                    $tmp_array[$room['room_no']]['room_band'] = (int) $room['room_band'];
+                    $tmp_array[$room['room_no']]['capacity'] = $room['capacity'];
+                    if ($room['employee']['id'] != null) {
+                        $totalRooms[$i]['employee']['id'] = (int) $totalRooms[$i]['employee']['id'];
+                        $room['employee']['flat_band'] = (int) $room['employee']['flat_band'];
+                        $tmp_array[$room['room_no']]['employees'][] = $room['employee'];
+
+                    } else {
+                        $tmp_array[$room['room_no']]['employees'] = array();
+                    }
+                }
+                $rooms = array();
+                $band_vacancy = array();
+                $vacancy_count = 0;
+                foreach ($tmp_array as $key => $room) {
+                    $room['room_vacancy'] = $tmp_array[$key]['capacity'] - count($tmp_array[$key]['employees']);
+                    $rooms[] = $room;
+                    $vacancy_count += $room['room_vacancy'];
+                    $band_vacancy[] = array('band' => (int) $room['room_band'], 'vacancy' => $room['room_vacancy']);
+                }
+
+                $flat['flat_vacancy'] = $band_vacancy;
+                $flat['vacancy_count'] = $vacancy_count;
+                $flat['rent_amount'] = moneyFormatIndia((int) $flat['rent_amount']);
+                $flat['flat_band'] = (int) $flat['flat_band'];
+                $flat['maintenance_amount'] = moneyFormatIndia((int) $flat['maintenance_amount']);
+                if ($flat['agreement_status'] == 'Pending') {
+                    $flat['agreement_date'] = '';
+                } else {
+                    $flat['agreement_date'] = date("Y-m-d", strtotime($flat['agreement_date']));
+                }
+                $flat['created_date'] = date("jS F, Y", strtotime($flat['created_date']));
+                $flat['distance'] = '10 km';
+                $flat['rooms'] = $rooms;
                 $this->httpStatusCode = 200;
-                $this->apiResponse['flat'] = $userFlatDetails; 
+                $this->apiResponse['flat'] = $flat;
             } else {
                 $this->httpStatusCode = 200;
                 $this->apiResponse['flat'] = null;
