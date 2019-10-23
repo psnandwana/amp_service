@@ -10,7 +10,7 @@ class AmpGrievance extends Entity
         'employee_id' => true,
         'request_type' => true,
         'subject' => true,
-        'descriptions' => true,
+        'description' => true,
         'status' => true,
         'submitted_date' => true,
         'employee' => true
