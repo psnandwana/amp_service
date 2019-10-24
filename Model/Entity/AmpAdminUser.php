@@ -29,6 +29,7 @@ class AmpAdminUser extends Entity
         'admin' => true,
         'view' => true,
         'employee' => true,
+        'rm' => true,
         'view_download' => true,
         'created_date' => true
     ];
