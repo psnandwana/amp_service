@@ -90,19 +90,34 @@ class AmpGrievanceController extends ApiController
         if ($this->checkToken()) {
             $page = $this->request->getData('page');
             $employee_id = $this->request->getData('employee_id');
+            $request_type = $this->request->getData('request_type');
             $type = $this->request->getData('type');
             $type = strtolower($type);
             $options = array();
             $options['conditions']['employee_id'] = $employee_id;
+            $options['conditions']['request_type'] = $request_type;
             $this->paginate['conditions']['employee_id'] = $employee_id;
             $this->paginate = ['limit' => 10, 'page' => $page];
-            if ($type != 'all') {
-                $this->paginate['conditions']['status'] = ucfirst($type);
-                $options['conditions']['status'] = ucfirst($type);
+            switch($type){
+                case 'pending_rm':
+                    $this->paginate['conditions']['status'] = ucfirst($type);
+                case 'pending':
+                case 'resolved':
+                case 'rejected':
             }
-
+            $this->paginate['fields'] = array(
+                'id'=>'AmpGrievance.id',
+                'rm_email' =>'Admin.email'
+            );
+            $this->paginate['join'] = array(
+                array(
+                    'table' => 'amp_admin_user',
+                    'alias' => 'Admin',
+                    'type' => 'INNER',
+                    'conditions' => 'Admin.email = Employee.rm_email_id',
+                )
+            );
             $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
-            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
                     unset($AmpGrievance[$index]['employee_id']);
