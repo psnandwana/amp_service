@@ -327,4 +327,51 @@ class AmpGrievanceController extends ApiController
             $this->apiResponse['message'] = "your session has been expired";
         }
     }
+
+    public function getadminapprovalstatus()
+    {
+        header("Access-Control-Allow-Origin: *");
+        $status[] = array('value' => 'Resolved', 'status' => 'Resolve');
+        $status[] = array('value' => 'Rejected', 'status' => 'Reject');
+        $this->httpStatusCode = 200;
+        $this->apiResponse['data'] = $status;
+    }
+
+    public function changestatus()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $AmpGrievance = TableRegistry::get('Grievance', ['table' => 'amp_grievance']);
+            $request_id = $this->request->getData('request_id');
+            $status = $this->request->getData('status');
+            $remark = $this->request->getData('remark');
+            date_default_timezone_set('Asia/Kolkata');
+            $current_date = date('Y-m-d H:i:s');
+
+            $options = array();
+            $options['conditions']['id'] = $request_id;
+            $requests = $AmpGrievance->find('all', $options)->count();
+            if ($requests > 0) {
+                $queryUpdate = $AmpGrievance->query();
+                $queryUpdate->update()
+                    ->set([
+                        'status' => $status,
+                        'admin_remark' => $remark,
+                        'approved_date' => $current_date
+                    ])
+                    ->where(['id' => $request_id])
+                    ->execute();
+
+                $this->httpStatusCode = 200;
+                $this->apiResponse['message'] = "Request status has been updated successfully.";
+            } else {
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = "Request not found";
+            }
+
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
 }

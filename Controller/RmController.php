@@ -156,7 +156,7 @@ class RmController extends ApiController
         }
     }
 
-    public function getrmstatus()
+    public function getrmapprovalstatus()
     {
         header("Access-Control-Allow-Origin: *");
         $status[] = array('value' => '1', 'status' => 'Approve');
@@ -165,44 +165,49 @@ class RmController extends ApiController
         $this->apiResponse['data'] = $status;
     }
 
-    public function updaterequeststatus()
+    public function changestatus()
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $AmpGrievance = TableRegistry::get('Grievance', ['table' => 'amp_grievance']);
-            $req_id = $this->request->getData('request_id');
+            $request_id = $this->request->getData('request_id');
             $status = $this->request->getData('status');
             $remark = $this->request->getData('remark');
+            date_default_timezone_set('Asia/Kolkata');
+            $current_date = date('Y-m-d H:i:s');
+
             $options = array();
-            $options['conditions']['id'] = $req_id;
+            $options['conditions']['id'] = $request_id;
             $requests = $AmpGrievance->find('all', $options)->count();
             if ($requests > 0) {
                 if ($status == '1') {
-                    $queryInsert = $AmpGrievance->query();
-                    $queryInsert->update()
+                    $queryUpdate = $AmpGrievance->query();
+                    $queryUpdate->update()
                         ->set([
                             'rm_approval_status' => $status,
                             'rm_remark' => $remark,
+                            'rm_approval_date' => $current_date
                         ])
-                        ->where(['id' => $req_id])
+                        ->where(['id' => $request_id])
                         ->execute();
                 } else {
-                    $queryInsert = $AmpGrievance->query();
-                    $queryInsert->update()
+                    $queryUpdate = $AmpGrievance->query();
+                    $queryUpdate->update()
                         ->set([
                             'rm_approval_status' => $status,
                             'rm_remark' => $remark,
                             'status' => 'Rejected',
+                            'rm_approval_date' => $current_date
                         ])
-                        ->where(['id' => $req_id])
+                        ->where(['id' => $request_id])
                         ->execute();
                 }
 
                 $this->httpStatusCode = 200;
-                $this->apiResponse['message'] = "Updated Successfully";
+                $this->apiResponse['message'] = "Request has been approved successfully.";
             } else {
                 $this->httpStatusCode = 422;
-                $this->apiResponse['message'] = "request not found";
+                $this->apiResponse['message'] = "Request not found";
             }
 
         } else {
