@@ -51,8 +51,10 @@ class AmpGrievanceController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $employee_id = $this->request->getData('employee_id');
+            $request_type = $this->request->getData('request_type');
             $options = array();
             $options['conditions']['employee_id'] = $employee_id;
+            $options['conditions']['request_type'] = $request_type;
             $allRequests = $this->AmpGrievance->find('all', $options)->count();
             $options['conditions']['rm_approval_status'] = "0";
             $rmPendingRequests = $this->AmpGrievance->find('all', $options)->count();
