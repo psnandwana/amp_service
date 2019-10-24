@@ -53,17 +53,21 @@ class AmpGrievanceController extends ApiController
             $employee_id = $this->request->getData('employee_id');
             $options = array();
             $options['conditions']['employee_id'] = $employee_id;
-            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
+            $allRequests = $this->AmpGrievance->find('all', $options)->count();
+            $options['conditions']['rm_approval_status'] = "0";
+            $rmPendingRequests = $this->AmpGrievance->find('all', $options)->count();
+            $options['conditions']['rm_approval_status !='] = "0";
             $options['conditions']['status'] = "Resolved";
-            $fulfilledRequests = $this->AmpGrievance->find('all', $options)->count();
+            $resolvedRequests = $this->AmpGrievance->find('all', $options)->count();
             $options['conditions']['status'] = "Pending";
             $pendingRequests = $this->AmpGrievance->find('all', $options)->count();
             $options['conditions']['status'] = "Rejected";
             $rejectedRequests = $this->AmpGrievance->find('all', $options)->count();
             $this->httpStatusCode = 200;
-            $this->apiResponse['total'] = $totalRequests;
-            $this->apiResponse['fulfilled'] = $fulfilledRequests;
+            $this->apiResponse['all'] = $allRequests;
+            $this->apiResponse['rm_pending'] = $rmPendingRequests;
             $this->apiResponse['pending'] = $pendingRequests;
+            $this->apiResponse['resolved'] = $resolvedRequests;         
             $this->apiResponse['rejected'] = $rejectedRequests;            
         } else {
             $this->httpStatusCode = 403;
