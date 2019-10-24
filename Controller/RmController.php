@@ -164,4 +164,50 @@ class RmController extends ApiController
         $this->httpStatusCode = 200;
         $this->apiResponse['data'] = $status;
     }
+
+    public function updaterequeststatus()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $AmpGrievance = TableRegistry::get('Grievance', ['table' => 'amp_grievance']);
+            $req_id = $this->request->getData('request_id');
+            $status = $this->request->getData('status');
+            $remark = $this->request->getData('remark');
+            $options = array();
+            $options['conditions']['id'] = $req_id;
+            $requests = $AmpGrievance->find('all', $options)->count();
+            if ($requests > 0) {
+                if ($status == '1') {
+                    $queryInsert = $AmpGrievance->query();
+                    $queryInsert->update()
+                        ->set([
+                            'rm_approval_status' => $status,
+                            'rm_remark' => $remark,
+                        ])
+                        ->where(['id' => $req_id])
+                        ->execute();
+                } else {
+                    $queryInsert = $AmpGrievance->query();
+                    $queryInsert->update()
+                        ->set([
+                            'rm_approval_status' => $status,
+                            'rm_remark' => $remark,
+                            'status' => 'Rejected',
+                        ])
+                        ->where(['id' => $req_id])
+                        ->execute();
+                }
+
+                $this->httpStatusCode = 200;
+                $this->apiResponse['message'] = "Updated Successfully";
+            } else {
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = "request not found";
+            }
+
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
 }
