@@ -79,7 +79,7 @@ class AmpAdminUserController extends ApiController
         if ($this->checkToken()) {
             // if ($this->request->session()->check('admin_user_id')) {
             // $user_id = $this->request->session()->read('admin_user_id');
-            $user_id = 1;
+            $user_id = 39;
             $checkUser = $this->AmpAdminUser->find('all')->where(['id' => $user_id])->first();
             if (!empty($checkUser)) {
                 $checkUser = $checkUser->toArray();
