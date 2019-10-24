@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
 class AmpGrievanceController extends ApiController
@@ -13,8 +14,23 @@ class AmpGrievanceController extends ApiController
             date_default_timezone_set('Asia/Kolkata');
             $current_date = date('Y-m-d H:i:s');
             $AmpGrievance = $this->AmpGrievance->newEntity();
+            $EmployeeTable = TableRegistry::get('Employee', ['table' => 'amp_employees_listing']);
+            $options['conditions']['Employee.id'] = $this->request->getData('employee_id');
+            $options['fields'] = array('rm_id'=>'Admin.id','rm_email' =>'Admin.email');
+            $options['join'] = array(
+                array(
+                    'table' => 'amp_admin_user',
+                    'alias' => 'Admin',
+                    'type' => 'INNER',
+                    'conditions' => 'Admin.email = Employee.rm_email_id',
+                )
+            );
+            $RMDetails = $EmployeeTable->find('all', $options)->first()->toArray();
+            $rm_id = $RMDetails['rm_id'];
+            $rm_email = $RMDetails['rm_email'];
 
             $this->request->data['submitted_date'] = $current_date;
+            $this->request->data['rm_id'] = $rm_id;
             $this->request->data['status'] = 'Pending';
             $AmpGrievance = $this->AmpGrievance->patchEntity($AmpGrievance, $this->request->getData());
             if ($this->AmpGrievance->save($AmpGrievance)) {
