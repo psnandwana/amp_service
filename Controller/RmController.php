@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
 class RmController extends ApiController
@@ -10,20 +11,21 @@ class RmController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $rm_id = $this->request->getData('rm_id');
+            $AmpGrievance = TableRegistry::get('Grievance', ['table' => 'amp_grievance']);
             $options = array();
             $options['conditions']['rm_id'] = $rm_id;
-            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
+            $totalRequests = $AmpGrievance->find('all', $options)->count();
             // pending request count
             $options['conditions']['rm_approval_status'] = "0";
-            $pendingRequests = $this->AmpGrievance->find('all', $options)->count();
+            $pendingRequests = $AmpGrievance->find('all', $options)->count();
             // approved request count
             $options['conditions']['status'] = "Resolved";
-            $approvedRequests = $this->AmpGrievance->find('all', $options)->count();
+            $approvedRequests = $AmpGrievance->find('all', $options)->count();
             // rejected request count
             $options['conditions']['status'] = "Rejected";
-            $rejectedRequests = $this->AmpGrievance->find('all', $options)->count();
+            $rejectedRequests = $AmpGrievance->find('all', $options)->count();
             $this->httpStatusCode = 200;
-            $this->apiResponse['total'] = $totalRequests;
+            $this->apiResponse['all'] = $totalRequests;
             $this->apiResponse['fulfilled'] = $approvedRequests;
             $this->apiResponse['pending'] = $pendingRequests;
             $this->apiResponse['rejected'] = $rejectedRequests;
@@ -37,21 +39,49 @@ class RmController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $rm_id = 0;
+            $AmpGrievance = TableRegistry::get('Grievance', ['table' => 'amp_grievance']);
+            $rm_id = $this->request->getData('rm_id');
             $page = $this->request->getData('page');
             $limit = 10;
             $start = ($page - 1) * $limit;
-            $options = array();
-            if ($this->request->getData('rm_id') != "") {
-                $rm_id = $this->request->getData('rm_id');
-            }
+            $options = array();            
             $options['conditions']['rm_id'] = $rm_id;
+
+            $options['fields'] = array(
+                'id' => 'Grievance.id',
+                'employee_id' => 'Employee.id',
+                'employee_name' => 'Employee.emp_name',
+                'rm_name' => 'Admin.name',
+                'request_type',
+                'subject',
+                'description',
+                'submitted_date' => 'Grievance.submitted_date',
+                'status' =>'Grievance.status');
+
+            $options['join'] = array(
+                array(
+                    'table' => 'amp_employees_listing',
+                    'alias' => 'Employee',
+                    'type' => 'INNER',
+                    'conditions' => 'Grievance.employee_id = Employee.id',
+                ),
+                array(
+                    'table' => 'amp_admin_user',
+                    'alias' => 'Admin',
+                    'type' => 'INNER',
+                    'conditions' => 'Admin.email = Employee.rm_email_id',
+                )                
+            );
             $options['limit'] = $limit;
-            $options['order'] = 'submitted_date DESC';
+            $options['order'] = 'Grievance.submitted_date DESC';
             $options['offset'] = $start;
-            $requestList = $this->AmpGrievance->find('all', $options)->toArray();
+            $allRequests = $AmpGrievance->find('all', $options)->toArray();
+            foreach($allRequests as $index=>$request){
+                $allRequests[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
+            }
+           
             $this->httpStatusCode = 200;
-            $this->apiResponse['requests'] = $requestList;
+            $this->apiResponse['data'] = $allRequests;
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";

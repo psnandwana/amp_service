@@ -100,34 +100,94 @@ class AmpGrievanceController extends ApiController
             $this->paginate = ['limit' => 10, 'page' => $page];
             switch($type){
                 case 'pending_rm':
-                    $this->paginate['conditions']['status'] = ucfirst($type);
+                    $this->paginate['conditions']['rm_approval_status'] = '0';
+                    break;
                 case 'pending':
+                    $this->paginate['conditions']['rm_approval_status !='] = '0';
+                    $this->paginate['conditions']['status'] = 'Pending';
+                    break;
                 case 'resolved':
+                    $this->paginate['conditions']['rm_approval_status !='] = '0';
+                    $this->paginate['conditions']['status'] = 'Resolved';
+                    break;
                 case 'rejected':
+                    $this->paginate['conditions']['rm_approval_status !='] = '0';
+                    $this->paginate['conditions']['status'] = 'Rejected';
+                    break;
             }
-            $this->paginate['fields'] = array(
-                'id'=>'AmpGrievance.id',
-                'rm_email' =>'Admin.email'
+            $this->paginate['fields'] = array(                
+                'id' => 'AmpGrievance.id',
+                'subject',
+                'request_type',                
+                'description',
+                'status' =>'AmpGrievance.status',
+                'submitted_date' => 'AmpGrievance.submitted_date',
+                'employee__id' => 'Employee.id',
+                'employee__emp_code' => 'Employee.emp_code',
+                'employee__emp_name' => 'Employee.emp_name',
+                'employee__email_id' => 'Employee.email_id',
+                'employee__flat_band' => 'Employee.flat_band',
+                'employee__flat_no' => 'Flat.flat_no',
+                'employee__apartment_name' => 'Flat.apartment_name',
+                'reporting_manager__id' => 'RM.id',
+                'reporting_manager__emp_code' => 'RM.emp_code',
+                'reporting_manager__emp_name' => 'RM.emp_name',
+                'reporting_manager__email_id' => 'RM.email_id',
+                'reporting_manager__flat_band' => 'RM.flat_band',  
+                'reporting_manager__flat_no' => 'RMFlat.flat_no',
+                'reporting_manager__apartment_name' => 'RMFlat.apartment_name'      
             );
+
             $this->paginate['join'] = array(
                 array(
-                    'table' => 'amp_admin_user',
-                    'alias' => 'Admin',
+                    'table' => 'amp_employees_listing',
+                    'alias' => 'Employee',
                     'type' => 'INNER',
-                    'conditions' => 'Admin.email = Employee.rm_email_id',
-                )
+                    'conditions' => 'AmpGrievance.employee_id = Employee.id',
+                ),
+                array(
+                    'table' => 'amp_employees_listing',
+                    'alias' => 'RM',
+                    'type' => 'INNER',
+                    'conditions' => 'RM.email_id = Employee.rm_email_id',
+                ),
+                array(
+                    'table' => 'amp_room_employee_mapping',
+                    'alias' => 'RoomEmpMap',
+                    'type' => 'LEFT',
+                    'conditions' => ['RoomEmpMap.employee_id = Employee.id', 'RoomEmpMap.active_status' => '1'],
+                ),  
+                array(
+                    'table' => 'amp_flats',
+                    'alias' => 'Flat',
+                    'type' => 'LEFT',
+                    'conditions' => ['Flat.id = RoomEmpMap.flat_id'],
+                ),
+                array(
+                    'table' => 'amp_room_employee_mapping',
+                    'alias' => 'RMRoomEmpMap',
+                    'type' => 'LEFT',
+                    'conditions' => ['RMRoomEmpMap.employee_id = RM.id', 'RMRoomEmpMap.active_status' => '1'],
+                ),  
+                array(
+                    'table' => 'amp_flats',
+                    'alias' => 'RMFlat',
+                    'type' => 'LEFT',
+                    'conditions' => ['RMFlat.id = RMRoomEmpMap.flat_id'],
+                )           
             );
             $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
             if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
-                    unset($AmpGrievance[$index]['employee_id']);
+                    $reporting_manager = $request['reporting_manager'];
+                    unset($request['reporting_manager']);
+                    $AmpGrievance[$index]['employee']['reporting_manager'] = $reporting_manager;
                     $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
                 }
             }
 
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
-            $this->apiResponse['total'] = (int) $totalRequests;
             $this->apiResponse['requests'] = $AmpGrievance;
             $this->apiResponse['message'] = "successfully fetched data";
         } else {
