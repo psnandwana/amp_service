@@ -206,12 +206,17 @@ class AmpAdminUserController extends ApiController
             $admin = $data['admin'];
             $view = $data['view'];           
             $view_download = $data['view_download'];
+            $rm = '0';
+            if(isset($data['rm'])){
+                $rm = $data['rm'];
+            }
             $employee = $data['employee'];
             if ($super_admin == '1') {
                 $admin = '1';
                 $view = '1';
                 $view_download = '1';
                 $employee = '1';
+                $rm = '1';
             }
 
             if (empty($email)) {
@@ -234,7 +239,7 @@ class AmpAdminUserController extends ApiController
                 } else {
             
                     $queryInsert = $this->AmpAdminUser->query();
-                    $queryInsert->insert(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin' , 'employee', 'view',  'view_download', 'created_date'])
+                    $queryInsert->insert(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin' , 'employee', 'rm','view',  'view_download', 'created_date'])
                         ->values([
                             'name' => $name,
                             'email' => $email,                            
@@ -245,6 +250,7 @@ class AmpAdminUserController extends ApiController
                             'super_admin' => $super_admin,
                             'admin' => $admin,
                             'employee' => $employee,
+                            'rm' => $rm,
                             'view' => $view,
                             'view_download' => $view_download,
                             'created_date' => Time::now(),
@@ -337,11 +343,15 @@ class AmpAdminUserController extends ApiController
             $view = $data['view'];
             $view_download = $data['view_download'];
             $employee = $data['employee'];
+            if(isset($data['rm'])){
+                $rm = $data['rm'];
+            }           
             if ($super_admin == '1') {
                 $admin = '1';
                 $view = '1';
                 $view_download = '1';
                 $employee = '1';
+                $rm = '1';
             }
 
             if (empty($email)) {
@@ -372,6 +382,7 @@ class AmpAdminUserController extends ApiController
                             'super_admin' => $super_admin,
                             'admin' => $admin,
                             'employee' => $employee,
+                            'rm' => $rm,
                             'view' => $view,
                             'view_download' => $view_download
                         ])
