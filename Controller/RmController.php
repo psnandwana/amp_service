@@ -44,7 +44,7 @@ class RmController extends ApiController
             $page = $this->request->getData('page');
             $limit = 10;
             $start = ($page - 1) * $limit;
-            $options = array();            
+            $options = array();
             $options['conditions']['rm_id'] = $rm_id;
 
             $options['fields'] = array(
@@ -56,7 +56,7 @@ class RmController extends ApiController
                 'subject',
                 'description',
                 'submitted_date' => 'Grievance.submitted_date',
-                'status' =>'Grievance.status');
+                'status' => 'Grievance.status');
 
             $options['join'] = array(
                 array(
@@ -70,16 +70,16 @@ class RmController extends ApiController
                     'alias' => 'Admin',
                     'type' => 'INNER',
                     'conditions' => 'Admin.email = Employee.rm_email_id',
-                )                
+                ),
             );
             $options['limit'] = $limit;
             $options['order'] = 'Grievance.submitted_date DESC';
             $options['offset'] = $start;
             $allRequests = $AmpGrievance->find('all', $options)->toArray();
-            foreach($allRequests as $index=>$request){
+            foreach ($allRequests as $index => $request) {
                 $allRequests[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
             }
-           
+
             $this->httpStatusCode = 200;
             $this->apiResponse['data'] = $allRequests;
         } else {
@@ -160,6 +160,52 @@ class RmController extends ApiController
             $requestList = $this->AmpGrievance->find('all', $options)->toArray();
             $this->httpStatusCode = 200;
             $this->apiResponse['requests'] = $requestList;
+        } else {
+            $this->httpStatusCode = 403;
+            $this->apiResponse['message'] = "your session has been expired";
+        }
+    }
+
+    public function updaterequeststatus()
+    {
+        header("Access-Control-Allow-Origin: *");
+        if ($this->checkToken()) {
+            $AmpGrievance = TableRegistry::get('Grievance', ['table' => 'amp_grievance']);
+            $req_id = $this->request->getData('request_id');
+            $status = $this->request->getData('status');
+            $remark = $this->request->getData('remark');
+            $options = array();
+            $options['conditions']['id'] = $req_id;
+            $requests = $AmpGrievance->find('all', $options)->count();
+            if ($requests > 0) {
+                if ($status == '1') {
+                    $queryInsert = $AmpGrievance->query();
+                    $queryInsert->update()
+                        ->set([
+                            'rm_approval_status' => $status,
+                            'rm_remark' => $remark,
+                        ])
+                        ->where(['id' => $req_id])
+                        ->execute();
+                } else {
+                    $queryInsert = $AmpGrievance->query();
+                    $queryInsert->update()
+                        ->set([
+                            'rm_approval_status' => $status,
+                            'rm_remark' => $remark,
+                            'status' => 'Rejected',
+                        ])
+                        ->where(['id' => $req_id])
+                        ->execute();
+                }
+
+                $this->httpStatusCode = 200;
+                $this->apiResponse['message'] = "Updated Successfully";
+            } else {
+                $this->httpStatusCode = 422;
+                $this->apiResponse['message'] = "request not found";
+            }
+
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
