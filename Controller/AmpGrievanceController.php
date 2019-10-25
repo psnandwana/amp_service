@@ -94,22 +94,33 @@ class AmpGrievanceController extends ApiController
             $type = $this->request->getData('type');
             $type = strtolower($type);
             $this->paginate['conditions']['employee_id'] = $employee_id;
+            $this->paginate['conditions']['request_type'] = $request_type;
+            $options = array();
+            $options['conditions']['employee_id'] = $employee_id;
+            $options['conditions']['request_type'] = $request_type;
             $this->paginate = ['limit' => 10, 'page' => $page];
             switch($type){
                 case 'pending_rm':
                     $this->paginate['conditions']['rm_approval_status'] = '0';
+                    $options['conditions']['rm_approval_status'] = '0';
                     break;
                 case 'pending':
                     $this->paginate['conditions']['rm_approval_status !='] = '0';
                     $this->paginate['conditions']['status'] = 'Pending';
+                    $options['conditions']['rm_approval_status !='] = '0';
+                    $options['conditions']['status'] = 'Pending';
                     break;
                 case 'resolved':
                     $this->paginate['conditions']['rm_approval_status !='] = '0';
                     $this->paginate['conditions']['status'] = 'Resolved';
+                    $options['conditions']['rm_approval_status !='] = '0';
+                    $options['conditions']['status'] = 'Resolved';
                     break;
                 case 'rejected':
                     $this->paginate['conditions']['rm_approval_status !='] = '0';
                     $this->paginate['conditions']['status'] = 'Rejected';
+                    $options['conditions']['rm_approval_status !='] = '0';
+                    $options['conditions']['status'] = 'Rejected';
                     break;
             }
             $this->paginate['fields'] = array(                
@@ -182,9 +193,10 @@ class AmpGrievanceController extends ApiController
                     $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
                 }
             }
-
+            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
+            $this->apiResponse['total'] = (int) $totalRequests;
             $this->apiResponse['requests'] = $AmpGrievance;
             $this->apiResponse['message'] = "successfully fetched data";
         } else {
@@ -229,22 +241,32 @@ class AmpGrievanceController extends ApiController
             $request_type = $this->request->getData('request_type');
             $type = $this->request->getData('type');
             $type = strtolower($type);
+            $this->paginate['conditions']['request_type'] = $request_type;
+            $options = array();
+            $options['conditions']['request_type'] = $request_type;
             $this->paginate = ['limit' => 10, 'page' => $page];
             switch($type){
                 case 'pending_rm':
                     $this->paginate['conditions']['rm_approval_status'] = '0';
+                    $options['conditions']['rm_approval_status'] = '0';
                     break;
                 case 'pending':
                     $this->paginate['conditions']['rm_approval_status !='] = '0';
                     $this->paginate['conditions']['status'] = 'Pending';
+                    $options['conditions']['rm_approval_status !='] = '0';
+                    $options['conditions']['status'] = 'Pending';
                     break;
                 case 'resolved':
                     $this->paginate['conditions']['rm_approval_status !='] = '0';
                     $this->paginate['conditions']['status'] = 'Resolved';
+                    $options['conditions']['rm_approval_status !='] = '0';
+                    $options['conditions']['status'] = 'Resolved';
                     break;
                 case 'rejected':
                     $this->paginate['conditions']['rm_approval_status !='] = '0';
                     $this->paginate['conditions']['status'] = 'Rejected';
+                    $options['conditions']['rm_approval_status !='] = '0';
+                    $options['conditions']['status'] = 'Rejected';
                     break;
             }
             $this->paginate['fields'] = array(                
@@ -318,8 +340,10 @@ class AmpGrievanceController extends ApiController
                 }
             }
 
+            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
+            $this->apiResponse['total'] = (int) $totalRequests;
             $this->apiResponse['requests'] = $AmpGrievance;
             $this->apiResponse['message'] = "successfully fetched data";
         } else {

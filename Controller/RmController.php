@@ -55,8 +55,7 @@ class RmController extends ApiController
             $options = array();
             $options['conditions']['rm_id'] = $rm_id;
             $options['conditions']['request_type'] = $request_type;
-            
-            $options = ['limit' => 10, 'page' => $page];
+           
             switch($type){
                 case 'pending':
                     $options['conditions']['rm_approval_status'] = '0';
@@ -70,6 +69,9 @@ class RmController extends ApiController
                     $options['conditions']['status'] = 'Rejected';
                     break;
             }
+
+            $totalRequests = $AmpGrievance->find('all', $options)->count();
+
             $options['fields'] = array(                
                 'id' => 'Grievance.id',
                 'subject',
@@ -146,8 +148,10 @@ class RmController extends ApiController
                 }
             }
 
+           
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
+            $this->apiResponse['total'] = (int) $totalRequests;
             $this->apiResponse['requests'] = $AmpGrievance;
             $this->apiResponse['message'] = "successfully fetched data";
         } else {
