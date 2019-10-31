@@ -659,7 +659,14 @@ class AmpFlatsController extends ApiController
             $employessTable = TableRegistry::get('amp_room_employee_mapping');
             $options = array();
             if ($this->request->getData('flat_type') != "") {
-                $options['conditions']['flat_type'] = $this->request->getData('flat_type');
+                $flat_type = $this->request->getData('flat_type');
+                $flat_type = json_decode($flat_type);
+                $temp = array();
+                foreach($flat_type as $type){
+                    $temp['flat_type'] = $type;
+                }
+                $options['conditions']['or'] = $temp;
+                //$options['conditions']['flat_type']l = $this->request->getData('flat_type');
             }
 
             if ($this->request->getData('flat_band') != "") {
