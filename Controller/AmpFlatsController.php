@@ -66,22 +66,21 @@ class AmpFlatsController extends ApiController
             $limit = 10;
             $start = ($page - 1) * $limit;
 
-            $totalFlats = $this->AmpFlats->find('all')->count();
+            
             $options = array();
 
             if ($this->request->getData('flat_type') != "") {
                 $flat_type = $this->request->getData('flat_type');
-                // echo gettype($flat_type);exit;
                 $flat_type = json_decode($flat_type);
-                if (count($flat_type)>1){
-                    $options['conditions']['flat_type'] = $flat_type[0];
-                }else{
-                    $temp = array();
-                    foreach($flat_type as $type){
-                        $temp['flat_type'] = $type;
-                    }
-                    $options['conditions']['or'] = $temp;
+                // if (count($flat_type)>1){
+                //     $options['conditions']['flat_type'] = $flat_type[0];
+                // }else{
+                $temp = array();
+                foreach($flat_type as $type){
+                    $temp['flat_type'] = $type;
                 }
+                $options['conditions']['or'] = $temp;
+                //}
                 
             }
 
@@ -108,6 +107,7 @@ class AmpFlatsController extends ApiController
             if ($this->request->getData('active_status') != "") {
                 $options['conditions']['active_status'] = $this->request->getData('active_status');
             }
+            $totalFlats = $this->AmpFlats->find('all',$options)->count();
 
             $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
 
