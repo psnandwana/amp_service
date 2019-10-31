@@ -70,7 +70,17 @@ class AmpFlatsController extends ApiController
             $options = array();
 
             if ($this->request->getData('flat_type') != "") {
-                $options['conditions']['flat_type'] = $this->request->getData('flat_type');
+                $flat_type = $this->request->getData('flat_type');
+                if (count($flat_type)>1){
+                    $options['conditions']['flat_type'] = $flat_type[0];
+                }else{
+                    $temp = array();
+                    foreach($flat_type as $type){
+                        $temp['flat_type'] = $type;
+                    }
+                    $options['conditions']['or'] = $temp;
+                }
+                
             }
 
             if ($this->request->getData('flat_band') != "") {
