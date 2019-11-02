@@ -30,6 +30,9 @@ class AmpEmployeesListing extends Entity
         'emp_name' => true,
         'email_id' => true,
         'email' => true,
-        'rm_email_id' => true
+        'rm_email_id' => true,
+        'team' => true,
+        'phone' => true,
+        'acco_model_name' => true
     ];
 }
