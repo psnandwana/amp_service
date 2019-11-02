@@ -1,11 +1,6 @@
 <?php
 namespace App\Controller;
 
-use Cake\Datasource\ConnectionManager;
-use Cake\Filesystem\File;
-use Cake\Filesystem\Folder;
-use Cake\I18n\Time;
-use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
@@ -25,24 +20,24 @@ class AmpEmployeesListingController extends ApiController
             // $ampEmployeesListing = $this->paginate($this->AmpEmployeesListing);
             $numUsers = $employee_listing->find('all')->count();
             $options = array();
-            if ($name!=""){
+            if ($name != "") {
                 $options['conditions']['employee.emp_name'] = $name;
             }
-            
+
             $options['join'] = array(
                 array(
                     'table' => 'amp_admin_user',
                     'alias' => 'adminUser',
                     'type' => 'INNER',
-                    'conditions' => 'employee.rm_email_id = adminUser.email',
-                )
+                    'conditions' => 'adminUser.email = employee.rm_email_id',
+                ),
             );
 
             $option['fields'] = array(
                 'employee.id',
                 'employee.emp_code',
                 'employee.name',
-                'employee.email_id', 
+                'employee.email_id',
                 'employee.flat_band',
                 'employee.rm_email_id',
                 'employee.team',
@@ -50,10 +45,10 @@ class AmpEmployeesListingController extends ApiController
                 'employee.acco_model_name',
                 'rm_name' => 'adminUser.name',
             );
-            
+
             $options['limit'] = $limit;
             $options['offset'] = $start;
-            $ampEmployeesListing = $employee_listing->find('all',$options)->toArray();
+            $ampEmployeesListing = $employee_listing->find('all', $options)->toArray();
             // dd($ampEmployeesListing);
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
@@ -100,31 +95,31 @@ class AmpEmployeesListingController extends ApiController
             $amp_employees_listing = TableRegistry::get('amp_employees_listing');
             while (($row = fgetcsv($handle, 1000, ",")) !== false) {
                 if ($headerLine) {$headerLine = false;} else {
-                    $name = $row[1];                    
+                    $name = $row[1];
                     $emp_code = $row[2];
                     $password = $row[2];
                     $email = $row[3];
-                    $campaign_office = $row[8];                   
+                    $campaign_office = $row[8];
                     $mobile_no = null;
                     $rm_email_id = $row[6];
                     $flat_band = $row[9];
-                    if($flat_band == ''){
+                    if ($flat_band == '') {
                         $flat_band = 8500;
                     }
                     $super_admin = 0;
                     $admin = 0;
-                    $view = 0;           
+                    $view = 0;
                     $view_download = 0;
                     $employee = 1;
-                    
+
                     $userList = $AmpAdminUser->find('all')->where(['email' => $email])->toArray();
 
                     if (count($userList) == 0) {
                         $queryInsert = $AmpAdminUser->query();
-                        $queryInsert->insert(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin' , 'employee', 'view',  'view_download', 'created_date'])
+                        $queryInsert->insert(['name', 'email', 'campaign_office', 'emp_code', 'mobile_no', 'password', 'super_admin', 'admin', 'employee', 'view', 'view_download', 'created_date'])
                             ->values([
                                 'name' => $name,
-                                'email' => $email,                            
+                                'email' => $email,
                                 'campaign_office' => $campaign_office,
                                 'emp_code' => $emp_code,
                                 'mobile_no' => $mobile_no,
@@ -137,7 +132,7 @@ class AmpEmployeesListingController extends ApiController
                                 'created_date' => $current_date,
                             ])
                             ->execute();
-    
+
                         $empListing = $amp_employees_listing->find('all')->where(['email_id' => $email])->toArray();
                         if (count($empListing) > 0) {
                             $employeeID = $empListing[0]->id;
@@ -148,30 +143,30 @@ class AmpEmployeesListingController extends ApiController
                                     'emp_name' => $name,
                                     'email_id' => $email,
                                     'flat_band' => $flat_band,
-                                    'rm_email_id' => $rm_email_id
+                                    'rm_email_id' => $rm_email_id,
                                 ])
                                 ->where(['id' => $employeeID])
                                 ->execute();
-                                
-                        }else{
+
+                        } else {
                             $queryEmpInsert = $amp_employees_listing->query();
-                            $statement = $queryEmpInsert->insert(['emp_code', 'emp_name', 'email_id', 'flat_band','rm_email_id'])
+                            $statement = $queryEmpInsert->insert(['emp_code', 'emp_name', 'email_id', 'flat_band', 'rm_email_id'])
                                 ->values([
                                     'emp_code' => $emp_code,
                                     'emp_name' => $name,
-                                    'email_id' => $email,                            
+                                    'email_id' => $email,
                                     'flat_band' => $flat_band,
-                                    'rm_email_id' => $rm_email_id
+                                    'rm_email_id' => $rm_email_id,
                                 ])->execute();
                             $employeeID = $statement->lastInsertId('amp_employees_listing');
                         }
 
-                        $queryUpdate =  $AmpAdminUser->query();
+                        $queryUpdate = $AmpAdminUser->query();
                         $queryUpdate->update()
                             ->set(['employee_id' => $employeeID])
                             ->where(['email' => $email])
                             ->execute();
-                    }                 
+                    }
                 }
             }
             fclose($handle);
