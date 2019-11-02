@@ -28,6 +28,15 @@ class AmpEmployeesListingController extends ApiController
             if ($name!=""){
                 $options['conditions']['employee.emp_name'] = $name;
             }
+            
+            $options['join'] = array(
+                array(
+                    'table' => 'amp_admin_user',
+                    'alias' => 'adminUser',
+                    'type' => 'INNER',
+                    'conditions' => 'employee.rm_email_id = adminUser.email',
+                )
+            );
 
             $option['fields'] = array(
                 'employee.id',
@@ -39,16 +48,7 @@ class AmpEmployeesListingController extends ApiController
                 'employee.team',
                 'employee.phone',
                 'employee.acco_model_name',
-                'rm_name' => 'admin.name',
-            );
-            
-            $options['join'] = array(
-                array(
-                    'table' => 'amp_admin_user',
-                    'alias' => 'admin',
-                    'type' => 'INNER',
-                    'conditions' => 'employee.rm_email_id = admin.email',
-                )
+                'rm_name' => 'adminUser.name',
             );
             
             $options['limit'] = $limit;
