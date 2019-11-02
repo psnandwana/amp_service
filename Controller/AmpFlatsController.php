@@ -665,7 +665,7 @@ class AmpFlatsController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
-            $flatsTable = TableRegistry::get('amp_flats');
+            $flatsTable = TableRegistry::get('flat', ['table' => 'amp_flats']);
             $employessTable = TableRegistry::get('amp_room_employee_mapping');
             $options = array();
             if ($this->request->getData('flat_type') != "") {
@@ -673,36 +673,36 @@ class AmpFlatsController extends ApiController
                 $flat_type = json_decode($flat_type);
                 $temp = array();
                 foreach ($flat_type as $type) {
-                    $temp['flat_type'] = $type;
+                    $temp['flat.flat_type'] = $type;
                 }
                 $options['conditions']['or'] = $temp;
                 //$options['conditions']['flat_type']l = $this->request->getData('flat_type');
             }
 
             if ($this->request->getData('flat_band') != "") {
-                $options['conditions']['flat_band'] = $this->request->getData('flat_band');
+                $options['conditions']['flat.flat_band'] = $this->request->getData('flat_band');
             }
 
             if ($this->request->getData('agreement_status') != "") {
-                $options['conditions']['agreement_status'] = $this->request->getData('agreement_status');
+                $options['conditions']['flat.agreement_status'] = $this->request->getData('agreement_status');
             }
 
             if ($this->request->getData('city') != "") {
-                $options['conditions']['city'] = $this->request->getData('city');
+                $options['conditions']['flat.city'] = $this->request->getData('city');
             }
 
             if ($this->request->getData('state') != "") {
-                $options['conditions']['state'] = $this->request->getData('state');
+                $options['conditions']['flat.state'] = $this->request->getData('state');
             }
 
             if ($this->request->getData('active_status') != "") {
                 // $options['conditions']['active_status'] = $this->request->getData('active_status');
-                $options['conditions']['active_status'] = '1';
+                $options['conditions']['flat.active_status'] = '1';
             }
 
-            $totalflats = $this->AmpFlats->find('all', $options)->count();
-            $options['conditions']['vacancy_status'] = 'Vacant';
-            // $vacantflats = $this->AmpFlats->find('all', $options)->count();
+            $totalflats = $flatsTable->find('all', $options)->count();
+            // $options['conditions']['vacancy_status'] = 'Vacant';
+            // $vacantflats = $flatsTable->find('all', $options)->count();
             /* Fetching vacancies in all flats */
             $subOptions = $options;
             $subOptions['fields'] = array(
@@ -713,23 +713,23 @@ class AmpFlatsController extends ApiController
                     'table' => 'amp_flat_rooms_mapping',
                     'alias' => 'flatRoom',
                     'type' => 'INNER',
-                    'conditions' => 'flatRoom.flat_id = amp_flats.id',
+                    'conditions' => 'flatRoom.flat_id = flat.id',
                 ),
             );
 
             $totaloccupacy = $flatsTable->find('all', $subOptions)->toArray(); 
             dd($totaloccupacy);
             /* --------------- */
-            $options['conditions']['vacancy_status'] = 'Occupied';
-            $occupiedflats = $this->AmpFlats->find('all', $options)->count();
-            $options['conditions']['vacancy_status'] = 'Partially Occupied';
-            $partiallyflats = $this->AmpFlats->find('all', $options)->count();
-            $allowanceOption['conditions']['vacancy_status'] = 'Vacant';
+            $options['conditions']['flat.vacancy_status'] = 'Occupied';
+            $occupiedflats = $flatsTable->find('all', $options)->count();
+            $options['conditions']['flat.vacancy_status'] = 'Partially Occupied';
+            $partiallyflats = $flatsTable->find('all', $options)->count();
+            $allowanceOption['conditions']['flat.vacancy_status'] = 'Vacant';
             $allowanceOption['fields'] = array(
-                'total_allowance' => 'SUM(rent_amount)',
+                'total_allowance' => 'SUM(flat.rent_amount)',
             );
             $vacantAmount = 0;
-            $vacantAllowance = $this->AmpFlats->find('all', $allowanceOption)->first();
+            $vacantAllowance = $flatsTable->find('all', $allowanceOption)->first();
             if ($vacantAllowance->total_allowance != null) {
                 $vacantAmount = $vacantAllowance->total_allowance;
             }
