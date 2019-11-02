@@ -54,7 +54,7 @@ class AmpEmployeesListingController extends ApiController
 
             $options['limit'] = $limit;
             $options['offset'] = $start;
-            $ampEmployeesListing = $employee_listing->find('all', $options)->sql();
+            $ampEmployeesListing = $employee_listing->find('all', $options)->toArray();
 
             // dd($ampEmployeesListing);
             $this->httpStatusCode = 200;
