@@ -134,7 +134,7 @@ class AmpGrievanceController extends ApiController
                     break;
             }
             $totalRequests = $this->AmpGrievance->find('all', $options)->count();
-            if ($request_type=='All'){
+            if ($type=='All'){
                 $totalRequests = $this->AmpGrievance->find('all')->count();
             }
             dd($totalRequests);
