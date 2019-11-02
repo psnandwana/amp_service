@@ -720,7 +720,7 @@ class AmpFlatsController extends ApiController
                 'max_capacity' => 'SUM(flatRoom.capacity)',
             );
 
-            $totaloccupacy = $flatsTable->find('all', $capacityoptions)->sql();
+            $totaloccupacy = $flatsTable->find('all', $capacityoptions)->toArray();
             dd($totaloccupacy);
             /* --------------- */
             $options['conditions']['flat.vacancy_status'] = 'Occupied';
