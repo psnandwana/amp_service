@@ -707,16 +707,17 @@ class AmpFlatsController extends ApiController
             /* Fetching vacancies in all flats */
             $capacityoptions = array();
             $capacityoptions = $options;
-            $capacityoptions['fields'] = array(
-                'max_capacity' => 'flatRoom.capacity',
-            );
-            $capacityoptions['joins'] = array(
+            
+            $capacityoptions['join'] = array(
                 array(
                     'table' => 'amp_flat_rooms_mapping',
                     'alias' => 'flatRoom',
                     'type' => 'INNER',
                     'conditions' => array('flatRoom.flat_id = flat.id'),
                 ),
+            );
+            $capacityoptions['fields'] = array(
+                'max_capacity' => 'flatRoom.capacity',
             );
 
             $totaloccupacy = $flatsTable->find('all', $capacityoptions)->sql();
