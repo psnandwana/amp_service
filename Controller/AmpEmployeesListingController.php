@@ -29,7 +29,7 @@ class AmpEmployeesListingController extends ApiController
                     'table' => 'amp_admin_user',
                     'alias' => 'adminUser',
                     'type' => 'INNER',
-                    'conditions' => 'adminUser.email = employee.rm_email_id',
+                    'conditions' => ['adminUser.email = employee.rm_email_id']
                 ),
             );
 
