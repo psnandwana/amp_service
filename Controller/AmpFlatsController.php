@@ -705,6 +705,7 @@ class AmpFlatsController extends ApiController
             // $options['conditions']['vacancy_status'] = 'Vacant';
             // $vacantflats = $flatsTable->find('all', $options)->count();
             /* Fetching vacancies in all flats */
+            $capacityoptions = array();
             $capacityoptions = $options;
             $capacityoptions['fields'] = array(
                 'max_capacity' => 'flatRoom.capacity',
