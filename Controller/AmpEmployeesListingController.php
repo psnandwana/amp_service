@@ -35,7 +35,7 @@ class AmpEmployeesListingController extends ApiController
                     'table' => 'amp_admin_user',
                     'alias' => 'adminRm',
                     'type' => 'INNER',
-                    'conditions' => ['adminRm.email = adminUser.rm_email_id'],
+                    'conditions' => ['adminRm.email = employee.rm_email_id'],
                 ),
                 array(
                     'table' => 'wp_career_location_preference',
