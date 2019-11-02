@@ -16,11 +16,42 @@ class AmpEmployeesListingController extends ApiController
     {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
+            $employee_listing = TableRegistry::get('employee', ['table' => 'amp_employees_listing']);
             $page = $this->request->getData('page');
-            $this->paginate = ['limit' => 10, 'page' => $page];
-            $ampEmployeesListing = $this->paginate($this->AmpEmployeesListing);
-            $numUsers = $this->AmpEmployeesListing->find('all')->count();
-
+            $limit = 10;
+            $start = ($page - 1) * $limit;
+            $name = $this->request->getData('emp_name');
+            // $this->paginate = ['limit' => 10, 'page' => $page];
+            // $ampEmployeesListing = $this->paginate($this->AmpEmployeesListing);
+            $numUsers = $employee_listing->find('all')->count();
+            $options = array();
+            if ($name!=""){
+                $options['conditions']['emp_name'] = $name;
+            }
+            
+            $options['join'] = array(
+                array(
+                    'table' => 'amp_admin_user',
+                    'alias' => 'admin',
+                    'type' => 'INNER',
+                    'conditions' => 'employee.email_id = admin.userid',
+                )
+            );
+            $option['fields'] = array(
+                'id',
+                'emp_code',
+                'name',
+                'email_id',
+                'flat_band',
+                'rm_email_id',
+                'team',
+                'phone',
+                'acco_model_name',
+                'rm_name' => 'admin.name',
+            );
+            $options['limit'] = $limit;
+            // $options['order'] = 'submitted_date DESC';
+            $options['offset'] = $start;
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
             $this->apiResponse['total'] = (int) $numUsers;
