@@ -25,17 +25,23 @@ class AmpEmployeesListingController extends ApiController
             }
 
             $options['join'] = array(
-                // array(
-                //     'table' => 'amp_admin_user',
-                //     'alias' => 'adminRm',
-                //     'type' => 'INNER',
-                //     'conditions' => ['adminUser.email = employee.rm_email_id']
-                // ),
                 array(
                     'table' => 'amp_admin_user',
                     'alias' => 'adminUser',
                     'type' => 'INNER',
-                    'conditions' => ['adminUser.email = employee.rm_email_id']
+                    'conditions' => ['adminUser.email = employee.email_id'],
+                ),
+                array(
+                    'table' => 'amp_admin_user',
+                    'alias' => 'adminRm',
+                    'type' => 'INNER',
+                    'conditions' => ['adminRm.email = adminUser.rm_email_id'],
+                ),
+                array(
+                    'table' => 'wp_career_location_preference',
+                    'alias' => 'office',
+                    'type' => 'INNER',
+                    'conditions' => ['office.id = adminUser.campaign_office'],
                 ),
             );
 
@@ -49,7 +55,8 @@ class AmpEmployeesListingController extends ApiController
                 'employee_team' => 'employee.team',
                 'employee_phone' => 'employee.phone',
                 'acco_model_name' => 'employee.acco_model_name',
-                'rm_name' => 'adminUser.name',
+                'rm_name' => 'adminRm.name',
+                'office' => 'office.location',
             );
 
             $options['limit'] = $limit;
