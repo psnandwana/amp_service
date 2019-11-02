@@ -34,7 +34,7 @@ class AmpEmployeesListingController extends ApiController
                     'table' => 'amp_admin_user',
                     'alias' => 'admin',
                     'type' => 'INNER',
-                    'conditions' => 'employee.email_id = admin.userid',
+                    'conditions' => 'employee.rm_email_id = admin.email',
                 )
             );
             $option['fields'] = array(
