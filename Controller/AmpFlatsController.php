@@ -714,11 +714,11 @@ class AmpFlatsController extends ApiController
                     'table' => 'amp_flat_rooms_mapping',
                     'alias' => 'flatRoom',
                     'type' => 'INNER',
-                    'conditions' => 'flatRoom.flat_id = flat.id',
+                    'conditions' => ['flatRoom.flat_id = flat.id',]
                 ),
             );
 
-            $totaloccupacy = $flatsTable->find('all', $subOptions)->sql(); 
+            $totaloccupacy = $flatsTable->find($subOptions)->sql(); 
             dd($totaloccupacy);
             /* --------------- */
             $options['conditions']['flat.vacancy_status'] = 'Occupied';
