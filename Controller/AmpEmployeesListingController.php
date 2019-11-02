@@ -28,15 +28,7 @@ class AmpEmployeesListingController extends ApiController
             if ($name!=""){
                 $options['conditions']['employee.emp_name'] = $name;
             }
-            
-            $options['join'] = array(
-                array(
-                    'table' => 'amp_admin_user',
-                    'alias' => 'admin',
-                    'type' => 'INNER',
-                    'conditions' => 'employee.rm_email_id = admin.email',
-                )
-            );
+
             $option['fields'] = array(
                 'employee.id',
                 'employee.emp_code',
@@ -49,9 +41,20 @@ class AmpEmployeesListingController extends ApiController
                 'employee.acco_model_name',
                 'rm_name' => 'admin.name',
             );
+            
+            $options['join'] = array(
+                array(
+                    'table' => 'amp_admin_user',
+                    'alias' => 'admin',
+                    'type' => 'INNER',
+                    'conditions' => 'employee.rm_email_id = admin.email',
+                )
+            );
+            
             $options['limit'] = $limit;
             $options['offset'] = $start;
             $ampEmployeesListing = $employee_listing->find('all',$options)->toArray();
+            dd($ampEmployeesListing);
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
             $this->apiResponse['total'] = (int) $numUsers;
