@@ -736,7 +736,6 @@ class AmpFlatsController extends ApiController
             $totaloccupied = $flatsTable->find('all', $occupiedoptions)->count();
             /* ----------------------------------------------------------------- */
             $vacantflats = $totalcapacity['max_capacity']-$totaloccupied;
-            dd($vacantflats);
             $options['conditions']['flat.vacancy_status'] = 'Occupied';
             $occupiedflats = $flatsTable->find('all', $options)->count();
             $options['conditions']['flat.vacancy_status'] = 'Partially Occupied';
