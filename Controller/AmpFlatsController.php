@@ -713,7 +713,7 @@ class AmpFlatsController extends ApiController
                     'table' => 'amp_flat_rooms_mapping',
                     'alias' => 'flatRoom',
                     'type' => 'INNER',
-                    'conditions' => 'flatRoom.flat_id = Employee.id',
+                    'conditions' => 'flatRoom.flat_id = amp_flats.id',
                 ),
             );
 
