@@ -32,6 +32,7 @@ class AmpGrievanceController extends ApiController
             $this->request->data['submitted_date'] = $current_date;
             $this->request->data['rm_id'] = $rm_id;
             $this->request->data['status'] = 'Pending';
+            // $this->request->data['emergency'] = '0';
             $AmpGrievance = $this->AmpGrievance->patchEntity($AmpGrievance, $this->request->getData());
             if ($this->AmpGrievance->save($AmpGrievance)) {
                 $this->httpStatusCode = 200;
