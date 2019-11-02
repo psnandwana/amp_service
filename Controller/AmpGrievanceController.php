@@ -138,9 +138,9 @@ class AmpGrievanceController extends ApiController
             }
             
             if ($type=='All'){
-                $totalRequests = $this->AmpGrievance->find('all')->sql();
+                $totalRequests = $this->AmpGrievance->find('all')->count();
             }else{
-                $totalRequests = $this->AmpGrievance->find('all', $options)->sql();
+                $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             }
             dd($totalRequests);
             $this->paginate['fields'] = array(                
