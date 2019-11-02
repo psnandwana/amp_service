@@ -710,12 +710,12 @@ class AmpFlatsController extends ApiController
             $capacityoptions['fields'] = array(
                 'max_capacity' => 'flatRoom.capacity',
             );
-            $capacityoptions = array(
+            $capacityoptions['joins'] = array(
                 array(
                     'table' => 'amp_flat_rooms_mapping',
                     'alias' => 'flatRoom',
                     'type' => 'INNER',
-                    'conditions' => ['flatRoom.flat_id = flat.id'],
+                    'conditions' => array('flatRoom.flat_id = flat.id'),
                 ),
             );
 
