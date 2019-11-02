@@ -85,7 +85,7 @@ class AmpGrievanceController extends ApiController
     public function requesttypes()
     {
         header("Access-Control-Allow-Origin: *");
-        $status = array('Accomodation', 'Travel');
+        $status = array('Accommodation', 'Travel');
         $this->httpStatusCode = 200;
         $this->apiResponse['data'] = $status;
     }
