@@ -707,7 +707,7 @@ class AmpFlatsController extends ApiController
             /* Fetching vacancies in all flats */
             $subOptions = $options;
             $subOptions['fields'] = array(
-                'max_capacity' => 'SUM(flatRoom.capacity)',
+                'max_capacity' => 'flatRoom.capacity',
             ); 
             $subOptions = array(
                 array(
