@@ -118,21 +118,21 @@ class AmpGrievanceController extends ApiController
                     $options['conditions']['rm_approval_status'] = '0';
                     break;
                 case 'Pending':
-                    $this->paginate['conditions']['rm_approval_status !='] = '0';
+                    // $this->paginate['conditions']['rm_approval_status !='] = '0';
                     $this->paginate['conditions']['status'] = 'Pending';
-                    $options['conditions']['rm_approval_status !='] = '0';
+                    // $options['conditions']['rm_approval_status !='] = '0';
                     $options['conditions']['status'] = 'Pending';
                     break;
                 case 'Resolved':
-                    $this->paginate['conditions']['rm_approval_status !='] = '0';
+                    // $this->paginate['conditions']['rm_approval_status !='] = '0';
                     $this->paginate['conditions']['status'] = 'Resolved';
-                    $options['conditions']['rm_approval_status !='] = '0';
+                    // $options['conditions']['rm_approval_status !='] = '0';
                     $options['conditions']['status'] = 'Resolved';
                     break;
                 case 'Rejected':
-                    $this->paginate['conditions']['rm_approval_status !='] = '0';
+                    // $this->paginate['conditions']['rm_approval_status !='] = '0';
                     $this->paginate['conditions']['status'] = 'Rejected';
-                    $options['conditions']['rm_approval_status !='] = '0';
+                    // $options['conditions']['rm_approval_status !='] = '0';
                     $options['conditions']['status'] = 'Rejected';
                     break;
             }
