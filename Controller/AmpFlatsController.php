@@ -107,6 +107,10 @@ class AmpFlatsController extends ApiController
             if ($this->request->getData('active_status') != "") {
                 $options['conditions']['active_status'] = $this->request->getData('active_status');
             }
+
+            if ($this->request->getData('flat_name') != "") {
+                $options['conditions']['apartment_name LIKE'] = "%".$this->request->getData('flat_name')."%";
+            }
             $totalFlats = $this->AmpFlats->find('all',$options)->count();
 
             $options['fields'] = array('id', 'flat_no', 'apartment_name', 'flat_type', 'flat_band', 'agreement_status', 'agreement_date', 'address', 'pincode', 'city', 'state', 'google_map_link', 'rent_amount', 'maintenance_amount', 'owner_name', 'owner_mobile_no', 'owner_email', 'vacancy_status', 'created_date', 'active_status');
