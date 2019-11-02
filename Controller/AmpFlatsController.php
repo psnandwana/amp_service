@@ -721,7 +721,7 @@ class AmpFlatsController extends ApiController
             );
 
             $totalcapacity = $flatsTable->find('all', $capacityoptions)->toArray();
-            print_r($totalcapacity);exit;
+            print_r($totalcapacity->max_capacity);exit;
             /* ---------------------Employee occupied count--------------------- */
             $occupiedoptions = array();
             $occupiedoptions = $options;
