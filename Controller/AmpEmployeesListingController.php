@@ -39,24 +39,24 @@ class AmpEmployeesListingController extends ApiController
                 ),
             );
 
-            $option['fields'] = array(
+            $options['fields'] = array(
                 'employee.id',
                 'employee.emp_code',
-                'employee.name',
+                'employee.emp_name',
                 'employee.email_id',
                 'employee.flat_band',
                 'employee.rm_email_id',
-                'employee.team',
-                'employee.phone',
-                'employee.acco_model_name',
-                'adminUser.name',
+                // 'employee.team',
+                // 'employee.phone',
+                // 'employee.acco_model_name',
+                'rm_name' => 'adminUser.name',
             );
 
             $options['limit'] = $limit;
             $options['offset'] = $start;
             $ampEmployeesListing = $employee_listing->find('all', $options)->toArray();
 
-            dd($ampEmployeesListing);
+            // dd($ampEmployeesListing);
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
             $this->apiResponse['total'] = (int) $numUsers;
