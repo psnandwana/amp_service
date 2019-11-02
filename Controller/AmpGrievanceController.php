@@ -53,7 +53,9 @@ class AmpGrievanceController extends ApiController
             $employee_id = $this->request->getData('employee_id');
             $request_type = $this->request->getData('request_type');
             $options = array();
-            $options['conditions']['employee_id'] = $employee_id;
+            if ($employee_id!=''){
+                $options['conditions']['employee_id'] = $employee_id;
+            }
             $options['conditions']['request_type'] = $request_type;
             $allRequests = $this->AmpGrievance->find('all', $options)->count();
             
@@ -98,7 +100,10 @@ class AmpGrievanceController extends ApiController
             $request_type = $this->request->getData('request_type');
             $type = $this->request->getData('type');
             $type = strtolower($type);
-            $this->paginate['conditions']['employee_id'] = $employee_id;
+            if ($employee_id!=''){
+                $options['conditions']['employee_id'] = $employee_id;
+            }
+            // $this->paginate['conditions']['employee_id'] = $employee_id;
             $this->paginate['conditions']['request_type'] = $request_type;
             $options = array();
             $options['conditions']['employee_id'] = $employee_id;
