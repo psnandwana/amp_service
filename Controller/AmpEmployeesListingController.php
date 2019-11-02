@@ -26,7 +26,7 @@ class AmpEmployeesListingController extends ApiController
             $numUsers = $employee_listing->find('all')->count();
             $options = array();
             if ($name!=""){
-                $options['conditions']['emp_name'] = $name;
+                $options['conditions']['employee.emp_name'] = $name;
             }
             
             $options['join'] = array(
@@ -38,19 +38,18 @@ class AmpEmployeesListingController extends ApiController
                 )
             );
             $option['fields'] = array(
-                'id',
-                'emp_code',
-                'name',
-                'email_id',
-                'flat_band',
-                'rm_email_id',
-                'team',
-                'phone',
-                'acco_model_name',
+                'employee.id',
+                'employee.emp_code',
+                'employee.name',
+                'employee.email_id', 
+                'employee.flat_band',
+                'employee.rm_email_id',
+                'employee.team',
+                'employee.phone',
+                'employee.acco_model_name',
                 'rm_name' => 'admin.name',
             );
             $options['limit'] = $limit;
-            // $options['order'] = 'submitted_date DESC';
             $options['offset'] = $start;
             $ampEmployeesListing = $employee_listing->find('all',$options)->toArray();
             $this->httpStatusCode = 200;
