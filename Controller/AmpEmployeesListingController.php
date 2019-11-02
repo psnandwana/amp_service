@@ -4,7 +4,7 @@ namespace App\Controller;
 use Cake\ORM\TableRegistry;
 use RestApi\Controller\ApiController;
 
-class AmpEmployeesListingController extends AppController
+class AmpEmployeesListingController extends ApiController
 {
     /**List employee List */
     public function index()
