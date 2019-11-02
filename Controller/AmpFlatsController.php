@@ -717,7 +717,7 @@ class AmpFlatsController extends ApiController
                 ),
             );
             $capacityoptions['fields'] = array(
-                'max_capacity' => 'flatRoom.capacity',
+                'max_capacity' => 'SUM(flatRoom.capacity)',
             );
 
             $totaloccupacy = $flatsTable->find('all', $capacityoptions)->sql();
