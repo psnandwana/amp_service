@@ -695,30 +695,30 @@ class AmpFlatsController extends ApiController
                 $options['conditions']['flat.state'] = $this->request->getData('state');
             }
 
-            if ($this->request->getData('active_status') != "") {
-                // $options['conditions']['active_status'] = $this->request->getData('active_status');
-                $options['conditions']['flat.active_status'] = '1';
-            }
-
+            // if ($this->request->getData('active_status') != "") {
+            //     // $options['conditions']['active_status'] = $this->request->getData('active_status');
+            //     $options['conditions']['flat.active_status'] = '1';
+            // }
+            $options['conditions']['flat.active_status'] = '1';
             $totalflats = $flatsTable->find('all', $options)->count();
             // dd($totalflats);
             // $options['conditions']['vacancy_status'] = 'Vacant';
             // $vacantflats = $flatsTable->find('all', $options)->count();
             /* Fetching vacancies in all flats */
-            $subOptions = $options;
-            $subOptions['fields'] = array(
+            $capacityoptions = $options;
+            $capacityoptions['fields'] = array(
                 'max_capacity' => 'flatRoom.capacity',
-            ); 
-            $subOptions = array(
+            );
+            $capacityoptions = array(
                 array(
                     'table' => 'amp_flat_rooms_mapping',
                     'alias' => 'flatRoom',
                     'type' => 'INNER',
-                    'conditions' => ['flatRoom.flat_id = flat.id',]
+                    'conditions' => ['flatRoom.flat_id = flat.id'],
                 ),
             );
 
-            $totaloccupacy = $flatsTable->find('all',$subOptions)->sql(); 
+            $totaloccupacy = $flatsTable->find('all', $capacityoptions)->sql();
             dd($totaloccupacy);
             /* --------------- */
             $options['conditions']['flat.vacancy_status'] = 'Occupied';
