@@ -43,7 +43,7 @@ class AmpEmployeesListingController extends ApiController
                 'employee.team',
                 'employee.phone',
                 'employee.acco_model_name',
-                'rm_name' => 'adminUser.name',
+                'adminUser.name',
             );
 
             $options['limit'] = $limit;
