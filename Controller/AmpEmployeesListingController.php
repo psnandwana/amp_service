@@ -25,12 +25,12 @@ class AmpEmployeesListingController extends ApiController
             }
 
             $options['join'] = array(
-                array(
-                    'table' => 'amp_admin_user',
-                    'alias' => 'adminRm',
-                    'type' => 'INNER',
-                    'conditions' => ['adminUser.email = employee.rm_email_id']
-                ),
+                // array(
+                //     'table' => 'amp_admin_user',
+                //     'alias' => 'adminRm',
+                //     'type' => 'INNER',
+                //     'conditions' => ['adminUser.email = employee.rm_email_id']
+                // ),
                 array(
                     'table' => 'amp_admin_user',
                     'alias' => 'adminUser',
