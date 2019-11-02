@@ -47,8 +47,8 @@ class AmpEmployeesListingController extends ApiController
                 'employee.flat_band',
                 'employee.rm_email_id',
                 'employee_team' => 'employee.team',
-                'employee_phone' => 'employee.phone',
-                'acco_model_name' => 'employee.acco_model_name',
+                // 'employee_phone' => 'employee.phone',
+                // 'acco_model_name' => 'employee.acco_model_name',
                 'rm_name' => 'adminUser.name',
             );
 
