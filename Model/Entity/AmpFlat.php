@@ -63,6 +63,7 @@ class AmpFlat extends Entity
         'vacancy_status' => true,
         'created_date' => true,
         'active_status' => true,
+        'owner_details' => true,
         'amp_employees_listing' => true
     ];
 }
