@@ -704,7 +704,7 @@ class AmpFlatsController extends ApiController
             // dd($totalflats);
             // $options['conditions']['vacancy_status'] = 'Vacant';
             // $vacantflats = $flatsTable->find('all', $options)->count();
-            /* Fetching vacancies in all flats */
+            /* ------------------Fetching vacancies in all flats ------------------*/
             $capacityoptions = array();
             $capacityoptions = $options;
             
@@ -720,9 +720,22 @@ class AmpFlatsController extends ApiController
                 'max_capacity' => 'SUM(flatRoom.capacity)',
             );
 
-            $totaloccupacy = $flatsTable->find('all', $capacityoptions)->toArray();
-            dd($totaloccupacy);
-            /* --------------- */
+            $totalcapacity = $flatsTable->find('all', $capacityoptions)->toArray();
+            
+            /* ---------------------Employee occupied count--------------------- */
+            $occupiedoptions = array();
+            $occupiedoptions = $options;
+            $occupiedoptions['join'] = array(
+                array(
+                    'table' => 'amp_room_employee_mapping',
+                    'alias' => 'roomEmployee',
+                    'type' => 'INNER',
+                    'conditions' => array('roomEmployee.flat_id = flat.id'),
+                ),
+            );
+            $totaloccupied = $flatsTable->find('all', $occupiedoptions)->count();
+            dd($totaloccupied);
+            /* ----------------------------------------------------------------- */
             $options['conditions']['flat.vacancy_status'] = 'Occupied';
             $occupiedflats = $flatsTable->find('all', $options)->count();
             $options['conditions']['flat.vacancy_status'] = 'Partially Occupied';
