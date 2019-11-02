@@ -136,9 +136,11 @@ class AmpGrievanceController extends ApiController
                     $options['conditions']['status'] = 'Rejected';
                     break;
             }
-            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
+            
             if ($type=='All'){
-                $totalRequests = $this->AmpGrievance->find('all')->count();
+                $totalRequests = $this->AmpGrievance->find('all')->sql();
+            }else{
+                $totalRequests = $this->AmpGrievance->find('all', $options)->sql();
             }
             dd($totalRequests);
             $this->paginate['fields'] = array(                
