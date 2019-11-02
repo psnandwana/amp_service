@@ -16,14 +16,17 @@ class AmpEmployeesListingController extends ApiController
             $limit = 10;
             $start = ($page - 1) * $limit;
             $name = $this->request->getData('emp_name');
-            // $this->paginate = ['limit' => 10, 'page' => $page];
-            // $ampEmployeesListing = $this->paginate($this->AmpEmployeesListing);
-            $numUsers = $employee_listing->find('all')->count();
+            $emp_code = $this->request->getData('emp_code');
+            
+            
             $options = array();
             if ($name != "") {
                 $options['conditions']['employee.emp_name'] = $name;
             }
-
+            if ($emp_code!=""){
+                $options['conditions']['employee.emp_code'] = $emp_code;
+            }
+            $numUsers = $employee_listing->find('all',$options)->count();
             $options['join'] = array(
                 array(
                     'table' => 'amp_admin_user',
