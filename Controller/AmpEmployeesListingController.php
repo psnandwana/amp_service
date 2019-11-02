@@ -27,6 +27,12 @@ class AmpEmployeesListingController extends ApiController
             $options['join'] = array(
                 array(
                     'table' => 'amp_admin_user',
+                    'alias' => 'adminRm',
+                    'type' => 'INNER',
+                    'conditions' => ['adminUser.email = employee.rm_email_id']
+                ),
+                array(
+                    'table' => 'amp_admin_user',
                     'alias' => 'adminUser',
                     'type' => 'INNER',
                     'conditions' => ['adminUser.email = employee.rm_email_id']
@@ -48,9 +54,9 @@ class AmpEmployeesListingController extends ApiController
 
             $options['limit'] = $limit;
             $options['offset'] = $start;
-            $ampEmployeesListing = $employee_listing->find('all', $options)->sql();
+            $ampEmployeesListing = $employee_listing->find('all', $options)->toArray();
 
-            dd($ampEmployeesListing);
+            // dd($ampEmployeesListing);
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
             $this->apiResponse['total'] = (int) $numUsers;
