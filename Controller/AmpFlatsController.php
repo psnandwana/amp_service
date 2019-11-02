@@ -696,12 +696,30 @@ class AmpFlatsController extends ApiController
             }
 
             if ($this->request->getData('active_status') != "") {
-                $options['conditions']['active_status'] = $this->request->getData('active_status');
+                // $options['conditions']['active_status'] = $this->request->getData('active_status');
+                $options['conditions']['active_status'] = '1';
             }
 
             $totalflats = $this->AmpFlats->find('all', $options)->count();
             $options['conditions']['vacancy_status'] = 'Vacant';
-            $vacantflats = $this->AmpFlats->find('all', $options)->count();
+            // $vacantflats = $this->AmpFlats->find('all', $options)->count();
+            /* Fetching vacancies in all flats */
+            $subOptions = $options;
+            $subOptions['fields'] = array(
+                'max_capacity' => 'SUM(flatRoom.capacity)',
+            ); 
+            $subOptions = array(
+                array(
+                    'table' => 'amp_flat_rooms_mapping',
+                    'alias' => 'flatRoom',
+                    'type' => 'INNER',
+                    'conditions' => 'flatRoom.flat_id = Employee.id',
+                ),
+            );
+
+            $totaloccupacy = $flatsTable->find('all', $subOptions)->toArray(); 
+            dd($totaloccupacy);
+            /* --------------- */
             $options['conditions']['vacancy_status'] = 'Occupied';
             $occupiedflats = $this->AmpFlats->find('all', $options)->count();
             $options['conditions']['vacancy_status'] = 'Partially Occupied';
