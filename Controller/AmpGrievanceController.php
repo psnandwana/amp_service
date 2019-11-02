@@ -142,7 +142,7 @@ class AmpGrievanceController extends ApiController
             }else{
                 $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             }
-            dd($totalRequests);
+            // dd($totalRequests);
             $this->paginate['fields'] = array(                
                 'id' => 'AmpGrievance.id',
                 'subject',
