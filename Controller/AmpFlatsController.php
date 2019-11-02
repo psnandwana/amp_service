@@ -717,7 +717,7 @@ class AmpFlatsController extends ApiController
                 ),
             );
 
-            $totaloccupacy = $flatsTable->find('all', $subOptions)->toArray(); 
+            $totaloccupacy = $flatsTable->find('all', $subOptions)->sql(); 
             dd($totaloccupacy);
             /* --------------- */
             $options['conditions']['flat.vacancy_status'] = 'Occupied';
