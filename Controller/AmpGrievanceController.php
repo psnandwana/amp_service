@@ -133,6 +133,7 @@ class AmpGrievanceController extends ApiController
                     $options['conditions']['status'] = 'Rejected';
                     break;
             }
+            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             $this->paginate['fields'] = array(                
                 'id' => 'AmpGrievance.id',
                 'subject',
@@ -203,7 +204,7 @@ class AmpGrievanceController extends ApiController
                     $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
                 }
             }
-            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
+            
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
             $this->apiResponse['total'] = (int) $totalRequests;
