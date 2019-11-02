@@ -720,8 +720,8 @@ class AmpFlatsController extends ApiController
                 'max_capacity' => 'SUM(flatRoom.capacity)',
             );
 
-            $totalcapacity = $flatsTable->find('all', $capacityoptions)->toArray();
-            print_r($totalcapacity[0]->max_capacity);exit;
+            $totalcapacity = $flatsTable->find('all', $capacityoptions)->first();
+            print_r($totalcapacity);exit;
             /* ---------------------Employee occupied count--------------------- */
             $occupiedoptions = array();
             $occupiedoptions = $options;
@@ -735,7 +735,7 @@ class AmpFlatsController extends ApiController
             );
             $totaloccupied = $flatsTable->find('all', $occupiedoptions)->count();
             /* ----------------------------------------------------------------- */
-            $vacantflats = $totalcapacity['max_capacity']-$totaloccupied;
+            $vacantflats = $totalcapacity[0]->max_capacity-$totaloccupied;
             dd($vacantflats);
             $options['conditions']['flat.vacancy_status'] = 'Occupied';
             $occupiedflats = $flatsTable->find('all', $options)->count();
