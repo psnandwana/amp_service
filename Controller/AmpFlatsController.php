@@ -563,7 +563,7 @@ class AmpFlatsController extends ApiController
             $roomEmployeeMappingTable = TableRegistry::get('amp_room_employee_mapping');
             $flatsTable = TableRegistry::get('amp_flats');
             $employeeTable = TableRegistry::get('amp_employees_listing');
-            $employee = $employeeTable
+            // $employee = $employeeTable
             $roomCapacity = $flatRoomMappingTable->find('all')->where(['id' => $roomID])->first()->toArray();
             $employeeCount = $roomEmployeeMappingTable->find('all')->where(['room_id' => $roomID, 'flat_id' => $flatID, 'active_status' => '1'])->count();
             $roomCapacity = $roomCapacity['capacity'];
