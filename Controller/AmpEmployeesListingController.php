@@ -52,6 +52,7 @@ class AmpEmployeesListingController extends ApiController
             $options['limit'] = $limit;
             // $options['order'] = 'submitted_date DESC';
             $options['offset'] = $start;
+            $ampEmployeesListing = $employee_listing->find('all',$options)->toArray();
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
             $this->apiResponse['total'] = (int) $numUsers;
