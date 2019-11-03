@@ -16,14 +16,14 @@ class AmpGrievanceController extends ApiController
             $AmpGrievance = $this->AmpGrievance->newEntity();
             $EmployeeTable = TableRegistry::get('Employee', ['table' => 'amp_employees_listing']);
             $options['conditions']['Employee.id'] = $this->request->getData('employee_id');
-            $options['fields'] = array('rm_id'=>'Admin.id','rm_email' =>'Admin.email');
+            $options['fields'] = array('rm_id' => 'Admin.id', 'rm_email' => 'Admin.email');
             $options['join'] = array(
                 array(
                     'table' => 'amp_admin_user',
                     'alias' => 'Admin',
                     'type' => 'INNER',
                     'conditions' => 'Admin.email = Employee.rm_email_id',
-                )
+                ),
             );
             $RMDetails = $EmployeeTable->find('all', $options)->first()->toArray();
             $rm_id = $RMDetails['rm_id'];
@@ -54,19 +54,19 @@ class AmpGrievanceController extends ApiController
             $employee_id = $this->request->getData('employee_id');
             $request_type = $this->request->getData('request_type');
             $options = array();
-            if ($employee_id!=''){
+            if ($employee_id != '') {
                 $options['conditions']['employee_id'] = $employee_id;
             }
             $options['conditions']['request_type'] = $request_type;
             $allRequests = $this->AmpGrievance->find('all', $options)->count();
-            
+
             $options['conditions']['status'] = "Resolved";
             $resolvedRequests = $this->AmpGrievance->find('all', $options)->count();
             $options['conditions']['status'] = "Pending";
             $pendingRequests = $this->AmpGrievance->find('all', $options)->count();
             $options['conditions']['status'] = "Rejected";
             $rejectedRequests = $this->AmpGrievance->find('all', $options)->count();
-            if ($request_type=='Travel'){
+            if ($request_type == 'Travel') {
                 $options['conditions']['rm_approval_status'] = "0";
                 $rmPendingRequests = $this->AmpGrievance->find('all', $options)->count();
                 $options['conditions']['rm_approval_status !='] = "0";
@@ -75,10 +75,10 @@ class AmpGrievanceController extends ApiController
             }
             $this->httpStatusCode = 200;
             $this->apiResponse['all'] = $allRequests;
-            
+
             $this->apiResponse['pending'] = $pendingRequests;
-            $this->apiResponse['resolved'] = $resolvedRequests;         
-            $this->apiResponse['rejected'] = $rejectedRequests;            
+            $this->apiResponse['resolved'] = $resolvedRequests;
+            $this->apiResponse['rejected'] = $rejectedRequests;
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
@@ -101,11 +101,11 @@ class AmpGrievanceController extends ApiController
             $request_type = $this->request->getData('request_type');
             $type = $this->request->getData('type');
             // $type = $type;
-            if ($employee_id!=''){
+            if ($employee_id != '') {
                 $this->paginate['conditions']['employee_id'] = $employee_id;
                 $options['conditions']['employee_id'] = $employee_id;
             }
-            
+
             $this->paginate['conditions']['request_type'] = $request_type;
             $options = array();
             $options['conditions']['request_type'] = $request_type;
@@ -113,7 +113,7 @@ class AmpGrievanceController extends ApiController
             // $totalRequests = $this->AmpGrievance->find('all')->count();
             // dd($totalRequests);
             // dd($type);
-            switch($type){
+            switch ($type) {
                 case 'Pending_rm':
                     $this->paginate['conditions']['rm_approval_status'] = '0';
                     $options['conditions']['rm_approval_status'] = '0';
@@ -137,19 +137,19 @@ class AmpGrievanceController extends ApiController
                     $options['conditions']['status'] = 'Rejected';
                     break;
             }
-            
-            if ($type=='All'){
+
+            if ($type == 'All') {
                 $totalRequests = $this->AmpGrievance->find('all')->count();
-            }else{
+            } else {
                 $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             }
             // dd($totalRequests);
-            $this->paginate['fields'] = array(                
+            $this->paginate['fields'] = array(
                 'id' => 'AmpGrievance.id',
                 'subject',
-                'request_type',                
+                'request_type',
                 'description',
-                'status' =>'AmpGrievance.status',
+                'status' => 'AmpGrievance.status',
                 'submitted_date' => 'AmpGrievance.submitted_date',
                 'employee__id' => 'Employee.id',
                 'employee__emp_code' => 'Employee.emp_code',
@@ -162,9 +162,9 @@ class AmpGrievanceController extends ApiController
                 'reporting_manager__emp_code' => 'RM.emp_code',
                 'reporting_manager__emp_name' => 'RM.emp_name',
                 'reporting_manager__email_id' => 'RM.email_id',
-                'reporting_manager__flat_band' => 'RM.flat_band',  
+                'reporting_manager__flat_band' => 'RM.flat_band',
                 'reporting_manager__flat_no' => 'RMFlat.flat_no',
-                'reporting_manager__apartment_name' => 'RMFlat.apartment_name'      
+                'reporting_manager__apartment_name' => 'RMFlat.apartment_name',
             );
 
             $this->paginate['join'] = array(
@@ -185,7 +185,7 @@ class AmpGrievanceController extends ApiController
                     'alias' => 'RoomEmpMap',
                     'type' => 'LEFT',
                     'conditions' => ['RoomEmpMap.employee_id = Employee.id', 'RoomEmpMap.active_status' => '1'],
-                ),  
+                ),
                 array(
                     'table' => 'amp_flats',
                     'alias' => 'Flat',
@@ -197,13 +197,13 @@ class AmpGrievanceController extends ApiController
                     'alias' => 'RMRoomEmpMap',
                     'type' => 'LEFT',
                     'conditions' => ['RMRoomEmpMap.employee_id = RM.id', 'RMRoomEmpMap.active_status' => '1'],
-                ),  
+                ),
                 array(
                     'table' => 'amp_flats',
                     'alias' => 'RMFlat',
                     'type' => 'LEFT',
                     'conditions' => ['RMFlat.id = RMRoomEmpMap.flat_id'],
-                )           
+                ),
             );
             $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
             if (count($AmpGrievance) > 0) {
@@ -214,7 +214,7 @@ class AmpGrievanceController extends ApiController
                     $AmpGrievance[$index]['submitted_date'] = date("jS F, Y", strtotime($request['submitted_date']));
                 }
             }
-            
+
             $this->httpStatusCode = 200;
             $this->apiResponse['page'] = (int) $page;
             $this->apiResponse['total'] = (int) $totalRequests;
@@ -247,15 +247,16 @@ class AmpGrievanceController extends ApiController
             $this->apiResponse['all'] = $allRequests;
             $this->apiResponse['rm_pending'] = $rmPendingRequests;
             $this->apiResponse['pending'] = $pendingRequests;
-            $this->apiResponse['resolved'] = $resolvedRequests;         
-            $this->apiResponse['rejected'] = $rejectedRequests;            
+            $this->apiResponse['resolved'] = $resolvedRequests;
+            $this->apiResponse['rejected'] = $rejectedRequests;
         } else {
             $this->httpStatusCode = 403;
             $this->apiResponse['message'] = "your session has been expired";
         }
     }
 
-    function getallrequests() {
+    public function getallrequests()
+    {
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $page = $this->request->getData('page');
@@ -266,7 +267,7 @@ class AmpGrievanceController extends ApiController
             $options = array();
             $options['conditions']['request_type'] = $request_type;
             $this->paginate = ['limit' => 10, 'page' => $page];
-            switch($type){
+            switch ($type) {
                 case 'pending_rm':
                     $this->paginate['conditions']['rm_approval_status'] = '0';
                     $options['conditions']['rm_approval_status'] = '0';
@@ -290,12 +291,12 @@ class AmpGrievanceController extends ApiController
                     $options['conditions']['status'] = 'Rejected';
                     break;
             }
-            $this->paginate['fields'] = array(                
+            $this->paginate['fields'] = array(
                 'id' => 'AmpGrievance.id',
                 'subject',
-                'request_type',                
+                'request_type',
                 'description',
-                'status' =>'AmpGrievance.status',
+                'status' => 'AmpGrievance.status',
                 'submitted_date' => 'AmpGrievance.submitted_date',
                 'employee__id' => 'Employee.id',
                 'employee__emp_code' => 'Employee.emp_code',
@@ -308,9 +309,9 @@ class AmpGrievanceController extends ApiController
                 'reporting_manager__emp_code' => 'RM.emp_code',
                 'reporting_manager__emp_name' => 'RM.emp_name',
                 'reporting_manager__email_id' => 'RM.email_id',
-                'reporting_manager__flat_band' => 'RM.flat_band',  
+                'reporting_manager__flat_band' => 'RM.flat_band',
                 'reporting_manager__flat_no' => 'RMFlat.flat_no',
-                'reporting_manager__apartment_name' => 'RMFlat.apartment_name'      
+                'reporting_manager__apartment_name' => 'RMFlat.apartment_name',
             );
 
             $this->paginate['join'] = array(
@@ -331,7 +332,7 @@ class AmpGrievanceController extends ApiController
                     'alias' => 'RoomEmpMap',
                     'type' => 'LEFT',
                     'conditions' => ['RoomEmpMap.employee_id = Employee.id', 'RoomEmpMap.active_status' => '1'],
-                ),  
+                ),
                 array(
                     'table' => 'amp_flats',
                     'alias' => 'Flat',
@@ -343,13 +344,13 @@ class AmpGrievanceController extends ApiController
                     'alias' => 'RMRoomEmpMap',
                     'type' => 'LEFT',
                     'conditions' => ['RMRoomEmpMap.employee_id = RM.id', 'RMRoomEmpMap.active_status' => '1'],
-                ),  
+                ),
                 array(
                     'table' => 'amp_flats',
                     'alias' => 'RMFlat',
                     'type' => 'LEFT',
                     'conditions' => ['RMFlat.id = RMRoomEmpMap.flat_id'],
-                )           
+                ),
             );
             $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
             if (count($AmpGrievance) > 0) {
@@ -402,7 +403,7 @@ class AmpGrievanceController extends ApiController
                     ->set([
                         'status' => $status,
                         'admin_remark' => $remark,
-                        'approved_date' => $current_date
+                        'approved_date' => $current_date,
                     ])
                     ->where(['id' => $request_id])
                     ->execute();
@@ -419,4 +420,17 @@ class AmpGrievanceController extends ApiController
             $this->apiResponse['message'] = "your session has been expired";
         }
     }
+
+    // public function updaterequeststatus()
+    // {
+    //     header("Access-Control-Allow-Origin: *");
+    //     if ($this->checkToken()) {
+    //         $AmpGrievance = TableRegistry::get('Grievance', ['table' => 'amp_grievance']);
+    //         $request_id = $this->request->getData('request_id');
+
+    //     } else {
+    //         $this->httpStatusCode = 403;
+    //         $this->apiResponse['message'] = "your session has been expired";
+    //     }
+    // }
 }
