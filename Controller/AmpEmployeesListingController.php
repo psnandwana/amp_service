@@ -31,19 +31,19 @@ class AmpEmployeesListingController extends ApiController
                 array(
                     'table' => 'amp_admin_user',
                     'alias' => 'adminUser',
-                    'type' => 'INNER',
+                    'type' => 'LEFT',
                     'conditions' => ['adminUser.email = employee.email_id'],
                 ),
                 array(
                     'table' => 'amp_admin_user',
                     'alias' => 'adminRm',
-                    'type' => 'INNER',
+                    'type' => 'LEFT',
                     'conditions' => ['adminRm.email = employee.rm_email_id'],
                 ),
                 array(
                     'table' => 'wp_career_location_preference',
                     'alias' => 'office',
-                    'type' => 'INNER',
+                    'type' => 'LEFT',
                     'conditions' => ['office.id = adminUser.campaign_office'],
                 ),
             );
