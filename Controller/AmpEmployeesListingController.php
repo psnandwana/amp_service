@@ -21,7 +21,7 @@ class AmpEmployeesListingController extends ApiController
             
             $options = array();
             if ($name != "") {
-                $options['conditions']['employee.emp_name'] = $name;
+                $options['conditions']['employee.emp_name LIKE'] = "%".$name."%";
             }
             if ($emp_code!=""){
                 $options['conditions']['employee.emp_code'] = $emp_code;
