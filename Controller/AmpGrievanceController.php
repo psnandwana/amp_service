@@ -13,8 +13,8 @@ class AmpGrievanceController extends ApiController
         if ($this->checkToken()) {
             date_default_timezone_set('Asia/Kolkata');
             $current_date = date('Y-m-d H:i:s');
-            dd($this->request->data);
             $AmpGrievance = $this->AmpGrievance->newEntity();
+            dd($this->request->data);
             $EmployeeTable = TableRegistry::get('Employee', ['table' => 'amp_employees_listing']);
             $options['conditions']['Employee.id'] = $this->request->getData('employee_id');
             $options['fields'] = array('rm_id' => 'Admin.id', 'rm_email' => 'Admin.email');
