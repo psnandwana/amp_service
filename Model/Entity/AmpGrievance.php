@@ -20,6 +20,7 @@ class AmpGrievance extends Entity
         'rm_approval_date' => true,
         'admin_remark' => true,
         'approved_by' => true,
-        'approved_date' => true
+        'approved_date' => true,
+        'emergency' => true
     ];
 }
