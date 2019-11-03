@@ -750,7 +750,7 @@ class AmpFlatsController extends ApiController
                 $vacantAmount = $vacantAllowance->total_allowance;
             }
             $data[] = array('name' => 'Total Flats', 'value' => $totalflats);
-            $data[] = array('name' => 'Vacant Flats', 'value' => $vacantflats);
+            $data[] = array('name' => 'Vacancies', 'value' => $vacantflats);
             $data[] = array('name' => 'Occupied Flats', 'value' => $occupiedflats);
             $data[] = array('name' => 'Partially Occupied Flats', 'value' => $partiallyflats);
             $data[] = array('name' => 'Vacant Allowance', 'value' => moneyFormatIndia($vacantAmount));
