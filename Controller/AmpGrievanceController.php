@@ -14,7 +14,7 @@ class AmpGrievanceController extends ApiController
             date_default_timezone_set('Asia/Kolkata');
             $current_date = date('Y-m-d H:i:s');
             $AmpGrievance = $this->AmpGrievance->newEntity();
-            dd($this->request->data);
+            
             $EmployeeTable = TableRegistry::get('Employee', ['table' => 'amp_employees_listing']);
             $options['conditions']['Employee.id'] = $this->request->getData('employee_id');
             $options['fields'] = array('rm_id' => 'Admin.id', 'rm_email' => 'Admin.email');
@@ -26,6 +26,7 @@ class AmpGrievanceController extends ApiController
                     'conditions' => 'Admin.email = Employee.rm_email_id',
                 ),
             );
+            dd($this->request->data);
             $RMDetails = $EmployeeTable->find('all', $options)->first()->toArray();
             
             $rm_id = $RMDetails['rm_id'];
