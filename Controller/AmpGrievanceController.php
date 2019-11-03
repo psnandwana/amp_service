@@ -27,8 +27,8 @@ class AmpGrievanceController extends ApiController
                 ),
             );
             
-            $RMDetails = $EmployeeTable->find('all', $options)->first()->sql();
-            dd($$RMDetails);
+            $RMDetails = $EmployeeTable->find('all', $options)->sql();
+            dd($RMDetails);
             $rm_id = $RMDetails['rm_id'];
             $rm_email = $RMDetails['rm_email'];
 
