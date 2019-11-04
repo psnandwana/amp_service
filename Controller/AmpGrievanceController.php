@@ -110,7 +110,7 @@ class AmpGrievanceController extends ApiController
             $this->paginate['conditions']['request_type'] = $request_type;
             $options['conditions']['request_type'] = $request_type;
             $this->paginate = ['limit' => 10, 'page' => $page];
-            dd($this->paginate);
+            dd($this->paginate['conditions']);
             switch ($type) {
                 case 'Pending_rm':
                     $this->paginate['conditions']['rm_approval_status'] = '0';
