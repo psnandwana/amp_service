@@ -57,7 +57,7 @@ class AmpGrievanceController extends ApiController
             $request_type = $this->request->getData('request_type');
             $options = array();
             if ($employee_id != '') {
-                $options['conditions']['employee_id'] = $employee_id;
+                $options['conditions']['employee_id'] = (int)$employee_id;
             }
             $options['conditions']['request_type'] = $request_type;
             $allRequests = $this->AmpGrievance->find('all', $options)->count();
