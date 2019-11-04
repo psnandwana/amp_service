@@ -145,7 +145,6 @@ class AmpGrievanceController extends ApiController
             } else {
                 $totalRequests = $this->AmpGrievance->find('all', $options)->count();
             }
-            // dd($totalRequests);
             $this->paginate['fields'] = array(
                 'id' => 'AmpGrievance.id',
                 'subject',
@@ -207,7 +206,8 @@ class AmpGrievanceController extends ApiController
                     'conditions' => ['RMFlat.id = RMRoomEmpMap.flat_id'],
                 ),
             );
-            $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
+            $AmpGrievance = $this->paginate($this->AmpGrievance)->sql();
+            dd($AmpGrievance);
             if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
                     $reporting_manager = $request['reporting_manager'];
