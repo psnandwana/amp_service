@@ -107,11 +107,10 @@ class AmpGrievanceController extends ApiController
                 $options['conditions']['employee_id'] = (int)$employee_id;
                 $this->paginate['conditions']['employee_id'] = (int)$employee_id;
             }
-            echo $this->paginate;
             $this->paginate['conditions']['request_type'] = $request_type;
             $options['conditions']['request_type'] = $request_type;
             $this->paginate = ['limit' => 10, 'page' => $page];
-            
+            dd($this->paginate);
             switch ($type) {
                 case 'Pending_rm':
                     $this->paginate['conditions']['rm_approval_status'] = '0';
@@ -205,7 +204,7 @@ class AmpGrievanceController extends ApiController
                     'conditions' => ['RMFlat.id = RMRoomEmpMap.flat_id'],
                 ),
             );
-            dd($this->paginate);
+            
             $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
             if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
