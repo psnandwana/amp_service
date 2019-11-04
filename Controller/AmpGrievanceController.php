@@ -394,7 +394,9 @@ class AmpGrievanceController extends ApiController
             $remark = $this->request->getData('remark');
             date_default_timezone_set('Asia/Kolkata');
             $current_date = date('Y-m-d H:i:s');
-
+            if ($status=='Need Information'){
+                $status = 'Pending';
+            }
             $options = array();
             $options['conditions']['id'] = $request_id;
             $requests = $AmpGrievance->find('all', $options)->count();
