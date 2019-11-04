@@ -107,7 +107,7 @@ class AmpGrievanceController extends ApiController
                 $this->paginate['conditions']['employee_id'] = (int)$employee_id;
                 $options['conditions']['employee_id'] = (int)$employee_id;
             }
-            dd($this->paginate);
+            // dd($this->paginate);
             $this->paginate['conditions']['request_type'] = $request_type;
             $options['conditions']['request_type'] = $request_type;
             $this->paginate = ['limit' => 10, 'page' => $page];
