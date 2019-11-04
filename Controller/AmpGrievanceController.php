@@ -206,8 +206,7 @@ class AmpGrievanceController extends ApiController
                     'conditions' => ['RMFlat.id = RMRoomEmpMap.flat_id'],
                 ),
             );
-            $AmpGrievance = $this->paginate($this->AmpGrievance)->sql();
-            dd($AmpGrievance);
+            $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
             if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
                     $reporting_manager = $request['reporting_manager'];
