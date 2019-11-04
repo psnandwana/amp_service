@@ -205,7 +205,7 @@ class AmpGrievanceController extends ApiController
                 ),
             );
             // $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
-            $AmpGrievance = $this->AmpGrievance->find('all', $options)->toArray();
+            $AmpGrievance = $this->AmpGrievance->find('all', $options)->sql();
             dd($AmpGrievance);
             if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
