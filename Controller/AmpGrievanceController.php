@@ -137,13 +137,13 @@ class AmpGrievanceController extends ApiController
                     break;
             }
 
-            if ($type == 'All') {
-                $totalRequests = $this->AmpGrievance->find('all')->count();
-            } else {
-                $totalRequests = $this->AmpGrievance->find('all', $options)->count();
-                echo $totalRequests;
-                dd($options);
-            }
+            // if ($type == 'All') {
+            //     $totalRequests = $this->AmpGrievance->find('all',$options)->count();
+            // } else {
+            $totalRequests = $this->AmpGrievance->find('all', $options)->count();
+                // echo $totalRequests;
+                // dd($options);
+            // }
             $this->paginate['fields'] = array(
                 'id' => 'AmpGrievance.id',
                 'subject',
