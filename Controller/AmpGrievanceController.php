@@ -103,6 +103,7 @@ class AmpGrievanceController extends ApiController
             $request_type = $this->request->getData('request_type');
             $type = $this->request->getData('type');
             $options = array();
+            $this->paginate['conditions'] = array();
             if ($employee_id != '') {
                 $options['conditions']['employee_id'] = (int)$employee_id;
                 $this->paginate['conditions']['employee_id'] = (int)$employee_id;
