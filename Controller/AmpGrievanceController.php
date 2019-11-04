@@ -102,19 +102,16 @@ class AmpGrievanceController extends ApiController
             $employee_id = $this->request->getData('employee_id');
             $request_type = $this->request->getData('request_type');
             $type = $this->request->getData('type');
-            // $type = $type;
+            $options = array();
             if ($employee_id != '') {
                 $this->paginate['conditions']['employee_id'] = $employee_id;
                 $options['conditions']['employee_id'] = $employee_id;
             }
 
             $this->paginate['conditions']['request_type'] = $request_type;
-            $options = array();
             $options['conditions']['request_type'] = $request_type;
             $this->paginate = ['limit' => 10, 'page' => $page];
-            // $totalRequests = $this->AmpGrievance->find('all')->count();
-            // dd($totalRequests);
-            // dd($type);
+            
             switch ($type) {
                 case 'Pending_rm':
                     $this->paginate['conditions']['rm_approval_status'] = '0';
