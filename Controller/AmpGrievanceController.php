@@ -204,7 +204,7 @@ class AmpGrievanceController extends ApiController
                     'conditions' => ['RMFlat.id = RMRoomEmpMap.flat_id'],
                 ),
             );
-            
+            dd($options);
             // $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
             $AmpGrievance = $this->AmpGrievance->find('all', $options)->toArray();
             if (count($AmpGrievance) > 0) {
