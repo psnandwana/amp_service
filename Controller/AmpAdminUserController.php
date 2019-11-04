@@ -77,8 +77,8 @@ class AmpAdminUserController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             // if ($this->request->session()->check('admin_user_id')) {
-            // $user_id = $this->request->session()->read('admin_user_id');
-            $user_id = 46;
+            $user_id = $this->request->session()->read('admin_user_id');
+            // $user_id = 46;
             $checkUser = $this->AmpAdminUser->find('all')->where(['id' => $user_id])->first();
             if (!empty($checkUser)) {
                 $checkUser = $checkUser->toArray();
