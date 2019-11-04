@@ -99,6 +99,8 @@ class AmpGrievanceController extends ApiController
         header("Access-Control-Allow-Origin: *");
         if ($this->checkToken()) {
             $page = $this->request->getData('page');
+            $limit = 10;
+            $start = ($page - 1) * $limit;
             $employee_id = $this->request->getData('employee_id');
             $request_type = $this->request->getData('request_type');
             $type = $this->request->getData('type');
@@ -204,6 +206,9 @@ class AmpGrievanceController extends ApiController
                     'conditions' => ['RMFlat.id = RMRoomEmpMap.flat_id'],
                 ),
             );
+            $options['limit'] = $limit;
+            $options['order'] = 'approved_date DESC';
+            $options['offset'] = $start;
             // $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
             $AmpGrievance = $this->AmpGrievance->find('all', $options)->sql();
             dd($AmpGrievance);
