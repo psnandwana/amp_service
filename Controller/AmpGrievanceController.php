@@ -103,7 +103,6 @@ class AmpGrievanceController extends ApiController
             $request_type = $this->request->getData('request_type');
             $type = $this->request->getData('type');
             $options = array();
-            $this->paginate['conditions'] = array();
             if ($employee_id != '') {
                 $options['conditions']['employee_id'] = (int)$employee_id;
                 $this->paginate['conditions']['employee_id'] = (int)$employee_id;
@@ -111,7 +110,7 @@ class AmpGrievanceController extends ApiController
             $this->paginate['conditions']['request_type'] = $request_type;
             $options['conditions']['request_type'] = $request_type;
             $this->paginate = ['limit' => 10, 'page' => $page];
-            dd($this->paginate['conditions']);
+            // dd($this->paginate['conditions']);
             switch ($type) {
                 case 'Pending_rm':
                     $this->paginate['conditions']['rm_approval_status'] = '0';
@@ -144,7 +143,7 @@ class AmpGrievanceController extends ApiController
                 // echo $totalRequests;
                 // dd($options);
             // }
-            $this->paginate['fields'] = array(
+            $options['fields'] = array(
                 'id' => 'AmpGrievance.id',
                 'subject',
                 'request_type',
@@ -167,7 +166,7 @@ class AmpGrievanceController extends ApiController
                 'reporting_manager__apartment_name' => 'RMFlat.apartment_name',
             );
 
-            $this->paginate['join'] = array(
+            $options['join'] = array(
                 array(
                     'table' => 'amp_employees_listing',
                     'alias' => 'Employee',
@@ -206,7 +205,8 @@ class AmpGrievanceController extends ApiController
                 ),
             );
             
-            $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
+            // $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
+            $AmpGrievance = $this->AmpGrievance->find('all', $options)->toArray();
             if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
                     $reporting_manager = $request['reporting_manager'];
