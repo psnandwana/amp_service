@@ -210,7 +210,7 @@ class AmpGrievanceController extends ApiController
             $options['order'] = 'AmpGrievance.approved_date DESC';
             $options['offset'] = $start;
             // $AmpGrievance = $this->paginate($this->AmpGrievance)->toArray();
-            $AmpGrievance = $this->AmpGrievance->find('all', $options)->sql();
+            $AmpGrievance = $this->AmpGrievance->find('all', $options)->toArray();
             // dd($AmpGrievance);
             if (count($AmpGrievance) > 0) {
                 foreach ($AmpGrievance as $index => $request) {
